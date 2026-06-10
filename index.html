@@ -1549,7 +1549,10 @@ async function filterDash(period){
     document.getElementById('dash-profit-result').innerHTML=html2;
   }catch(e){document.getElementById('dash-profit-result').innerHTML='<span style="color:var(--red)">Erro: '+e.message+'</span>';}
 
-async function openCreateBarberUser(barberId, barberName){
+async function openCreateBarberUser(barberIdOrEl, barberName){
+  let barberId=barberIdOrEl;
+  if(typeof barberIdOrEl==='object'&&barberIdOrEl.dataset){barberId=barberIdOrEl.dataset.bid;barberName=barberIdOrEl.dataset.bn;}
+
   // Verificar limite de 3 barbeiros com acesso
   const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
   const count=(existing||[]).length;
@@ -1585,7 +1588,10 @@ async function saveBarberUser(){
 }
 
 
-async function openCreateBarberUser(barberId, barberName){
+async function openCreateBarberUser(barberIdOrEl, barberName){
+  let barberId=barberIdOrEl;
+  if(typeof barberIdOrEl==='object'&&barberIdOrEl.dataset){barberId=barberIdOrEl.dataset.bid;barberName=barberIdOrEl.dataset.bn;}
+
   // Verificar limite de 3 barbeiros com acesso
   const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
   const count=(existing||[]).length;
@@ -1927,22 +1933,38 @@ async function loadCfgForm(){
   const linkEl=document.getElementById('cfg-share-link');
   if(linkEl)linkEl.textContent=window.location.origin+window.location.pathname+'?s='+d.slug;
 }
-async function loadBarbCfg(){
+async async function loadBarbCfg(){
   const{data}=await db.from('barbers').select('*').eq('shop_id',S.shopId).order('name');
-    const{data:bu}=await db.from('barber_users').select('barber_id').eq('shop_id',S.shopId);
-    const usersSet=new Set((bu||[]).map(x=>x.barber_id));
-    (data||[]).forEach(b=>{b.has_user=usersSet.has(b.id);});
+  const{data:bu}=await db.from('barber_users').select('barber_id').eq('shop_id',S.shopId);
+  const usersSet=new Set((bu||[]).map(x=>x.barber_id));
   const el=document.getElementById('barb-cfg');if(!el)return;
-  el.innerHTML=(data||[]).map(b=>`
-    <div class="ci">
-      <div class="cii">${b.avatar_emoji||'👤'}</div>
-      <div class="cit" style="flex:1;cursor:pointer" onclick="editBarber('${b.id}','${b.name}','${b.specialty||""}',${b.commission_pct||0})"><div class="citn">${b.name}</div><div class="cits">${b.specialty||''} &bull; Comissão: ${b.commission_pct||0}%${b.has_user?' &bull; <span style=color:var(--grn)>✓ Acesso</span>':' &bull; <a onclick=\"event.stopPropagation();openCreateBarberUser(\''+b.id+'\',\''+b.name+'\')\" style=color:var(--gold);cursor:pointer;text-decoration:underline>Criar acesso</a>'}</div></div>
-      <div class="tog${b.active?' on':''}" onclick="togBarb('${b.id}',${b.active})"></div>
-      <button onclick="delBarb('${b.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:6px">✕</button>
-    </div>`).join('');
+  el.innerHTML=(data||[]).map(b=>{
+    const hasUser=usersSet.has(b.id);
+    const nm=b.name.replace(/'/g,"");
+    const sp=(b.specialty||"").replace(/'/g,"");
+    const cm=b.commission_pct||0;
+    const accessHtml=hasUser
+      ?'<span style="color:#27AE60;font-size:11px">&#10003; Acesso</span>'
+      :'<button onclick="event.stopPropagation();openCreateBarberUser(this.dataset.bid,this.dataset.bn)" data-bid="'+b.id+'" data-bn="'+nm+'" style="background:#C9A84C;color:#0E0E0E;border:none;border-radius:50px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer">Criar acesso</button>';
+    return '<div class="ci" style="flex-wrap:wrap;gap:8px">'
+      +'<div class="cii">'+(b.avatar_emoji||"\u{1F464}")+'</div>'
+      +'<div class="cit" style="flex:1;min-width:120px;cursor:pointer" onclick="editBarber(this.dataset.bid,this.dataset.bn,this.dataset.bs,this.dataset.bc)" data-bid="'+b.id+'" data-bn="'+nm+'" data-bs="'+sp+'" data-bc="'+cm+'">'
+      +'<div class="citn">'+b.name+'</div>'
+      +'<div class="cits">'+(b.specialty||"")+' &bull; Comissao: '+cm+'%</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px">'
+      +accessHtml
+      +'<div class="tog'+(b.active?' on':'')+'" onclick="togBarb(this.dataset.bid,'+b.active+')" data-bid="'+b.id+'"></div>'
+      +'<button onclick="delBarb(this.dataset.bid)" data-bid="'+b.id+'" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">&#10005;</button>'
+      +'</div></div>';
+  }).join('');
 }
-async function togBarb(id,cur){await db.from('barbers').update({active:!cur}).eq('id',id);loadBarbCfg();loadBarbers();}
-async function delBarb(id){if(!confirm('Remover barbeiro?'))return;await db.from('barbers').delete().eq('id',id);loadBarbCfg();loadBarbers();}
+async function togBarb(idOrEl,cur){
+  let id=idOrEl;if(typeof idOrEl==='object'&&idOrEl.dataset)id=idOrEl.dataset.bid;
+await db.from('barbers').update({active:!cur}).eq('id',id);loadBarbCfg();loadBarbers();}
+async function delBarb(idOrEl){
+  let id=idOrEl;if(typeof idOrEl==='object'&&idOrEl.dataset)id=idOrEl.dataset.bid;
+if(!confirm('Remover barbeiro?'))return;await db.from('barbers').delete().eq('id',id);loadBarbCfg();loadBarbers();}
 function addBarber(){
   document.getElementById('brb-name').value='';
   document.getElementById('brb-spec').value='';
@@ -1952,7 +1974,10 @@ function addBarber(){
   document.getElementById('mod-barber-title').textContent='Adicionar Barbeiro';
   openMod('mod-barber');
 }
-function editBarber(id,name,spec,comm){
+function editBarber(el_or_id,name,spec,comm){
+  let id=el_or_id;
+  if(typeof el_or_id==='object'&&el_or_id.dataset){id=el_or_id.dataset.bid;name=el_or_id.dataset.bn;spec=el_or_id.dataset.bs;comm=el_or_id.dataset.bc;}
+
   document.getElementById('brb-name').value=name||'';
   document.getElementById('brb-spec').value=spec||'';
   document.getElementById('brb-comm').value=comm||0;
