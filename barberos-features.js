@@ -169,6 +169,20 @@ function overrideFunctions(){
 }
 
 // === BARBER LOGIN DETECTION ===
+
+  // Re-apply loadBarbCfg quando aba barbeiros for exibida
+  var origShowA = window.showA;
+  if (typeof origShowA === "function") {
+    window.showA = function(sec) {
+      origShowA(sec);
+      if (sec === "barbs" || sec === "config") {
+        setTimeout(function(){ if(typeof loadBarbCfg==="function") loadBarbCfg(); }, 100);
+      }
+    };
+  }
+  // Also override immediately if barb-cfg already exists
+  setTimeout(function(){ if(document.getElementById("barb-cfg") && S.shopId) loadBarbCfg(); }, 1500);
+
 function setupBarberLogin(){
   // Store session token when available
   var origSetSession = "catch(se){console.warn";
