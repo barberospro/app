@@ -1684,19 +1684,46 @@ async function loadBarbCfg(){
   el.innerHTML=(data||[]).map(b=>`
     <div class="ci">
       <div class="cii">${b.avatar_emoji||'👤'}</div>
-      <div class="cit"><div class="citn">${b.name}</div><div class="cits">${b.specialty||''}</div></div>
+      <div class="cit" style="flex:1;cursor:pointer" onclick="editBarber('${b.id}','${b.name}','${b.specialty||""}',${b.commission_pct||0})"><div class="citn">${b.name}</div><div class="cits">${b.specialty||''} &bull; Comissão: ${b.commission_pct||0}%</div></div>
       <div class="tog${b.active?' on':''}" onclick="togBarb('${b.id}',${b.active})"></div>
       <button onclick="delBarb('${b.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:6px">✕</button>
     </div>`).join('');
 }
 async function togBarb(id,cur){await db.from('barbers').update({active:!cur}).eq('id',id);loadBarbCfg();loadBarbers();}
 async function delBarb(id){if(!confirm('Remover barbeiro?'))return;await db.from('barbers').delete().eq('id',id);loadBarbCfg();loadBarbers();}
-async function addBarber(){
-  const name=prompt('Nome do barbeiro:');if(!name)return;
-  const spec=prompt('Especialidade:');
-  const{error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec||'',avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true});
+function addBarber(){
+  document.getElementById('brb-name').value='';
+  document.getElementById('brb-spec').value='';
+  document.getElementById('brb-comm').value='0';
+  document.getElementById('brb-comm-val').textContent='0';
+  document.getElementById('brb-edit-id').value='';
+  document.getElementById('mod-barber-title').textContent='Adicionar Barbeiro';
+  openMod('mod-barber');
+}
+function editBarber(id,name,spec,comm){
+  document.getElementById('brb-name').value=name||'';
+  document.getElementById('brb-spec').value=spec||'';
+  document.getElementById('brb-comm').value=comm||0;
+  document.getElementById('brb-comm-val').textContent=comm||0;
+  document.getElementById('brb-edit-id').value=id;
+  document.getElementById('mod-barber-title').textContent='Editar Barbeiro';
+  openMod('mod-barber');
+}
+async function saveBarber(){
+  const name=document.getElementById('brb-name').value.trim();
+  if(!name){toast('Informe o nome do barbeiro','err');return;}
+  const spec=document.getElementById('brb-spec').value.trim();
+  const comm=Number(document.getElementById('brb-comm').value)||0;
+  const editId=document.getElementById('brb-edit-id').value;
+  let error;
+  if(editId){
+    ({error}=await db.from('barbers').update({name,specialty:spec,commission_pct:comm}).eq('id',editId));
+  } else {
+    ({error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec,avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true,commission_pct:comm}));
+  }
   if(error){toast('Erro: '+error.message,'err');return;}
-  toast('Barbeiro adicionado!','ok');loadBarbCfg();loadBarbers();
+  toast(editId?'Barbeiro atualizado!':'Barbeiro adicionado!','ok');
+  closeMod('mod-barber');loadBarbCfg();loadBarbers();
 }
 
 // Override saveSvc/savePkg to include shop_id
@@ -1979,5 +2006,24 @@ async function deleteFinalized(){var{count:cnt}=await db.from('appointments').se
 })();
 </script>
 <script src="pkg_booking.js?v=2"></script>
+
+<!-- Modal Barbeiro -->
+<div id="mod-barber" class="modal" style="display:none">
+  <div class="modal-content" style="max-width:400px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 id="mod-barber-title" style="margin:0;font-family:'Playfair Display',serif;color:var(--gold)">Adicionar Barbeiro</h3>
+      <button onclick="closeMod('mod-barber')" style="background:none;border:none;color:var(--tx);font-size:20px;cursor:pointer">&times;</button>
+    </div>
+    <div class="fg"><label class="fl">Nome *</label><input class="fi" id="brb-name" placeholder="Nome do barbeiro"></div>
+    <div class="fg"><label class="fl">Especialidade</label><input class="fi" id="brb-spec" placeholder="Ex: Degradê, Barba..."></div>
+    <div class="fg">
+      <label class="fl">Comissão: <span id="brb-comm-val">0</span>%</label>
+      <input type="range" id="brb-comm" min="0" max="100" value="0" step="5" oninput="document.getElementById('brb-comm-val').textContent=this.value" style="width:100%;accent-color:var(--gold)">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txm)"><span>0%</span><span>50%</span><span>100%</span></div>
+    </div>
+    <input type="hidden" id="brb-edit-id" value="">
+    <button class="btn" onclick="saveBarber()" style="width:100%;margin-top:12px">Salvar barbeiro</button>
+  </div>
+</div>
 </body>
 </html>
