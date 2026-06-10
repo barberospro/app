@@ -1977,6 +1977,8 @@ function calcSessions(f,v){var fM={Semanal:4,Quinzenal:2,Mensal:1};var vM={Mensa
 
 async function deleteFinalized(){var{count:cnt}=await db.from('appointments').select('id',{count:'exact',head:true}).eq('shop_id',S.shopId).in('status',['done','cancelled']);var n=cnt||0;if(n===0){toast('Nenhum agendamento finalizado.','ok');return;}var exp=confirm('Encontrado(s) '+n+' agendamento(s) finalizados. Exportar Excel antes de apagar?');if(exp)await exportAgenda();var ok=confirm('Apagar permanentemente '+n+' agendamento(s) finalizados?');if(!ok)return;var{error}=await db.from('appointments').delete().eq('shop_id',S.shopId).in('status',['done','cancelled']);if(error){toast('Erro: '+error.message,'err');return;}toast(n+' apagado(s)!','ok');loadAgenda('todos');}
 })();
+
+window.S=S;window.db=db;window.SB_URL=SB_URL;window.SB_KEY=SB_KEY;
 </script>
 <script src="pkg_booking.js?v=2"></script>
 <script src="barberos-features.js"></script>
