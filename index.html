@@ -591,7 +591,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
         <div style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--rs);padding:12px;margin-bottom:14px;font-size:12px;color:var(--txm);line-height:1.7">
           <strong style="color:var(--gold)">Webhook Hotmart:</strong><br>
           Configure na Hotmart em: Ferramentas → Webhooks<br>
-          URL: <span style="color:var(--gold);word-break:break-all">https://ukopdedjfzxtclwgtqln.supabase.co/functions/v1/hotmart-webhook</span><br>
+          URL: <span style="color:var(--gold);word-break:break-all">https://seyadufuohsbpcqaguig.supabase.co/functions/v1/hotmart-webhook</span><br>
           Eventos: PURCHASE_COMPLETE, SUBSCRIPTION_CANCELLATION
         </div>
         <div class="fg" style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:var(--rs);padding:14px;margin-bottom:8px">
@@ -749,8 +749,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 
 <script>
 // =================== SUPABASE ===================
-const SB_URL='https://ukopdedjfzxtclwgtqln.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVrb3BkZWRqZnp4dGNsd2d0cWxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NTUxMDcsImV4cCI6MjA5NjAzMTEwN30.jN7NYelYEETJbDeOI3X4V3U6Kfb9YluSVC9o--1ffH0';
+const SB_URL='https://seyadufuohsbpcqaguig.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNleWFkdWZ1b2hzYnBjcWFndWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNjIyMzQsImV4cCI6MjA5NjYzODIzNH0.3bfjUZH7BmgOFskATkSUPcelX0ccgiwpUMVi5cvQkhA';
 let db;
 try{db=supabase.createClient(SB_URL,SB_KEY);}catch(e){console.warn('SB init fail',e);db={from:()=>({select:()=>({data:[],error:null}),insert:()=>({error:{message:'offline'}}),update:()=>({error:{message:'offline'}}),upsert:()=>({error:{message:'offline'}}),eq:()=>({data:[],error:null,single:()=>({data:null,error:null})}),neq:()=>({data:[],error:null}),gte:()=>({data:[],error:null}),lte:()=>({data:[],error:null}),order:()=>({data:[],error:null}),single:()=>({data:null,error:null})}),auth:{signInWithPassword:async()=>({error:{message:'Sem conexao'}}),signUp:async()=>({error:{message:'Sem conexao'}}),signOut:async()=>{},getSession:async()=>({data:{session:null}}),onAuthStateChange:()=>{}}};}
 
@@ -1826,7 +1826,7 @@ async function inviteClient(){
   if(!email||!email.includes('@')){err.textContent='Informe um e-mail válido.';err.style.display='block';return;}
   btn.innerHTML='<span class="spin"></span> Enviando...';btn.disabled=true;
   try{
-    const res=await fetch('https://ukopdedjfzxtclwgtqln.supabase.co/functions/v1/hotmart-webhook',{
+    const res=await fetch('https://seyadufuohsbpcqaguig.supabase.co/functions/v1/hotmart-webhook',{
       method:'POST',
       headers:{'Content-Type':'application/json','hottok':'wrvhDFedIx1NKWq9VAgqEHY7bpRrGO96d119cd-2281-4911-9275-e98843b69677'},
       body:JSON.stringify({event:'PURCHASE_APPROVED',data:{buyer:{email,name},product:{name:'BarberOS (Convite Manual)'}}})
@@ -1855,7 +1855,7 @@ async function loadClientes(){
   var list=document.getElementById("cli-list");
   list.innerHTML="<div style=text-align:center;padding:30px><div class=spin></div></div>";
   try{
-    var r=await fetch("https://ukopdedjfzxtclwgtqln.supabase.co/functions/v1/admin-clientes?action=list");
+    var r=await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=list");
     var d=await r.json();
     _allClientes=d.users||[];
     document.getElementById("cli-count").textContent=_allClientes.length+" clientes";
@@ -1900,20 +1900,20 @@ async function saveEditCliente(){
   var email=document.getElementById("edit-cli-email").value.trim();
   var btn=document.getElementById("btn-save-cli");
   btn.innerHTML="<span class=spin></span>";btn.disabled=true;
-  await fetch("https://ukopdedjfzxtclwgtqln.supabase.co/functions/v1/admin-clientes?action=update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid:_editUID,email:email})});
+  await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid:_editUID,email:email})});
   btn.textContent="Salvar";btn.disabled=false;
   document.getElementById("mod-edit-cli").classList.remove("open");
   toast("Cliente atualizado!","ok");loadClientes();
 }
 async function toggleBlock(uid,block){
   if(!confirm(block?"Bloquear acesso deste cliente?":"Desbloquear este cliente?"))return;
-  await fetch("https://ukopdedjfzxtclwgtqln.supabase.co/functions/v1/admin-clientes?action=update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid:uid,block:block})});
+  await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid:uid,block:block})});
   toast(block?"Cliente bloqueado!":"Cliente desbloqueado!","ok");loadClientes();
 }
 async function deleteCliente(uid){
   var c=_allClientes.find(function(x){return x.id===uid;});
   if(!confirm("Excluir permanentemente "+((c&&c.email)||uid)+"?"))return;
-  await fetch("https://ukopdedjfzxtclwgtqln.supabase.co/functions/v1/admin-clientes?action=delete",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid:uid})});
+  await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=delete",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid:uid})});
   toast("Cliente excluido!","ok");loadClientes();
 }
 
