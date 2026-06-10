@@ -1932,9 +1932,6 @@ async function loadBarbCfg(){
     const{data:bu}=await db.from('barber_users').select('barber_id').eq('shop_id',S.shopId);
     const usersSet=new Set((bu||[]).map(x=>x.barber_id));
     (data||[]).forEach(b=>{b.has_user=usersSet.has(b.id);});
-    const{data:bu}=await db.from('barber_users').select('barber_id').eq('shop_id',S.shopId);
-    const usersSet=new Set((bu||[]).map(x=>x.barber_id));
-    (data||[]).forEach(b=>{b.has_user=usersSet.has(b.id);});
   const el=document.getElementById('barb-cfg');if(!el)return;
   el.innerHTML=(data||[]).map(b=>`
     <div class="ci">
