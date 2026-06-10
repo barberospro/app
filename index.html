@@ -1,7 +1,129 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
+function addBarber(){
+  document.getElementById('brb-name').value='';
+  document.getElementById('brb-spec').value='';
+  document.getElementById('brb-comm').value='0';
+  document.getElementById('brb-comm-val').textContent='0';
+  document.getElementById('brb-edit-id').value='';
+  document.getElementById('mod-barber-title').textContent='Adicionar Barbeiro';
+  openMod('mod-barber');
+}
+function editBarber(id,name,spec,comm){
+  document.getElementById('brb-name').value=name||'';
+  document.getElementById('brb-spec').value=spec||'';
+  document.getElementById('brb-comm').value=comm||0;
+  document.getElementById('brb-comm-val').textContent=comm||0;
+  document.getElementById('brb-edit-id').value=id;
+  document.getElementById('mod-barber-title').textContent='Editar Barbeiro';
+  openMod('mod-barber');
+}
+async function saveBarber(){
+  const name=document.getElementById('brb-name').value.trim();
+  if(!name){toast('Informe o nome do barbeiro','err');return;}
+  const spec=document.getElementById('brb-spec').value.trim();
+  const comm=Number(document.getElementById('brb-comm').value)||0;
+  const editId=document.getElementById('brb-edit-id').value;
+  let error;
+  if(editId){
+    ({error}=await db.from('barbers').update({name,specialty:spec,commission_pct:comm}).eq('id',editId));
+  } else {
+    ({error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec,avatar_emoji:'\u{1F464}',rating:5.0,reviews_count:0,active:true,commission_pct:comm}));
+  }
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast(editId?'Barbeiro atualizado!':'Barbeiro adicionado!','ok');
+  closeMod('mod-barber');loadBarbCfg();loadBarbers();
+}
+async function openCreateBarberUser(barberId,barberName){
+  const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
+  const count=(existing||[]).length;
+  if(count>=3){toast('Limite de 3 barbeiros com acesso atingido.','err');return;}
+  document.getElementById('buser-barber-name').textContent=barberName;
+  document.getElementById('buser-barber-id').value=barberId;
+  document.getElementById('buser-email').value='';
+  document.getElementById('buser-pwd').value='';
+  document.getElementById('buser-count').textContent=count+'/3 acessos criados';
+  openMod('mod-barber-user');
+}
+async function saveBarberUser(){
+  const barberId=document.getElementById('buser-barber-id').value;
+  const email=document.getElementById('buser-email').value.trim().toLowerCase();
+  const pwd=document.getElementById('buser-pwd').value;
+  if(!email||!pwd){toast('Preencha e-mail e senha.','err');return;}
+  if(pwd.length<6){toast('Senha deve ter no minimo 6 caracteres.','err');return;}
+  try{
+    const res=await fetch(SB_URL+'/functions/v1/create-barber-user',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(S.session?S.session.access_token:'')},
+      body:JSON.stringify({email,password:pwd,barber_id:barberId,shop_id:S.shopId})
+    });
+    const data2=await res.json();
+    if(!data2.ok){toast('Erro: '+(data2.error||'Falha ao criar'),'err');return;}
+    toast('Acesso criado para '+email+'!','ok');
+    closeMod('mod-barber-user');loadBarbCfg();
+  }catch(e){toast('Erro: '+e.message,'err');}
+}
+e='';
+  document.getElementById('brb-spec').value='';
+  document.getElementById('brb-comm').value='0';
+  document.getElementById('brb-comm-val').textContent='0';
+  document.getElementById('brb-edit-id').value='';
+  document.getElementById('mod-barber-title').textContent='Adicionar Barbeiro';
+  openMod('mod-barber');
+}
+function editBarber(id,name,spec,comm){
+  document.getElementById('brb-name').value=name||'';
+  document.getElementById('brb-spec').value=spec||'';
+  document.getElementById('brb-comm').value=comm||0;
+  document.getElementById('brb-comm-val').textContent=comm||0;
+  document.getElementById('brb-edit-id').value=id;
+  document.getElementById('mod-barber-title').textContent='Editar Barbeiro';
+  openMod('mod-barber');
+}
+async function saveBarber(){
+  const name=document.getElementById('brb-name').value.trim();
+  if(!name){toast('Informe o nome do barbeiro','err');return;}
+  const spec=document.getElementById('brb-spec').value.trim();
+  const comm=Number(document.getElementById('brb-comm').value)||0;
+  const editId=document.getElementById('brb-edit-id').value;
+  let error;
+  if(editId){
+    ({error}=await db.from('barbers').update({name,specialty:spec,commission_pct:comm}).eq('id',editId));
+  } else {
+    ({error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec,avatar_emoji:'\u{1F464}',rating:5.0,reviews_count:0,active:true,commission_pct:comm}));
+  }
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast(editId?'Barbeiro atualizado!':'Barbeiro adicionado!','ok');
+  closeMod('mod-barber');loadBarbCfg();loadBarbers();
+}
+async function openCreateBarberUser(barberId,barberName){
+  const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
+  const count=(existing||[]).length;
+  if(count>=3){toast('Limite de 3 barbeiros com acesso atingido.','err');return;}
+  document.getElementById('buser-barber-name').textContent=barberName;
+  document.getElementById('buser-barber-id').value=barberId;
+  document.getElementById('buser-email').value='';
+  document.getElementById('buser-pwd').value='';
+  document.getElementById('buser-count').textContent=count+'/3 acessos criados';
+  openMod('mod-barber-user');
+}
+async function saveBarberUser(){
+  const barberId=document.getElementById('buser-barber-id').value;
+  const email=document.getElementById('buser-email').value.trim().toLowerCase();
+  const pwd=document.getElementById('buser-pwd').value;
+  if(!email||!pwd){toast('Preencha e-mail e senha.','err');return;}
+  if(pwd.length<6){toast('Senha deve ter no minimo 6 caracteres.','err');return;}
+  try{
+    const res=await fetch(SB_URL+'/functions/v1/create-barber-user',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(S.session?S.session.access_token:'')},
+      body:JSON.stringify({email,password:pwd,barber_id:barberId,shop_id:S.shopId})
+    });
+    const data2=await res.json();
+    if(!data2.ok){toast('Erro: '+(data2.error||'Falha ao criar'),'err');return;}
+    toast('Acesso criado para '+email+'!','ok');
+    closeMod('mod-barber-user');loadBarbCfg();
+  }catch(e){toast('Erro: '+e.message,'err');}
+}
+-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>BarberOS</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -28,7 +150,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .fl{font-size:11px;font-weight:700;color:var(--txm);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;display:block}
 .fi{width:100%;background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--rs);padding:13px 14px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
 .fi:focus{border-color:var(--gold)}
-/* SERVICE ICON BADGES ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â no emoji, 100% reliable */
+/* SERVICE ICON BADGES — no emoji, 100% reliable */
 .sic{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:#fff;letter-spacing:0}
 .sic-C{background:linear-gradient(135deg,#8B6914,#C9A84C)}
 .sic-B{background:linear-gradient(135deg,#1a4a6b,#2980b9)}
@@ -127,9 +249,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .fbtn{background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}.fbtn.active,.fbtn:hover{background:var(--gold);color:var(--dk);border-color:var(--gold)}
 .fbtn{background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}.fbtn.active,.fbtn:hover{background:var(--gold);color:var(--dk);border-color:var(--gold)}
 .be{background:rgba(52,152,219,.15);color:#3498DB}.bf{background:rgba(39,174,96,.15);color:#27AE60}
+.fbtn{background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}.fbtn.active,.fbtn:hover{background:var(--gold);color:var(--dk);border-color:var(--gold)}
+.fbtn{background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}.fbtn.active,.fbtn:hover{background:var(--gold);color:var(--dk);border-color:var(--gold)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
 </head>
 <body>
@@ -138,7 +262,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 <!-- SPLASH -->
 <div id="splash" class="screen active">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px">
-    <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--gd),var(--gold));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡</div>
+    <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--gd),var(--gold));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px">✂</div>
     <div style="font-family:'Playfair Display',serif;font-size:52px;font-weight:900;color:var(--gold);letter-spacing:-1px">BarberOS</div>
     <div style="font-size:11px;letter-spacing:5px;color:var(--txm);text-transform:uppercase;margin:6px 0 60px" id="sp-name">Estilo & Precisao</div>
     <button class="btn btn-gold" onclick="enterApp('client')" style="max-width:320px">Agendar Agora</button>
@@ -150,59 +274,59 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 <!-- ADMIN LOGIN -->
 <div id="adm-login" class="screen">
   <div class="lbox">
-    <div class="llogo">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ BarberOS</div>
+    <div class="llogo">✂ BarberOS</div>
     <div class="lsub">Painel Admin</div>
     <div class="errbox" id="lerr"></div>
     <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="lemail" placeholder="seu@email.com" autocomplete="email"></div>
-    <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="lpwd" placeholder="ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="lpwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="btn btn-gold" id="btnlogin" onclick="doLogin()">Entrar</button>
     <button class="btn btn-out" onclick="enterApp('splash')">Voltar</button>
     <p style="text-align:center;font-size:11px;color:var(--txm);margin-top:16px">
       <span style="color:var(--gold);cursor:pointer" onclick="doForgot()">Esqueci minha senha</span>
     </p>
     <p style="text-align:center;font-size:11px;color:var(--txm);margin-top:10px">
-      Nao tem conta? <span style="color:var(--gold);cursor:pointer" onclick="enterApp('planos')">Ver planos ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</span>
+      Nao tem conta? <span style="color:var(--gold);cursor:pointer" onclick="enterApp('planos')">Ver planos →</span>
     </p>
   </div>
 </div>
 
 <!-- PLANOS / HOTMART -->
-<!-- CRIAR SENHA ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â primeiro acesso via link do email -->
+<!-- CRIAR SENHA — primeiro acesso via link do email -->
 <div id="set-password" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px 24px">
     <div style="width:100%;max-width:380px">
-      <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold);text-align:center">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ BarberOS</div>
+      <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold);text-align:center">✂ BarberOS</div>
       <div style="font-size:11px;color:var(--txm);text-align:center;letter-spacing:3px;text-transform:uppercase;margin:4px 0 32px">Primeiro Acesso</div>
       <div style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:var(--r);padding:14px;margin-bottom:24px;font-size:13px;color:var(--gold);line-height:1.6;text-align:center">
-        ÃƒÂ°Ã…Â¸Ã…Â½Ã¢â‚¬Â° Bem-vindo ao BarberOS!<br>Crie sua senha para continuar.
+        🎉 Bem-vindo ao BarberOS!<br>Crie sua senha para continuar.
       </div>
       <div class="errbox" id="sp-err"></div>
-      <div class="fg"><label class="fl">Nova senha</label><input class="fi" type="password" id="sp-pwd" placeholder="MÃƒÆ’Ã‚Â­nimo 8 caracteres"></div>
+      <div class="fg"><label class="fl">Nova senha</label><input class="fi" type="password" id="sp-pwd" placeholder="Mínimo 8 caracteres"></div>
       <div class="fg"><label class="fl">Confirmar senha</label><input class="fi" type="password" id="sp-pwd2" placeholder="Repita a senha" onkeydown="if(event.key==='Enter')setNewPassword()"></div>
-      <button class="btn btn-gold" id="btn-sp" onclick="setNewPassword()">Criar senha e entrar ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
+      <button class="btn btn-gold" id="btn-sp" onclick="setNewPassword()">Criar senha e entrar →</button>
     </div>
   </div>
 </div>
 
-<!-- ONBOARDING ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â tela de configuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o inicial para novos assinantes -->
+<!-- ONBOARDING — tela de configuração inicial para novos assinantes -->
 <div id="onboarding" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;padding:40px 24px;overflow-y:auto;flex:1;max-width:480px;margin:0 auto;width:100%">
-    <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);text-align:center;margin-bottom:4px">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ BarberOS</div>
+    <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);text-align:center;margin-bottom:4px">✂ BarberOS</div>
     <div style="font-size:13px;color:var(--txm);text-align:center;margin-bottom:32px">Vamos configurar sua barbearia!</div>
     <div style="width:100%">
       <div style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:var(--r);padding:14px;margin-bottom:24px;font-size:13px;color:var(--gold);line-height:1.6">
-        ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ¢â‚¬Â¹ Bem-vindo ao BarberOS! Preencha os dados abaixo para criar sua ÃƒÆ’Ã‚Â¡rea exclusiva. Isso leva menos de 2 minutos.
+        👋 Bem-vindo ao BarberOS! Preencha os dados abaixo para criar sua área exclusiva. Isso leva menos de 2 minutos.
       </div>
-      <div class="fg"><label class="fl">Nome da sua barbearia *</label><input class="fi" id="ob-name" placeholder="Ex: Barbearia do JoÃƒÆ’Ã‚Â£o" oninput="autoSlug(this)"></div>
+      <div class="fg"><label class="fl">Nome da sua barbearia *</label><input class="fi" id="ob-name" placeholder="Ex: Barbearia do João" oninput="autoSlug(this)"></div>
       <div class="fg">
-        <label class="fl">Identificador ÃƒÆ’Ã‚Âºnico (link) *</label>
+        <label class="fl">Identificador único (link) *</label>
         <input class="fi" id="ob-slug" placeholder="ex: barbearia-joao" style="font-family:monospace">
-        <div style="font-size:11px;color:var(--txm);margin-top:6px">Seu link serÃƒÆ’Ã‚Â¡: <span id="slug-preview" style="color:var(--gold)">app.barberos.click?s=...</span></div>
+        <div style="font-size:11px;color:var(--txm);margin-top:6px">Seu link será: <span id="slug-preview" style="color:var(--gold)">app.barberos.click?s=...</span></div>
       </div>
-      <div class="fg"><label class="fl">EndereÃƒÆ’Ã‚Â§o</label><input class="fi" id="ob-addr" placeholder="Rua, nÃƒÆ’Ã‚Âºmero ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Bairro, Cidade"></div>
-      <div class="fg"><label class="fl">WhatsApp (com cÃƒÆ’Ã‚Â³digo do paÃƒÆ’Ã‚Â­s)</label><input class="fi" id="ob-wa" placeholder="5511999999999" type="tel"></div>
+      <div class="fg"><label class="fl">Endereço</label><input class="fi" id="ob-addr" placeholder="Rua, número — Bairro, Cidade"></div>
+      <div class="fg"><label class="fl">WhatsApp (com código do país)</label><input class="fi" id="ob-wa" placeholder="5511999999999" type="tel"></div>
       <div class="fg"><label class="fl">Chave PIX</label><input class="fi" id="ob-pix" placeholder="CPF, CNPJ, email ou celular"></div>
-      <button class="btn btn-gold" id="btn-ob" onclick="saveOnboarding()">Criar minha barbearia ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
+      <button class="btn btn-gold" id="btn-ob" onclick="saveOnboarding()">Criar minha barbearia →</button>
       <button class="btn btn-out" onclick="doLogout()">Sair</button>
     </div>
   </div>
@@ -210,7 +334,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 
 <div id="planos" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;padding:40px 24px;overflow-y:auto;flex:1">
-    <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold);text-align:center">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ BarberOS</div>
+    <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold);text-align:center">✂ BarberOS</div>
     <div style="font-size:13px;color:var(--txm);text-align:center;margin:8px 0 32px;line-height:1.6">Sistema completo de agendamento para sua barbearia.<br>Escolha o plano ideal:</div>
 
     <!-- PLANO MENSAL -->
@@ -219,11 +343,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
       <div style="font-size:13px;color:var(--txm);margin-bottom:16px">Renovacao automatica todo mes</div>
       <div style="font-size:38px;font-weight:900;color:var(--gold);margin-bottom:4px">R$ 47<small style="font-size:14px;color:var(--txm)">/mes</small></div>
       <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>Agendamento online para clientes</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>Painel admin completo</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>Gestao de barbeiros e servicos</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>Notificacao WhatsApp automatica</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>Relatorios financeiros</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Agendamento online para clientes</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Painel admin completo</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Gestao de barbeiros e servicos</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Notificacao WhatsApp automatica</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Relatorios financeiros</div>
       </div>
       <a id="btn-hotmart-monthly" href="https://pay.hotmart.com/SEU_PRODUTO_MENSAL" target="_blank" style="display:block;background:var(--gold);color:var(--dk);border-radius:50px;padding:15px;text-align:center;font-weight:700;font-size:15px;text-decoration:none;margin-top:8px">Assinar por R$ 47/mes</a>
     </div>
@@ -234,30 +358,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
       <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:4px">Plano Anual</div>
       <div style="font-size:13px;color:var(--txm);margin-bottom:16px">Pague uma vez, use o ano todo</div>
       <div style="font-size:38px;font-weight:900;color:var(--gold);margin-bottom:4px">R$ 397<small style="font-size:14px;color:var(--txm)">/ano</small></div>
-      <div style="font-size:12px;color:var(--grn);margin-bottom:16px;font-weight:600">Economize R$ 167 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â equivale a R$ 33/mes</div>
+      <div style="font-size:12px;color:var(--grn);margin-bottom:16px;font-weight:600">Economize R$ 167 — equivale a R$ 33/mes</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>Tudo do plano mensal</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>Suporte prioritario</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>Acesso a novidades em primeira mao</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Tudo do plano mensal</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Suporte prioritario</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Acesso a novidades em primeira mao</div>
       </div>
       <a id="btn-hotmart-annual" href="https://pay.hotmart.com/SEU_PRODUTO_ANUAL" target="_blank" style="display:block;background:var(--gold);color:var(--dk);border-radius:50px;padding:15px;text-align:center;font-weight:700;font-size:15px;text-decoration:none;margin-top:8px">Assinar por R$ 397/ano</a>
     </div>
 
     <div style="font-size:11px;color:var(--txm);text-align:center;line-height:1.7;margin-bottom:20px">
       Apos o pagamento na Hotmart voce recebera um e-mail com suas credenciais de acesso.<br>
-      <span style="color:var(--gold);cursor:pointer" onclick="enterApp('adm-login')">Ja sou assinante ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Fazer login ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</span>
+      <span style="color:var(--gold);cursor:pointer" onclick="enterApp('adm-login')">Ja sou assinante — Fazer login →</span>
     </div>
-    <button class="btn btn-out" onclick="enterApp('splash')" style="max-width:380px;width:100%">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â Voltar</button>
+    <button class="btn btn-out" onclick="enterApp('splash')" style="max-width:380px;width:100%">← Voltar</button>
   </div>
 </div>
 
 <!-- CLIENT APP -->
 <div id="client-app" class="screen">
   <div class="hdr">
-    <div class="logo">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ BarberOS</div>
+    <div class="logo">✂ BarberOS</div>
     <div style="display:flex;gap:10px">
-      <div onclick="showC('meus')" style="background:var(--dk3);border:1px solid var(--dk5);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹</div>
-      <div onclick="showC('perfil')" style="background:var(--dk3);border:1px solid var(--dk5);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer">ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤</div>
+      <div onclick="showC('meus')" style="background:var(--dk3);border:1px solid var(--dk5);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer">📋</div>
+      <div onclick="showC('perfil')" style="background:var(--dk3);border:1px solid var(--dk5);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer">👤</div>
     </div>
   </div>
   <div class="content" id="cc">
@@ -265,7 +389,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
     <!-- HOME -->
     <div id="sc-home" class="csec">
       <div style="background:linear-gradient(160deg,var(--dk2),var(--dk));padding:28px 20px 24px;position:relative;overflow:hidden">
-        <div style="position:absolute;right:-10px;top:10px;font-size:100px;opacity:.04">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡</div>
+        <div style="position:absolute;right:-10px;top:10px;font-size:100px;opacity:.04">✂</div>
         <div style="font-size:13px;color:var(--txm)">Bem-vindo a</div>
         <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700" id="h-name">BarberOS</div>
         <div id="h-hours" style="display:inline-flex;align-items:center;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:5px 12px;border-radius:50px;font-size:12px;margin-top:12px">Aberto agora</div>
@@ -274,14 +398,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px 4px">
         <div onclick="showC('agendar')" style="background:linear-gradient(135deg,var(--gd),var(--gold));border-radius:var(--r);padding:18px;cursor:pointer;grid-column:span 2;display:flex;align-items:center;justify-content:space-between">
           <div><div style="color:var(--dk);font-size:17px;font-weight:700">Agendar Horario</div><div style="color:rgba(0,0,0,.6);font-size:12px">Rapido e facil</div></div>
-          <div style="font-size:32px">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦</div>
+          <div style="font-size:32px">📅</div>
         </div>
         <div onclick="showC('servicos')" style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r);padding:18px;cursor:pointer">
           <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--gd),var(--gold));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--dk);margin-bottom:8px">CO</div>
           <div style="font-size:14px;font-weight:600">Servicos</div><div style="font-size:11px;color:var(--txm)">Ver precos</div>
         </div>
         <div onclick="showC('pacotes')" style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r);padding:18px;cursor:pointer">
-          <div style="font-size:26px;margin-bottom:8px">ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â</div>
+          <div style="font-size:26px;margin-bottom:8px">🎁</div>
           <div style="font-size:14px;font-weight:600">Pacotes</div><div style="font-size:11px;color:var(--txm)">Economize mais</div>
         </div>
       </div>
@@ -290,29 +414,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
       <div class="divider"></div>
       <div class="sec-title">Nos encontre</div>
       <div style="display:flex;gap:10px;padding:0 20px 16px">
-        <div onclick="openWA()" style="flex:1;background:var(--dk3);border:1px solid #25D366;border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;font-size:20px;color:#25D366">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¬<div style="font-size:11px;margin-top:4px;font-weight:500">WhatsApp</div></div>
-        <div id="btn-ig" style="flex:1;background:var(--dk3);border:1px solid #E1306C;border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;font-size:20px;color:#E1306C">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â¸<div style="font-size:11px;margin-top:4px;font-weight:500">Instagram</div></div>
+        <div onclick="openWA()" style="flex:1;background:var(--dk3);border:1px solid #25D366;border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;font-size:20px;color:#25D366">💬<div style="font-size:11px;margin-top:4px;font-weight:500">WhatsApp</div></div>
+        <div id="btn-ig" style="flex:1;background:var(--dk3);border:1px solid #E1306C;border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;font-size:20px;color:#E1306C">📸<div style="font-size:11px;margin-top:4px;font-weight:500">Instagram</div></div>
       </div>
       <div style="padding:0 20px 20px;text-align:center">
         <div style="font-size:12px;color:var(--txm)" id="h-addr"></div>
         <div style="font-size:12px;color:var(--txm);margin-top:4px" id="h-sched"></div>
       </div>
 
-      <!-- BANNER SAAS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â visÃƒÆ’Ã‚Â­vel quando nÃƒÆ’Ã‚Â£o hÃƒÆ’Ã‚Â¡ ?s= na URL (modo demo) -->
+      <!-- BANNER SAAS — visível quando não há ?s= na URL (modo demo) -->
       <div id="saas-banner" style="display:none;margin:0 20px 24px">
         <div style="background:linear-gradient(135deg,#1a1a1a,#242424);border:1px solid rgba(201,168,76,.4);border-radius:var(--r);padding:20px;text-align:center;position:relative;overflow:hidden">
           <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(201,168,76,.08),transparent 70%);pointer-events:none"></div>
-          <div style="font-size:22px;margin-bottom:8px">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡</div>
+          <div style="font-size:22px;margin-bottom:8px">✂</div>
           <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px">Gostou? Tenha o seu!</div>
           <div style="font-size:12px;color:var(--txm);line-height:1.6;margin-bottom:16px">
-            Este ÃƒÆ’Ã‚Â© o <strong style="color:var(--tx)">BarberOS</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â sistema completo de agendamento para barbearias.<br>
-            Crie sua versÃƒÆ’Ã‚Â£o personalizada por apenas <strong style="color:var(--gold)">R$ 47/mÃƒÆ’Ã‚Âªs</strong>.
+            Este é o <strong style="color:var(--tx)">BarberOS</strong> — sistema completo de agendamento para barbearias.<br>
+            Crie sua versão personalizada por apenas <strong style="color:var(--gold)">R$ 47/mês</strong>.
           </div>
           <button onclick="enterApp('planos')" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:12px 28px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;width:100%;margin-bottom:10px">
-            Ver planos e preÃƒÆ’Ã‚Â§os ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢
+            Ver planos e preços →
           </button>
           <button onclick="enterApp('adm-login')" style="background:transparent;color:var(--txm);border:1px solid var(--dk4);border-radius:50px;padding:10px 28px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;width:100%">
-            JÃƒÆ’Ã‚Â¡ sou assinante ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Entrar
+            Já sou assinante — Entrar
           </button>
         </div>
       </div>
@@ -321,7 +445,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
     <!-- AGENDAR -->
     <div id="sc-agendar" class="csec" style="display:none">
       <div style="padding:20px 20px 0;display:flex;align-items:center;gap:12px">
-        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â</div>
+        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">←</div>
         <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Novo Agendamento</div>
       </div>
       <!-- STEP 1: services -->
@@ -348,7 +472,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
           </div>
         </div>
         <div style="padding:20px">
-          <button class="btn btn-gold" id="btn-bk1" onclick="goStep(2)" disabled>Proximo ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
+          <button class="btn btn-gold" id="btn-bk1" onclick="goStep(2)" disabled>Proximo →</button>
         </div>
       </div>
       <!-- STEP 2: barber -->
@@ -361,8 +485,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
           </div>
         </div>
         <div style="padding:20px">
-          <button class="btn btn-gold" id="btn-bk2" onclick="goStep(3)" disabled>Proximo ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
-          <button class="btn btn-out" onclick="goStep(1)">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â Voltar</button>
+          <button class="btn btn-gold" id="btn-bk2" onclick="goStep(3)" disabled>Proximo →</button>
+          <button class="btn btn-out" onclick="goStep(1)">← Voltar</button>
         </div>
       </div>
       <!-- STEP 3: date/time -->
@@ -380,8 +504,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
           <div class="tg" id="tg"></div>
         </div>
         <div style="padding:20px">
-          <button class="btn btn-gold" id="btn-bk3" onclick="goStep(4)" disabled>Proximo ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
-          <button class="btn btn-out" onclick="goStep(2)">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â Voltar</button>
+          <button class="btn btn-gold" id="btn-bk3" onclick="goStep(4)" disabled>Proximo →</button>
+          <button class="btn btn-out" onclick="goStep(2)">← Voltar</button>
         </div>
       </div>
       <!-- STEP 4: payment -->
@@ -394,17 +518,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
           <div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="bk-phone" type="tel" placeholder="(11) 99999-9999"></div>
           <div style="font-weight:600;font-size:14px;margin-bottom:10px">Forma de Pagamento</div>
           <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-            <div class="pay-opt" data-m="pix" onclick="selPay(this,'pix')"><div id="popt-pix" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--rs);cursor:pointer"><span style="font-size:22px">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â²</span><div><div style="font-weight:600">PIX</div><div style="font-size:11px;color:var(--txm)">Pagamento instantaneo</div></div></div></div>
+            <div class="pay-opt" data-m="pix" onclick="selPay(this,'pix')"><div id="popt-pix" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--rs);cursor:pointer"><span style="font-size:22px">💲</span><div><div style="font-weight:600">PIX</div><div style="font-size:11px;color:var(--txm)">Pagamento instantaneo</div></div></div></div>
             
-            <div class="pay-opt" data-m="local" onclick="selPay(this,'local')"><div id="popt-local" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--rs);cursor:pointer"><span style="font-size:22px">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Âµ</span><div><div style="font-weight:600">Pagar no Local</div><div style="font-size:11px;color:var(--txm)">Dinheiro ou cartao</div></div></div></div>
+            <div class="pay-opt" data-m="local" onclick="selPay(this,'local')"><div id="popt-local" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--rs);cursor:pointer"><span style="font-size:22px">💵</span><div><div style="font-weight:600">Pagar no Local</div><div style="font-size:11px;color:var(--txm)">Dinheiro ou cartao</div></div></div></div>
           </div>
           <!-- PIX box -->
           <div id="pix-box" style="display:none">
             <div style="font-weight:600;font-size:14px;margin-bottom:10px">Pague via PIX</div>
-            <div style="background:#fff;border-radius:var(--r);width:160px;height:160px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:48px">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â±</div>
+            <div style="background:#fff;border-radius:var(--r);width:160px;height:160px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:48px">📱</div>
             <div class="pbox" id="pix-key-disp">barbearia@pix.com</div>
             <button class="btn btn-gold" onclick="copyPix()" style="margin-bottom:10px">Copiar Chave PIX</button>
-            <button class="btn btn-grn" onclick="confirmPay('pix')">Ja Paguei ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Confirmar Agendamento</button>
+            <button class="btn btn-grn" onclick="confirmPay('pix')">Ja Paguei — Confirmar Agendamento</button>
           </div>
           <!-- Card box -->
           <div id="card-box" style="display:none">
@@ -424,13 +548,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
           </div>
         </div>
         <div style="padding:0 20px 20px">
-          <button class="btn btn-out" onclick="goStep(3)">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â Voltar</button>
+          <button class="btn btn-out" onclick="goStep(3)">← Voltar</button>
         </div>
       </div>
       <!-- SUCCESS -->
       <div id="bk-ok" style="display:none">
         <div class="succ">
-          <div class="succ-ic">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦</div>
+          <div class="succ-ic">✅</div>
           <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700">Agendado!</div>
           <div style="font-size:14px;color:var(--txm);line-height:1.6">Horario confirmado! O proprietario foi notificado pelo WhatsApp.</div>
           <div class="card" style="width:100%;text-align:left" id="ok-detail"></div>
@@ -443,17 +567,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
     <!-- SERVICOS -->
     <div id="sc-servicos" class="csec" style="display:none">
       <div style="padding:20px 20px 12px;display:flex;align-items:center;gap:12px">
-        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â</div>
+        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">←</div>
         <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Servicos & Precos</div>
       </div>
       <div id="svc-menu"><div style="text-align:center;padding:40px"><div class="spin"></div></div></div>
-      <div style="padding:20px"><button class="btn btn-gold" onclick="showC('agendar')">Agendar agora ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦</button></div>
+      <div style="padding:20px"><button class="btn btn-gold" onclick="showC('agendar')">Agendar agora 📅</button></div>
     </div>
 
     <!-- PACOTES -->
     <div id="sc-pacotes" class="csec" style="display:none">
       <div style="padding:20px 20px 12px;display:flex;align-items:center;gap:12px">
-        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â</div>
+        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">←</div>
         <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Pacotes & Planos</div>
       </div>
       <div id="pkg-list"><div style="text-align:center;padding:40px"><div class="spin"></div></div></div>
@@ -472,7 +596,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
     <!-- PERFIL -->
     <div id="sc-perfil" class="csec" style="display:none">
       <div style="padding:28px 20px 20px;text-align:center;background:var(--dk2);border-bottom:1px solid var(--dk4)">
-        <div style="width:72px;height:72px;border-radius:50%;background:var(--dk4);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px">ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤</div>
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--dk4);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px">👤</div>
         <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Meu Perfil</div>
       </div>
       <div style="padding:20px">
@@ -485,20 +609,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
     </div>
 
   </div>
-  <button onclick="showC('agendar')" style="position:fixed;bottom:90px;right:20px;background:var(--gold);color:var(--dk);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(201,168,76,.4);cursor:pointer;z-index:150;border:none">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦</button>
+  <button onclick="showC('agendar')" style="position:fixed;bottom:90px;right:20px;background:var(--gold);color:var(--dk);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(201,168,76,.4);cursor:pointer;z-index:150;border:none">📅</button>
   <div class="bnav">
-    <button class="ni active" id="cn-home" onclick="showC('home')"><div class="ni-ic">ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â </div>Inicio</button>
-    <button class="ni" id="cn-agendar" onclick="showC('agendar')"><div class="ni-ic">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦</div>Agendar</button>
-    <button class="ni" id="cn-servicos" onclick="showC('servicos')"><div class="ni-ic">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡</div>Servicos</button>
-    <button class="ni" id="cn-meus" onclick="showC('meus')"><div class="ni-ic">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹</div>Meus</button>
-    <button class="ni" id="cn-perfil" onclick="showC('perfil')"><div class="ni-ic">ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤</div>Perfil</button>
+    <button class="ni active" id="cn-home" onclick="showC('home')"><div class="ni-ic">🏠</div>Inicio</button>
+    <button class="ni" id="cn-agendar" onclick="showC('agendar')"><div class="ni-ic">📅</div>Agendar</button>
+    <button class="ni" id="cn-servicos" onclick="showC('servicos')"><div class="ni-ic">✂</div>Servicos</button>
+    <button class="ni" id="cn-meus" onclick="showC('meus')"><div class="ni-ic">📋</div>Meus</button>
+    <button class="ni" id="cn-perfil" onclick="showC('perfil')"><div class="ni-ic">👤</div>Perfil</button>
   </div>
 </div>
 
 <!-- ADMIN APP -->
 <div id="admin-app" class="screen">
   <div class="hdr">
-    <div class="logo">ÃƒÂ¢Ã…Â¡Ã¢â€žÂ¢ BarberOS</div>
+    <div class="logo">⚙ BarberOS</div>
     <button onclick="doLogout()" style="background:transparent;border:1px solid var(--dk5);color:var(--txm);border-radius:50px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Sair</button>
   </div>
   <div class="content" id="ac">
@@ -567,7 +691,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
     <div id="as-agenda" style="display:none">
       <div style="padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between">
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700">Agenda</div>
-        <div style="display:flex;gap:8px"><button onclick="exportAgenda()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">ÃƒÂ¢Ã‚Â¬Ã¢â‚¬Â¡ Excel</button><button onclick="deleteFinalized()" style="background:rgba(192,57,43,.1);color:var(--red);border:1px solid var(--red);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬Ëœ Limpar</button><button onclick="openAdmBook()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">+ Novo</button></div>
+        <div style="display:flex;gap:8px"><button onclick="exportAgenda()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">⬇ Excel</button><button onclick="deleteFinalized()" style="background:rgba(192,57,43,.1);color:var(--red);border:1px solid var(--red);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">🗑 Limpar</button><button onclick="openAdmBook()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">+ Novo</button></div>
       </div>
       <div class="tabs" id="ag-tabs">
         <div class="tab active" onclick="swAgTab('hoje',this)">Hoje</div>
@@ -613,15 +737,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
         <div class="fg"><label class="fl">Instagram</label><input class="fi" id="cfg-ig" placeholder="@usuario"></div>
         <div class="fg"><label class="fl">Chave PIX</label><input class="fi" id="cfg-pix"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="fg"><label class="fl">Abre ÃƒÆ’Ã‚Â s</label><input class="fi" type="time" id="cfg-open"></div>
-          <div class="fg"><label class="fl">Fecha ÃƒÆ’Ã‚Â s</label><input class="fi" type="time" id="cfg-close"></div>
+          <div class="fg"><label class="fl">Abre às</label><input class="fi" type="time" id="cfg-open"></div>
+          <div class="fg"><label class="fl">Fecha às</label><input class="fi" type="time" id="cfg-close"></div>
         </div>
-        <div style="font-size:12px;font-weight:700;color:var(--txm);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px">ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â½ HorÃƒÆ’Ã‚Â¡rio de AlmoÃƒÆ’Ã‚Â§o (opcional)</div>
+        <div style="font-size:12px;font-weight:700;color:var(--txm);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px">🍽 Horário de Almoço (opcional)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="fg"><label class="fl">InÃƒÆ’Ã‚Â­cio do almoÃƒÆ’Ã‚Â§o</label><input class="fi" type="time" id="cfg-lunch-start" placeholder="12:00"></div>
-          <div class="fg"><label class="fl">Fim do almoÃƒÆ’Ã‚Â§o</label><input class="fi" type="time" id="cfg-lunch-end" placeholder="13:00"></div>
+          <div class="fg"><label class="fl">Início do almoço</label><input class="fi" type="time" id="cfg-lunch-start" placeholder="12:00"></div>
+          <div class="fg"><label class="fl">Fim do almoço</label><input class="fi" type="time" id="cfg-lunch-end" placeholder="13:00"></div>
         </div>
-        <div class="fg"><label class="fl">Intervalo entre horÃƒÆ’Ã‚Â¡rios (minutos)</label>
+        <div class="fg"><label class="fl">Intervalo entre horários (minutos)</label>
           <select class="fi" id="cfg-slot">
             <option value="15">15 minutos</option>
             <option value="20">20 minutos</option>
@@ -631,41 +755,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
           </select>
         </div>
         <div id="super-admin-section" style="display:none"><div style="height:8px;background:var(--dk);margin:8px -20px"></div>
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">Hotmart ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Links de Assinatura</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">Hotmart — Links de Assinatura</div>
         <div class="fg"><label class="fl">Link Plano Mensal (Hotmart)</label><input class="fi" id="cfg-hm-monthly" placeholder="https://pay.hotmart.com/..."></div>
         <div class="fg"><label class="fl">Link Plano Anual (Hotmart)</label><input class="fi" id="cfg-hm-annual" placeholder="https://pay.hotmart.com/..."></div>
         <div style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--rs);padding:12px;margin-bottom:14px;font-size:12px;color:var(--txm);line-height:1.7">
           <strong style="color:var(--gold)">Webhook Hotmart:</strong><br>
-          Configure na Hotmart em: Ferramentas ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Webhooks<br>
+          Configure na Hotmart em: Ferramentas → Webhooks<br>
           URL: <span style="color:var(--gold);word-break:break-all">https://seyadufuohsbpcqaguig.supabase.co/functions/v1/hotmart-webhook</span><br>
           Eventos: PURCHASE_COMPLETE, SUBSCRIPTION_CANCELLATION
         </div>
         <div class="fg" style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:var(--rs);padding:14px;margin-bottom:8px">
-          <label class="fl" style="color:var(--gold)">ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â  Barbearia padrÃƒÆ’Ã‚Â£o do link principal</label>
+          <label class="fl" style="color:var(--gold)">🏠 Barbearia padrão do link principal</label>
           <div style="display:flex;align-items:center;justify-content:space-between">
-            <div style="font-size:13px;color:var(--txm)">Esta barbearia abre quando alguÃƒÆ’Ã‚Â©m acessa<br><strong style="color:var(--gold)">app.barberos.click</strong> sem o ?s=</div>
-            <button onclick="setDefaultShop()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;margin-left:10px">Definir como padrÃƒÆ’Ã‚Â£o</button>
+            <div style="font-size:13px;color:var(--txm)">Esta barbearia abre quando alguém acessa<br><strong style="color:var(--gold)">app.barberos.click</strong> sem o ?s=</div>
+            <button onclick="setDefaultShop()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;margin-left:10px">Definir como padrão</button>
           </div>
         </div>
         <div style="height:8px;background:var(--dk);margin:8px -20px"></div>
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ Convidar Cliente</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">👤 Convidar Cliente</div>
         <div class="card" style="margin-bottom:14px">
-          <div class="fg"><label class="fl">Nome do cliente</label><input class="fi" id="inv-name" placeholder="Ex: JoÃƒÆ’Ã‚Â£o Silva"></div>
+          <div class="fg"><label class="fl">Nome do cliente</label><input class="fi" id="inv-name" placeholder="Ex: João Silva"></div>
           <div class="fg"><label class="fl">E-mail do cliente</label><input class="fi" type="email" id="inv-email" placeholder="cliente@email.com"></div>
           <div class="errbox" id="inv-err" style="display:none"></div>
-          <div id="inv-ok" style="display:none;background:rgba(39,174,96,.15);border:1px solid var(--grn);border-radius:var(--rs);padding:12px;font-size:13px;color:var(--grn);margin-bottom:12px">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Convite enviado com sucesso!</div>
-          <button class="btn btn-gold" id="inv-btn" onclick="inviteClient()">Enviar convite ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
+          <div id="inv-ok" style="display:none;background:rgba(39,174,96,.15);border:1px solid var(--grn);border-radius:var(--rs);padding:12px;font-size:13px;color:var(--grn);margin-bottom:12px">✓ Convite enviado com sucesso!</div>
+          <button class="btn btn-gold" id="inv-btn" onclick="inviteClient()">Enviar convite →</button>
         </div>
         </div>
         <button class="btn btn-gold" onclick="saveSettings()">Salvar configuracoes</button>
       </div>
       <div class="divider"></div>
-      <div style="padding:20px 20px 12px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700">ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬â€ Link da sua barbearia</div>
+      <div style="padding:20px 20px 12px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🔗 Link da sua barbearia</div>
       <div style="padding:0 20px 20px">
         <div style="background:var(--dk3);border:1px solid var(--gold);border-radius:var(--r);padding:16px">
           <div style="font-size:12px;color:var(--txm);margin-bottom:8px">Compartilhe este link com seus clientes:</div>
           <div id="cfg-share-link" style="font-size:13px;color:var(--gold);word-break:break-all;font-weight:600;cursor:pointer" onclick="copyShareLink()">Carregando...</div>
-          <button onclick="copyShareLink()" style="margin-top:12px;background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¹ Copiar link</button>
+          <button onclick="copyShareLink()" style="margin-top:12px;background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%">📋 Copiar link</button>
         </div>
       </div>
       <div class="divider" style="margin-top:16px"></div>
@@ -676,11 +800,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 
   </div>
   <div class="bnav">
-    <button class="ni active" id="an-dash" onclick="showA('dash')"><div class="ni-ic">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â </div>Dashboard</button>
-    <button class="ni" id="an-agenda" onclick="showA('agenda')"><div class="ni-ic">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦</div>Agenda</button>
-    <button class="ni" id="an-servicos" onclick="showA('servicos')"><div class="ni-ic">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡</div>Servicos</button>
-    <button class="ni" id="an-config" onclick="showA('config')"><div class="ni-ic">ÃƒÂ¢Ã…Â¡Ã¢â€žÂ¢ÃƒÂ¯Ã‚Â¸Ã‚Â</div>Config</button>
-    <button class="ni" id="an-clientes" onclick="showA('clientes')" style="display:none"><div class="ni-ic">ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¥</div>Clientes</button>
+    <button class="ni active" id="an-dash" onclick="showA('dash')"><div class="ni-ic">📊</div>Dashboard</button>
+    <button class="ni" id="an-agenda" onclick="showA('agenda')"><div class="ni-ic">📅</div>Agenda</button>
+    <button class="ni" id="an-servicos" onclick="showA('servicos')"><div class="ni-ic">✂</div>Servicos</button>
+    <button class="ni" id="an-config" onclick="showA('config')"><div class="ni-ic">⚙️</div>Config</button>
+    <button class="ni" id="an-clientes" onclick="showA('clientes')" style="display:none"><div class="ni-ic">👥</div>Clientes</button>
   </div>
 </div>
 
@@ -698,7 +822,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
     </div>
     <!-- Indicador de sessoes -->
     <div id="pkb-dots" style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap"></div>
-    <!-- CalendÃƒÆ’Ã‚Â¡rio -->
+    <!-- Calendário -->
     <div id="pkb-cal-area">
       <div style="font-weight:600;font-size:14px;margin-bottom:12px">Escolha a data</div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
@@ -707,7 +831,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
         <div onclick="pkbChMon(1)" style="background:var(--dk3);border:1px solid var(--dk4);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--txm)">&#8250;</div>
       </div>
       <div class="cal-grid" id="pkb-cal-grid"></div>
-      <div style="font-weight:600;font-size:14px;margin:14px 0 10px">HorÃƒÆ’Ã‚Â¡rio</div>
+      <div style="font-weight:600;font-size:14px;margin:14px 0 10px">Horário</div>
       <div class="tg" id="pkb-tg"></div>
     </div>
     <!-- Tela final: nome + whatsapp -->
@@ -721,8 +845,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
     </div>
     <!-- Botoes -->
     <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
-      <button class="btn btn-gold" id="pkb-btn-next" onclick="pkbNext()" disabled>PrÃƒÆ’Ã‚Â³xima sessÃƒÆ’Ã‚Â£o ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
-      <button class="btn btn-out" id="pkb-btn-back" onclick="pkbBack()">ÃƒÂ¢Ã¢â‚¬Â Ã‚Â Voltar</button>
+      <button class="btn btn-gold" id="pkb-btn-next" onclick="pkbNext()" disabled>Próxima sessão →</button>
+      <button class="btn btn-out" id="pkb-btn-back" onclick="pkbBack()">← Voltar</button>
       <button class="btn btn-out" onclick="closeMod('mod-pkg-book')">Cancelar</button>
     </div>
   </div>
@@ -828,7 +952,7 @@ function icLabel(cat){const m={'Cortes':'CO','Barba':'BA','Combos':'CB','Tratame
 // =================== NAV ===================
 function enterApp(mode){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const idMap={client:'client-app',admin:'admin-app',barber:'admin-app','adm-login':'adm-login',planos:'planos',splash:'splash',onboarding:'onboarding','set-password':'set-password'};
+  const idMap={client:'client-app',admin:'admin-app','adm-login':'adm-login',planos:'planos',splash:'splash',onboarding:'onboarding','set-password':'set-password'};
   const target=document.getElementById(idMap[mode]||mode);
   if(target)target.classList.add('active');
   if(mode==='client'){showC('home');loadSvcs();loadBarbers();loadPromos();}
@@ -867,21 +991,21 @@ function applyShop(d){
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   set('sp-name',d.name); set('h-name',d.name);
   const sa=document.getElementById('sp-addr');if(sa)sa.innerHTML=d.name+(d.address?'<br>'+d.address:'');
-  if(d.address){set('h-addr','ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â '+d.address);}
+  if(d.address){set('h-addr','📍 '+d.address);}
   const o=(d.opening_time||'09:00').slice(0,5), c=(d.closing_time||'20:00').slice(0,5);
-  set('h-sched','ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¢Ã‚Â '+o+' ÃƒÆ’Ã‚Â s '+c); set('h-hours','Aberto Ãƒâ€šÃ‚Â· Fecha ÃƒÆ’Ã‚Â s '+c);
+  set('h-sched','🕐 '+o+' às '+c); set('h-hours','Aberto · Fecha às '+c);
   const pk=document.getElementById('pix-key-disp');if(pk&&d.pix_key)pk.textContent=d.pix_key;
-  document.title='BarberOS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ '+d.name;
+  document.title='BarberOS – '+d.name;
   if(d.instagram){const ib=document.getElementById('btn-ig');if(ib)ib.onclick=()=>window.open('https://instagram.com/'+d.instagram.replace('@',''),'_blank');}
   // Set shop URL hint for sharing
   S.settings=d; // backward compat
 }
-// Verifica se ÃƒÆ’Ã‚Â© modo demo: sem ?s= na URL
+// Verifica se é modo demo: sem ?s= na URL
 function isDemoMode(){return!new URLSearchParams(window.location.search).get('s');}
 function showC(sec){
   document.querySelectorAll('.csec').forEach(s=>s.style.display='none');
   const t=document.getElementById('sc-'+sec);if(t)t.style.display='block';
-  // Mostra banner SaaS apenas quando nÃƒÆ’Ã‚Â£o hÃƒÆ’Ã‚Â¡ ?s= na URL
+  // Mostra banner SaaS apenas quando não há ?s= na URL
   if(sec==='home'){const b=document.getElementById('saas-banner');if(b)b.style.display=isDemoMode()?'block':'none';}
   document.querySelectorAll('#client-app .ni').forEach(n=>n.classList.remove('active'));
   const m={home:'cn-home',agendar:'cn-agendar',servicos:'cn-servicos',meus:'cn-meus',perfil:'cn-perfil'};
@@ -917,7 +1041,7 @@ async function doLogin(){
   if(!email||!pwd){err.textContent='Preencha email e senha.';err.style.display='block';return;}
   btn.innerHTML='<span class="spin"></span> Entrando...';btn.disabled=true;
   try{
-    // Direct REST API call ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 100% reliable, independent of JS client state
+    // Direct REST API call — 100% reliable, independent of JS client state
     const resp=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SB_KEY},
@@ -937,6 +1061,7 @@ async function doLogin(){
       try{await db.auth.setSession({access_token:result.access_token,refresh_token:result.refresh_token});}
       catch(se){console.warn('setSession:',se);}
     S.session={access_token:result.access_token,refresh_token:result.refresh_token};
+    S.session={access_token:result.access_token,refresh_token:result.refresh_token};
     }
     err.style.display='none';
     // Load this admin's shop
@@ -945,7 +1070,7 @@ async function doLogin(){
     const hasShop=await loadShop(userId,true);
     btn.textContent='Entrar';btn.disabled=false;
     if(!hasShop){
-      // New subscriber ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â go to onboarding
+      // New subscriber — go to onboarding
       enterApp('onboarding');
     } else {
       enterApp('admin');
@@ -967,7 +1092,7 @@ async function doLogout(){await db.auth.signOut();enterApp('splash');}
 
 // =================== SETTINGS (legacy compat) ===================
 async function loadSettings(){
-  // Settings vÃƒÆ’Ã‚Âªm do shop ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â jÃƒÆ’Ã‚Â¡ carregado no init
+  // Settings vêm do shop — já carregado no init
   // Nada a fazer aqui, mantido por compatibilidade
 }
 function applySettings(data){
@@ -977,11 +1102,11 @@ function applySettings(data){
   setTxt('sp-name',n);
   const sa=document.getElementById('sp-addr');if(sa)sa.innerHTML=n+(a?'<br>'+a:'');
   setTxt('h-name',n);
-  if(a){setTxt('h-addr','ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â '+a);}
+  if(a){setTxt('h-addr','📍 '+a);}
   const open=(data.opening_time||'09:00').slice(0,5);
   const close=(data.closing_time||'20:00').slice(0,5);
-  setTxt('h-sched','ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¢Ã‚Â '+open+' as '+close);
-  setTxt('h-hours','Aberto Ãƒâ€šÃ‚Â· Fecha as '+close);
+  setTxt('h-sched','🕐 '+open+' as '+close);
+  setTxt('h-hours','Aberto · Fecha as '+close);
   const pk=document.getElementById('pix-key-disp');if(pk&&data.pix_key)pk.textContent=data.pix_key;
   if(data.instagram){const ib=document.getElementById('btn-ig');if(ib)ib.onclick=()=>window.open('https://instagram.com/'+data.instagram.replace('@',''),'_blank');}
 }
@@ -1000,13 +1125,13 @@ async function loadSvcs(){
 }
 function useFallbackSvcs(){
   if(S.svcs.length){renderSvcGrid();return;}
-  // IDs prefixados com 'tmp-' para o carrinho funcionar ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â NÃƒÆ’Ã†â€™O sÃƒÆ’Ã‚Â£o UUIDs vÃƒÆ’Ã‚Â¡lidos
+  // IDs prefixados com 'tmp-' para o carrinho funcionar — NÃO são UUIDs válidos
   S.svcs=[
-    {id:'tmp-1',name:'Corte DegradÃƒÆ’Ã‚Âª',price:45,duration_minutes:40,category:'Cortes'},
+    {id:'tmp-1',name:'Corte Degradê',price:45,duration_minutes:40,category:'Cortes'},
     {id:'tmp-2',name:'Barba Completa',price:35,duration_minutes:30,category:'Barba'},
     {id:'tmp-3',name:'Corte + Barba',price:70,duration_minutes:60,category:'Combos'},
     {id:'tmp-4',name:'Pezinho',price:20,duration_minutes:15,category:'Cortes'},
-    {id:'tmp-5',name:'HidrataÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o',price:30,duration_minutes:30,category:'Tratamentos'},
+    {id:'tmp-5',name:'Hidratação',price:30,duration_minutes:30,category:'Tratamentos'},
     {id:'tmp-6',name:'Sobrancelha',price:15,duration_minutes:15,category:'Tratamentos'},
   ];
   renderSvcGrid();
@@ -1024,13 +1149,13 @@ function renderSvcGrid(){
       <div style="font-size:14px;font-weight:600;color:var(--tx)">${s.name}</div>
       <div style="font-size:16px;font-weight:700;color:var(--gold);margin-top:4px">${fmt(s.price)}</div>
       <div style="font-size:11px;color:var(--txm);margin-top:2px">${s.duration_minutes} min</div>
-      ${inCart?'<div style="font-size:11px;color:var(--gold);font-weight:700;margin-top:6px">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“ Adicionado</div>':''}
+      ${inCart?'<div style="font-size:11px;color:var(--gold);font-weight:700;margin-top:6px">✓ Adicionado</div>':''}
     </div>`;
   }).join('');
 }
 
 function toggleCart(idx){
-  // idx ÃƒÆ’Ã‚Â© o ÃƒÆ’Ã‚Â­ndice do array S.svcs
+  // idx é o índice do array S.svcs
   const svc=S.svcs[idx];if(!svc)return;
   const svcWithIdx={...svc,_idx:idx};
   const cartIdx=S.cart.findIndex(c=>c._idx===idx);
@@ -1051,7 +1176,7 @@ function renderCart(){
       <span style="font-size:13px">${s.name}</span>
       <div style="display:flex;align-items:center;gap:8px">
         <span style="color:var(--gold);font-weight:700;font-size:13px">${fmt(s.price)}</span>
-        <button class="cart-rm" onclick="toggleCart(${s._idx});event.stopPropagation()">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¢</button>
+        <button class="cart-rm" onclick="toggleCart(${s._idx});event.stopPropagation()">✕</button>
       </div>
     </div>`).join('');
   const t=S.cart.reduce((s,c)=>s+Number(c.price),0);
@@ -1090,9 +1215,9 @@ async function loadBarbers(){
 function useFallbackBarbers(){
   if(S.barbers.length){renderBarberGrid();return;}
   S.barbers=[
-    {id:'tmp-b1',name:'Marcos',specialty:'DegradÃƒÆ’Ã‚Âª & Barba',rating:4.9,reviews_count:142,avatar_emoji:'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤'},
-    {id:'tmp-b2',name:'Rafael',specialty:'ClÃƒÆ’Ã‚Â¡ssico & Social',rating:4.8,reviews_count:89,avatar_emoji:'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤'},
-    {id:'tmp-b3',name:'JoÃƒÆ’Ã‚Â£o',specialty:'Navalhado & Barba',rating:4.7,reviews_count:56,avatar_emoji:'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤'},
+    {id:'tmp-b1',name:'Marcos',specialty:'Degradê & Barba',rating:4.9,reviews_count:142,avatar_emoji:'👤'},
+    {id:'tmp-b2',name:'Rafael',specialty:'Clássico & Social',rating:4.8,reviews_count:89,avatar_emoji:'👤'},
+    {id:'tmp-b3',name:'João',specialty:'Navalhado & Barba',rating:4.7,reviews_count:56,avatar_emoji:'👤'},
   ];
   renderBarberGrid();
 }
@@ -1100,13 +1225,13 @@ function renderBarberGrid(){
   const g=document.getElementById('barber-grid');if(!g)return;
   g.innerHTML=S.barbers.map(b=>`
     <div onclick="selBarber(this,'${b.name}','${b.id}')" style="background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--r);padding:16px;cursor:pointer;text-align:center;transition:all .2s" id="bc-${b.id}">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--dk4);border:2px solid var(--dk5);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;transition:border-color .2s">${b.avatar_emoji||'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤'}</div>
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--dk4);border:2px solid var(--dk5);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;transition:border-color .2s">${b.avatar_emoji||'👤'}</div>
       <div style="font-size:14px;font-weight:600">${b.name}</div>
-      <div style="font-size:11px;color:var(--gold);margin-top:3px">ÃƒÂ¢Ã‚Â­Ã‚Â ${b.rating} (${b.reviews_count})</div>
+      <div style="font-size:11px;color:var(--gold);margin-top:3px">⭐ ${b.rating} (${b.reviews_count})</div>
       <div style="font-size:11px;color:var(--txm);margin-top:2px">${b.specialty||''}</div>
     </div>`).join('')+`
     <div onclick="selBarber(this,'Qualquer',null)" style="background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--r);padding:16px;cursor:pointer;text-align:center" id="bc-any">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--dk4);border:2px solid var(--dk5);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px">ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â²</div>
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--dk4);border:2px solid var(--dk5);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px">🎲</div>
       <div style="font-size:14px;font-weight:600">Qualquer</div>
       <div style="font-size:11px;color:var(--txm);margin-top:3px">Sem preferencia</div>
       <div style="font-size:11px;color:var(--txm);margin-top:2px">Primeiro disponivel</div>
@@ -1116,7 +1241,7 @@ function selBarber(card,name,id){
   document.querySelectorAll('#barber-grid > div').forEach(c=>{c.style.borderColor='var(--dk4)';c.style.background='var(--dk3)';});
   card.style.borderColor='var(--gold)';card.style.background='rgba(201,168,76,.08)';
   S.selectedBarber=name;
-  // SÃƒÆ’Ã‚Â³ salva o id se for UUID vÃƒÆ’Ã‚Â¡lido
+  // Só salva o id se for UUID válido
   const isUUID=v=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v||'');
   S.selectedBarberId=isUUID(id)?id:null;
   const btn=document.getElementById('btn-bk2');if(btn){btn.disabled=false;btn.style.opacity='1';}
@@ -1132,7 +1257,7 @@ async function loadPromos(){
     if(!data||!data.length){c.innerHTML='<div style="padding:0 20px 12px;color:var(--txm);font-size:13px">Sem promocoes no momento.</div>';return;}
     c.innerHTML=data.map(p=>`
       <div class="promo-card" onclick="showC('agendar')">
-        <div style="font-size:32px">${p.emoji||'ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â¥'}</div>
+        <div style="font-size:32px">${p.emoji||'🔥'}</div>
         <div>
           <div style="font-size:15px;font-weight:600">${p.name}</div>
           <div style="font-size:12px;color:var(--txm);margin-top:2px">${p.description||''}</div>
@@ -1155,7 +1280,7 @@ async function loadPkgs(){
       <div class="pkg${p.badge?'  best':''}" onclick="_pkgClick(this)" data-pid="${p.id}">
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:10px">${p.name}</div>
         <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
-          ${(p.items||[]).map(i=>`<div style="font-size:12px;color:var(--txm);display:flex;gap:6px;align-items:center"><span style="color:var(--grn);font-weight:700">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“</span>${i}</div>`).join('')}
+          ${(p.items||[]).map(i=>`<div style="font-size:12px;color:var(--txm);display:flex;gap:6px;align-items:center"><span style="color:var(--grn);font-weight:700">✓</span>${i}</div>`).join('')}
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--dk4)">
           <div>
@@ -1232,30 +1357,30 @@ function renderTimes(){
   const lsM=lunchStart?toMin(lunchStart):null;
   const leM=lunchEnd  ?toMin(lunchEnd)  :null;
 
-  // Gera todos os slots dentro do horÃƒÆ’Ã‚Â¡rio de funcionamento
+  // Gera todos os slots dentro do horário de funcionamento
   const slots=[];
   let cur=openM;
   while(cur+totalDur<=closeM){
-    // Bloqueia horÃƒÆ’Ã‚Â¡rio de almoÃƒÆ’Ã‚Â§o: qualquer slot que COMECE dentro do almoÃƒÆ’Ã‚Â§o
-    // ou que INVADA o inÃƒÆ’Ã‚Â­cio do almoÃƒÆ’Ã‚Â§o
+    // Bloqueia horário de almoço: qualquer slot que COMECE dentro do almoço
+    // ou que INVADA o início do almoço
     const isLunch=lsM!==null&&leM!==null&&(cur<leM&&cur+totalDur>lsM);
     slots.push({time:toStr(cur),lunch:isLunch});
     cur+=slotMin;
   }
 
   if(!slots.length){
-    g.innerHTML='<div style="grid-column:span 4;color:var(--txm);font-size:13px;padding:10px">Sem horÃƒÆ’Ã‚Â¡rios disponÃƒÆ’Ã‚Â­veis.</div>';
+    g.innerHTML='<div style="grid-column:span 4;color:var(--txm);font-size:13px;padding:10px">Sem horários disponíveis.</div>';
     return;
   }
 
-  // Agrupa por perÃƒÆ’Ã‚Â­odo (manhÃƒÆ’Ã‚Â£ / tarde) se houver almoÃƒÆ’Ã‚Â§o
+  // Agrupa por período (manhã / tarde) se houver almoço
   let html='';
   if(lsM&&leM){
     const manha=slots.filter(s=>toMin(s.time)<lsM);
     const tarde=slots.filter(s=>toMin(s.time)>=leM);
-    if(manha.length){html+=`<div style="grid-column:span 4;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">ÃƒÂ¢Ã‹Å“Ã¢â€šÂ¬ ManhÃƒÆ’Ã‚Â£</div>`+manha.map(s=>slotBtn(s,totalDur)).join('');}
-    html+=`<div style="grid-column:span 4;font-size:11px;color:var(--txm);padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:var(--dk4)"></div>ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â½ AlmoÃƒÆ’Ã‚Â§o ${lunchStart}ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“${lunchEnd}<div style="flex:1;height:1px;background:var(--dk4)"></div></div>`;
-    if(tarde.length){html+=`<div style="grid-column:span 4;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â¤ Tarde</div>`+tarde.map(s=>slotBtn(s,totalDur)).join('');}
+    if(manha.length){html+=`<div style="grid-column:span 4;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>`+manha.map(s=>slotBtn(s,totalDur)).join('');}
+    html+=`<div style="grid-column:span 4;font-size:11px;color:var(--txm);padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:var(--dk4)"></div>🍽 Almoço ${lunchStart}–${lunchEnd}<div style="flex:1;height:1px;background:var(--dk4)"></div></div>`;
+    if(tarde.length){html+=`<div style="grid-column:span 4;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>`+tarde.map(s=>slotBtn(s,totalDur)).join('');}
   } else {
     html=slots.map(s=>slotBtn(s,totalDur)).join('');
   }
@@ -1265,7 +1390,7 @@ function slotBtn(s,dur){
   const busy=s.lunch||isConflict(s.time,dur,S.busySlots);
   const sel=S.selTime===s.time;
   const lunchCls=s.lunch?' lunch':'';
-  return`<div class="ts${busy?' busy':''}${sel?' sel':''}${lunchCls}" ${!busy?`onclick="selTime(this,'${s.time}')"`:'title="HorÃƒÆ’Ã‚Â¡rio de almoÃƒÆ’Ã‚Â§o"'}>${s.time}${s.lunch?' ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â½':''}</div>`;
+  return`<div class="ts${busy?' busy':''}${sel?' sel':''}${lunchCls}" ${!busy?`onclick="selTime(this,'${s.time}')"`:'title="Horário de almoço"'}>${s.time}${s.lunch?' 🍽':''}</div>`;
 }
 function selTime(el,t){
   document.querySelectorAll('.ts').forEach(x=>x.classList.remove('sel'));
@@ -1297,7 +1422,7 @@ function goStepUI(step){
   [1,2,3,4].forEach(i=>{
     const d=document.getElementById('sd'+i);if(!d)return;
     d.classList.remove('active','done');
-    if(i<step){d.classList.add('done');d.textContent='ÃƒÂ¢Ã…â€œÃ¢â‚¬Å“';}
+    if(i<step){d.classList.add('done');d.textContent='✓';}
     else if(i===step){d.classList.add('active');d.textContent=i;}
     else d.textContent=i;
     if(i<4){const l=document.getElementById('sl'+i);if(l)l.classList.toggle('done',i<step);}
@@ -1309,9 +1434,9 @@ function renderSummary(){
   const dur=S.cart.reduce((s,c)=>s+Number(c.duration_minutes),0);
   el.innerHTML=`
     <div class="sr"><span class="srl">Servicos</span><span class="srv">${S.cart.map(c=>c.name).join(', ')}</span></div>
-    <div class="sr"><span class="srl">Barbeiro</span><span class="srv">${S.selectedBarber||'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span></div>
-    <div class="sr"><span class="srl">Data</span><span class="srv">${S.selDate||'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span></div>
-    <div class="sr"><span class="srl">Horario</span><span class="srv">${S.selTime||'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span></div>
+    <div class="sr"><span class="srl">Barbeiro</span><span class="srv">${S.selectedBarber||'—'}</span></div>
+    <div class="sr"><span class="srl">Data</span><span class="srv">${S.selDate||'—'}</span></div>
+    <div class="sr"><span class="srl">Horario</span><span class="srv">${S.selTime||'—'}</span></div>
     <div class="sr"><span class="srl">Duracao</span><span class="srv">${dur} min</span></div>
     <div class="sr"><span class="srl">Total</span><span class="srv" style="color:var(--gold);font-size:20px">${fmt(total)}</span></div>`;
 }
@@ -1380,32 +1505,32 @@ async function confirmPay(method){
 function notifyAdmin(a){
   const num=(S.shop.whatsapp||S.settings.whatsapp||'5511999999999').replace(/\D/g,'');
   const svcs=a.services_json?a.services_json.map(s=>s.name).join(' + '):a.service_name;
-  // Formata data em portuguÃƒÆ’Ã‚Âªs: 2026-06-03 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 03/06/2026
+  // Formata data em português: 2026-06-03 → 03/06/2026
   const dateParts=(a.appointment_date||'').split('-');
   const dataFmt=dateParts.length===3?`${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`:a.appointment_date;
-  // Formata horÃƒÆ’Ã‚Â¡rio: 18:30:00 ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ 18:30
+  // Formata horário: 18:30:00 → 18:30
   const hora=(a.appointment_time||'').slice(0,5);
   // Traduz forma de pagamento
-  const pagMap={pix:'PIX ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â²',credito:'CartÃƒÆ’Ã‚Â£o de CrÃƒÆ’Ã‚Â©dito ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â³',debito:'CartÃƒÆ’Ã‚Â£o de DÃƒÆ’Ã‚Â©bito ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â¦',local:'Pagar no Local ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Âµ'};
-  const pagamento=pagMap[a.payment_method]||a.payment_method||'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
+  const pagMap={pix:'PIX 💲',credito:'Cartão de Crédito 💳',debito:'Cartão de Débito 🏦',local:'Pagar no Local 💵'};
+  const pagamento=pagMap[a.payment_method]||a.payment_method||'—';
   // Monta a mensagem
   const shopName=S.shop.name||'BarberOS';
   const msg=
-`ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Â *Novo Agendamento ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ${shopName}*
-ÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚Â
-ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤ *Cliente:* ${a.client_name}
-ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â± *WhatsApp:* ${a.client_phone||'NÃƒÆ’Ã‚Â£o informado'}
-ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚Â *ServiÃƒÆ’Ã‚Â§o:* ${svcs}
-ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‹â€  *Barbeiro:* ${a.barber_name}
-ÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚Â
-ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ *Data:* ${dataFmt}
-ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¢Ã‚Â *HorÃƒÆ’Ã‚Â¡rio:* ${hora}
-ÃƒÂ¢Ã‚ÂÃ‚Â± *DuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o:* ${a.total_duration_minutes||30} min
-ÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚Â
-ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° *Total:* ${fmt(a.service_price)}
-ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â³ *Pagamento:* ${pagamento}
-ÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚Â
-_Enviado pelo BarberOS_ ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚Â`;
+`🔔 *Novo Agendamento — ${shopName}*
+━━━━━━━━━━━━━━━━━━━━
+👤 *Cliente:* ${a.client_name}
+📱 *WhatsApp:* ${a.client_phone||'Não informado'}
+✂️ *Serviço:* ${svcs}
+💈 *Barbeiro:* ${a.barber_name}
+━━━━━━━━━━━━━━━━━━━━
+📅 *Data:* ${dataFmt}
+🕐 *Horário:* ${hora}
+⏱ *Duração:* ${a.total_duration_minutes||30} min
+━━━━━━━━━━━━━━━━━━━━
+💰 *Total:* ${fmt(a.service_price)}
+💳 *Pagamento:* ${pagamento}
+━━━━━━━━━━━━━━━━━━━━
+_Enviado pelo BarberOS_ ✂️`;
   window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
 }
 function shareWA(){
@@ -1416,15 +1541,15 @@ function shareWA(){
   const hora=(a.appointment_time||'').slice(0,5);
   const shopName=S.shop.name||'BarberOS';
   const msg=
-`ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ *Agendamento Confirmado!*
-ÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚Â
-ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ÃƒÂ¯Ã‚Â¸Ã‚Â *ServiÃƒÆ’Ã‚Â§o:* ${a.service_name||''}
-ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‹â€  *Barbeiro:* ${a.barber_name||''}
-ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ *Data:* ${dataFmt}
-ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¢Ã‚Â *HorÃƒÆ’Ã‚Â¡rio:* ${hora}
-ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â° *Total:* ${fmt(a.service_price||0)}
-ÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚ÂÃƒÂ¢Ã¢â‚¬ÂÃ‚Â
-_${shopName} ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ BarberOS_ ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã‚Â²`;
+`✅ *Agendamento Confirmado!*
+━━━━━━━━━━━━━━━━━━
+✂️ *Serviço:* ${a.service_name||''}
+💈 *Barbeiro:* ${a.barber_name||''}
+📅 *Data:* ${dataFmt}
+🕐 *Horário:* ${hora}
+💰 *Total:* ${fmt(a.service_price||0)}
+━━━━━━━━━━━━━━━━━━
+_${shopName} • BarberOS_ 📲`;
   window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
 }
 function openWA(){
@@ -1450,7 +1575,7 @@ async function loadMyAppts(){
         <div><div style="font-weight:700;font-size:15px">${a.service_name}</div><div style="font-size:12px;color:var(--txm)">com ${a.barber_name}</div></div>
         <span class="badge ${sl[a.status]||'bp'}">${st[a.status]||'Pendente'}</span>
       </div>
-      <div style="font-size:12px;color:var(--txm)">ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã¢â‚¬Â¦ ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')} as ${(a.appointment_time||'').slice(0,5)} Ãƒâ€šÃ‚Â· ${fmt(a.service_price)}</div>
+      <div style="font-size:12px;color:var(--txm)">📅 ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')} as ${(a.appointment_time||'').slice(0,5)} · ${fmt(a.service_price)}</div>
     </div>`).join('');
 }
 
@@ -1550,84 +1675,6 @@ async function filterDash(period){
     
     document.getElementById('dash-profit-result').innerHTML=html2;
   }catch(e){document.getElementById('dash-profit-result').innerHTML='<span style="color:var(--red)">Erro: '+e.message+'</span>';}
-
-async function openCreateBarberUser(barberIdOrEl, barberName){
-  let barberId=barberIdOrEl;
-  if(typeof barberIdOrEl==='object'&&barberIdOrEl.dataset){barberId=barberIdOrEl.dataset.bid;barberName=barberIdOrEl.dataset.bn;}
-
-  // Verificar limite de 3 barbeiros com acesso
-  const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
-  const count=(existing||[]).length;
-  if(count>=3){toast('Limite de 3 barbeiros com acesso atingido.','err');return;}
-  document.getElementById('buser-barber-name').textContent=barberName;
-  document.getElementById('buser-barber-id').value=barberId;
-  document.getElementById('buser-email').value='';
-  document.getElementById('buser-pwd').value='';
-  document.getElementById('buser-count').textContent=count+'/3 acessos criados';
-  openMod('mod-barber-user');
-}
-
-async function saveBarberUser(){
-  const barberId=document.getElementById('buser-barber-id').value;
-  const email=document.getElementById('buser-email').value.trim().toLowerCase();
-  const pwd=document.getElementById('buser-pwd').value;
-  if(!email||!pwd){toast('Preencha e-mail e senha.','err');return;}
-  if(pwd.length<6){toast('Senha deve ter no minimo 6 caracteres.','err');return;}
-  
-  // Criar usuario via Edge Function (usa service_role internamente)
-  try{
-    const res=await fetch(SB_URL+'/functions/v1/create-barber-user',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.session.access_token},
-      body:JSON.stringify({email,password:pwd,barber_id:barberId,shop_id:S.shopId})
-    });
-    const data=await res.json();
-    if(!data.ok){toast('Erro: '+(data.error||'Falha ao criar'),'err');return;}
-    toast('Acesso criado para '+email+'!','ok');
-    closeMod('mod-barber-user');
-    loadBarbCfg();
-  }catch(e){toast('Erro: '+e.message,'err');}
-}
-
-
-async function openCreateBarberUser(barberIdOrEl, barberName){
-  let barberId=barberIdOrEl;
-  if(typeof barberIdOrEl==='object'&&barberIdOrEl.dataset){barberId=barberIdOrEl.dataset.bid;barberName=barberIdOrEl.dataset.bn;}
-
-  // Verificar limite de 3 barbeiros com acesso
-  const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
-  const count=(existing||[]).length;
-  if(count>=3){toast('Limite de 3 barbeiros com acesso atingido.','err');return;}
-  document.getElementById('buser-barber-name').textContent=barberName;
-  document.getElementById('buser-barber-id').value=barberId;
-  document.getElementById('buser-email').value='';
-  document.getElementById('buser-pwd').value='';
-  document.getElementById('buser-count').textContent=count+'/3 acessos criados';
-  openMod('mod-barber-user');
-}
-
-async function saveBarberUser(){
-  const barberId=document.getElementById('buser-barber-id').value;
-  const email=document.getElementById('buser-email').value.trim().toLowerCase();
-  const pwd=document.getElementById('buser-pwd').value;
-  if(!email||!pwd){toast('Preencha e-mail e senha.','err');return;}
-  if(pwd.length<6){toast('Senha deve ter no minimo 6 caracteres.','err');return;}
-  
-  // Criar usuario via Edge Function (usa service_role internamente)
-  try{
-    const res=await fetch(SB_URL+'/functions/v1/create-barber-user',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.session.access_token},
-      body:JSON.stringify({email,password:pwd,barber_id:barberId,shop_id:S.shopId})
-    });
-    const data=await res.json();
-    if(!data.ok){toast('Erro: '+(data.error||'Falha ao criar'),'err');return;}
-    toast('Acesso criado para '+email+'!','ok');
-    closeMod('mod-barber-user');
-    loadBarbCfg();
-  }catch(e){toast('Erro: '+e.message,'err');}
-}
-
 }
 
 
@@ -1709,7 +1756,7 @@ function agItemHTML(a){
   return`<div class="ai" onclick="openApptMod('${a.id}')">
     <div class="at"><div class="ath">${h}</div><div class="atm">:${m}</div></div>
     <div class="al${hasAct?' g':''}"></div>
-    <div class="aif"><div class="aic">${a.client_name}${pkgLabel}</div><div class="ais">${a.service_name} Ãƒâ€šÃ‚Â· ${fmt(a.service_price)}</div><div class="aib">ÃƒÂ¢Ã…â€œÃ¢â‚¬Å¡ ${a.barber_name} Ãƒâ€šÃ‚Â· ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')}</div></div>
+    <div class="aif"><div class="aic">${a.client_name}${pkgLabel}</div><div class="ais">${a.service_name} · ${fmt(a.service_price)}</div><div class="aib">✂ ${a.barber_name} · ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')}</div></div>
     <span class="badge ${sl[a.status]||'bp'}">${st[a.status]||'Pendente'}</span>
   </div>`;
 }
@@ -1725,19 +1772,19 @@ async function openApptMod(id){
   document.getElementById('mod-appt-body').innerHTML=`
     <div class="card" style="margin-bottom:16px">
       <div class="sr"><span class="srl">Cliente</span><span class="srv">${a.client_name}</span></div>
-      <div class="sr"><span class="srl">WhatsApp</span><span class="srv">${a.client_phone||'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span></div>
+      <div class="sr"><span class="srl">WhatsApp</span><span class="srv">${a.client_phone||'—'}</span></div>
       <div class="sr"><span class="srl">Servico</span><span class="srv">${a.service_name}</span></div>
       <div class="sr"><span class="srl">Barbeiro</span><span class="srv">${a.barber_name}</span></div>
       <div class="sr"><span class="srl">Data</span><span class="srv">${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')}</span></div>
       <div class="sr"><span class="srl">Horario</span><span class="srv">${t}</span></div>
-      <div class="sr"><span class="srl">Pagamento</span><span class="srv">${a.payment_method||'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span></div>
+      <div class="sr"><span class="srl">Pagamento</span><span class="srv">${a.payment_method||'—'}</span></div>
       <div class="sr"><span class="srl">Total</span><span class="srv" style="color:var(--gold);font-size:18px">${fmt(a.service_price)}</span></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-gold" onclick="updAppt('${a.id}','confirmed')">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Confirmar</button>
-      <button class="btn btn-grn" onclick="updAppt('${a.id}','done')">ÃƒÂ°Ã…Â¸Ã‚ÂÃ‚Â Marcar como Feito</button>
+      <button class="btn btn-gold" onclick="updAppt('${a.id}','confirmed')">✅ Confirmar</button>
+      <button class="btn btn-grn" onclick="updAppt('${a.id}','done')">🏁 Marcar como Feito</button>
       ${pkgSessions.length>1?`<div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:var(--rs);padding:12px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:8px">PACOTE ${pkgSessions.length} SESSOES</div>${pkgSessions.map(s=>('<div style="font-size:12px;padding:4px 0;display:flex;justify-content:space-between"><span style=color:var(--txm)>Sessao '+s.package_session_num+'</span><span>'+new Date(s.appointment_date+'T12:00').toLocaleDateString('pt-BR')+' '+s.appointment_time.slice(0,5)+'</span><span style=color:var(--gold)>'+(s.status==='done'?'Feito':s.status==='cancelled'?'Cancelado':'Pendente')+'</span></div>')).join('')}</div>`:''}
-      ${a.client_phone?`<button class="btn btn-out" onclick="window.open('https://wa.me/${a.client_phone.replace(/\D/g,'')}','_blank')">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¬ WhatsApp do cliente</button>`:''}
+      ${a.client_phone?`<button class="btn btn-out" onclick="window.open('https://wa.me/${a.client_phone.replace(/\D/g,'')}','_blank')">💬 WhatsApp do cliente</button>`:''}
       <button class="btn-red" onclick="updAppt('${a.id}','cancelled')">Cancelar agendamento</button>
     </div>`;
 }
@@ -1779,7 +1826,7 @@ async function openAdmBook(){
       db.from('services').select('id,name,price,duration_minutes').eq('shop_id',S.shopId).eq('active',true).order('name'),
       db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name')
     ]);
-    ds.innerHTML=(svcs||[]).map(s=>`<option value="${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ${fmt(s.price)}</option>`).join('');
+    ds.innerHTML=(svcs||[]).map(s=>`<option value="${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} — ${fmt(s.price)}</option>`).join('');
     db2.innerHTML=`<option value="|Qualquer">Qualquer disponivel</option>`+(barbers||[]).map(b=>`<option value="${b.id}|${b.name}">${b.name}</option>`).join('');
   }catch(e){
     ds.innerHTML='<option value="|Servico">Erro ao carregar servicos</option>';
@@ -1824,11 +1871,11 @@ async function loadAdmSvcs(){
       <div class="${catCls(s.category)}" style="width:40px;height:40px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff">${icLabel(s.category)}</div>
       <div style="flex:1">
         <div style="font-size:15px;font-weight:600">${s.name}</div>
-        <div style="font-size:12px;color:var(--txm)">${fmt(s.price)} Ãƒâ€šÃ‚Â· ${s.duration_minutes} min Ãƒâ€šÃ‚Â· ${s.category}</div>
+        <div style="font-size:12px;color:var(--txm)">${fmt(s.price)} · ${s.duration_minutes} min · ${s.category}</div>
       </div>
       <div class="tog${s.active?' on':''}" onclick="togSvc('${s.id}',${s.active})"></div>
       <button onclick="openSvcMod('${s.id}')" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--tx);border-radius:var(--rs);padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Editar</button>
-      <button onclick="delSvc('${s.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¢</button>
+      <button onclick="delSvc('${s.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">✕</button>
     </div>`).join('');
 }
 function openSvcMod(id){
@@ -1866,12 +1913,12 @@ async function loadAdmPkgs(){
     <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--dk3)">
       <div style="flex:1">
         <div style="font-size:15px;font-weight:600">${p.name}${p.badge?` <span style="background:var(--gold);color:var(--dk);font-size:9px;font-weight:800;border-radius:4px;padding:2px 6px">${p.badge}</span>`:''}</div>
-        <div style="font-size:12px;color:var(--txm)">${fmt(p.price)} Ãƒâ€šÃ‚Â· ${(p.items||[]).length} itens</div>
+        <div style="font-size:12px;color:var(--txm)">${fmt(p.price)} · ${(p.items||[]).length} itens</div>
         ${p.frequencia?"<div style=margin-top:3px><span style=background:rgba(201,168,76,.15);color:var(--gold);border-radius:4px;padding:2px_7px;font-size:11px;font-weight:600>"+p.frequencia+"</span> <span style=background:var(--dk4);color:var(--txm);border-radius:4px;padding:2px_6px;font-size:10px>"+(p.validade||"")+"</span></div>":""}
       </div>
       <div class="tog${p.active?' on':''}" onclick="togPkg('${p.id}',${p.active})"></div>
       <button onclick="openPkgMod('${p.id}')" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--tx);border-radius:var(--rs);padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Editar</button>
-      <button onclick="delPkg('${p.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¢</button>
+      <button onclick="delPkg('${p.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">✕</button>
     </div>`).join('');
 }
 function openPkgMod(id){
@@ -1922,7 +1969,7 @@ async function saveSettings(){
   const{error}=await db.from('shops').update(updates).eq('id',S.shopId);
   if(error){toast('Erro: '+error.message,'err');return;}
   Object.assign(S.shop,updates);applyShop(S.shop);
-  toast('ConfiguraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes salvas!','ok');
+  toast('Configurações salvas!','ok');
 }
 async function loadCfgForm(){
   const d=S.shop;
@@ -1935,38 +1982,31 @@ async function loadCfgForm(){
   const linkEl=document.getElementById('cfg-share-link');
   if(linkEl)linkEl.textContent=window.location.origin+window.location.pathname+'?s='+d.slug;
 }
-async async function loadBarbCfg(){
+async function loadBarbCfg(){
   const{data}=await db.from('barbers').select('*').eq('shop_id',S.shopId).order('name');
   const{data:bu}=await db.from('barber_users').select('barber_id').eq('shop_id',S.shopId);
   const usersSet=new Set((bu||[]).map(x=>x.barber_id));
   const el=document.getElementById('barb-cfg');if(!el)return;
   el.innerHTML=(data||[]).map(b=>{
     const hasUser=usersSet.has(b.id);
-    const nm=b.name.replace(/'/g,"");
-    const sp=(b.specialty||"").replace(/'/g,"");
-    const cm=b.commission_pct||0;
     const accessHtml=hasUser
-      ?'<span style="color:#27AE60;font-size:11px">&#10003; Acesso</span>'
-      :'<button onclick="event.stopPropagation();openCreateBarberUser(this.dataset.bid,this.dataset.bn)" data-bid="'+b.id+'" data-bn="'+nm+'" style="background:#C9A84C;color:#0E0E0E;border:none;border-radius:50px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer">Criar acesso</button>';
+      ?'<span style="color:#27AE60;font-size:11px">\u2713 Acesso</span>'
+      :'<button onclick="event.stopPropagation();openCreateBarberUser(\''+b.id+'\',\''+b.name.replace(/'/g,'')+'\')" style="background:#C9A84C;color:#0E0E0E;border:none;border-radius:50px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer">Criar acesso</button>';
     return '<div class="ci" style="flex-wrap:wrap;gap:8px">'
-      +'<div class="cii">'+(b.avatar_emoji||"\u{1F464}")+'</div>'
-      +'<div class="cit" style="flex:1;min-width:120px;cursor:pointer" onclick="editBarber(this.dataset.bid,this.dataset.bn,this.dataset.bs,this.dataset.bc)" data-bid="'+b.id+'" data-bn="'+nm+'" data-bs="'+sp+'" data-bc="'+cm+'">'
+      +'<div class="cii">'+(b.avatar_emoji||'\u{1F464}')+'</div>'
+      +'<div class="cit" style="flex:1;min-width:120px;cursor:pointer" onclick="editBarber(\''+b.id+'\',\''+b.name.replace(/'/g,'')+'\',\''+(b.specialty||'').replace(/'/g,'')+'\','+(b.commission_pct||0)+')">'
       +'<div class="citn">'+b.name+'</div>'
-      +'<div class="cits">'+(b.specialty||"")+' &bull; Comissao: '+cm+'%</div>'
+      +'<div class="cits">'+(b.specialty||'')+' \u2022 Comiss\u00e3o: '+(b.commission_pct||0)+'%</div>'
       +'</div>'
       +'<div style="display:flex;align-items:center;gap:6px">'
       +accessHtml
-      +'<div class="tog'+(b.active?' on':'')+'" onclick="togBarb(this.dataset.bid,'+b.active+')" data-bid="'+b.id+'"></div>'
-      +'<button onclick="delBarb(this.dataset.bid)" data-bid="'+b.id+'" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">&#10005;</button>'
+      +'<div class="tog'+(b.active?' on':'')+'" onclick="togBarb(\''+b.id+'\','+b.active+')"></div>'
+      +'<button onclick="delBarb(\''+b.id+'\')" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">\u2715</button>'
       +'</div></div>';
   }).join('');
 }
-async function togBarb(idOrEl,cur){
-  let id=idOrEl;if(typeof idOrEl==='object'&&idOrEl.dataset)id=idOrEl.dataset.bid;
-await db.from('barbers').update({active:!cur}).eq('id',id);loadBarbCfg();loadBarbers();}
-async function delBarb(idOrEl){
-  let id=idOrEl;if(typeof idOrEl==='object'&&idOrEl.dataset)id=idOrEl.dataset.bid;
-if(!confirm('Remover barbeiro?'))return;await db.from('barbers').delete().eq('id',id);loadBarbCfg();loadBarbers();}
+async function togBarb(id,cur){await db.from('barbers').update({active:!cur}).eq('id',id);loadBarbCfg();loadBarbers();}
+async function delBarb(id){if(!confirm('Remover barbeiro?'))return;await db.from('barbers').delete().eq('id',id);loadBarbCfg();loadBarbers();}
 function addBarber(){
   document.getElementById('brb-name').value='';
   document.getElementById('brb-spec').value='';
@@ -1976,10 +2016,7 @@ function addBarber(){
   document.getElementById('mod-barber-title').textContent='Adicionar Barbeiro';
   openMod('mod-barber');
 }
-function editBarber(el_or_id,name,spec,comm){
-  let id=el_or_id;
-  if(typeof el_or_id==='object'&&el_or_id.dataset){id=el_or_id.dataset.bid;name=el_or_id.dataset.bn;spec=el_or_id.dataset.bs;comm=el_or_id.dataset.bc;}
-
+function editBarber(id,name,spec,comm){
   document.getElementById('brb-name').value=name||'';
   document.getElementById('brb-spec').value=spec||'';
   document.getElementById('brb-comm').value=comm||0;
@@ -1998,7 +2035,7 @@ async function saveBarber(){
   if(editId){
     ({error}=await db.from('barbers').update({name,specialty:spec,commission_pct:comm}).eq('id',editId));
   } else {
-    ({error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec,avatar_emoji:'ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ‚Â¤',rating:5.0,reviews_count:0,active:true,commission_pct:comm}));
+    ({error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec,avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true,commission_pct:comm}));
   }
   if(error){toast('Erro: '+error.message,'err');return;}
   toast(editId?'Barbeiro atualizado!':'Barbeiro adicionado!','ok');
@@ -2020,7 +2057,7 @@ async function saveSvc(){
   if(eid){({error}=await db.from('services').update(payload).eq('id',eid));}
   else{({error}=await db.from('services').insert({...payload,active:true}));}
   if(error){toast('Erro: '+error.message,'err');return;}
-  toast('ServiÃƒÆ’Ã‚Â§o salvo!','ok');closeMod('mod-svc');loadAdmSvcs();loadSvcs();
+  toast('Serviço salvo!','ok');closeMod('mod-svc');loadAdmSvcs();loadSvcs();
 }
 async function savePkg(){
   const name=document.getElementById('pm-name').value.trim();
@@ -2030,7 +2067,7 @@ async function savePkg(){
   const desc=document.getElementById('pm-desc').value.trim();
   const badge=document.getElementById('pm-badge').value.trim();
   const eid=document.getElementById('pm-id').value;
-  if(!name||!price){toast('Preencha nome e preÃƒÆ’Ã‚Â§o.','err');return;}
+  if(!name||!price){toast('Preencha nome e preço.','err');return;}
   const freq=document.getElementById('pm-freq').value;
   const valid=document.getElementById('pm-valid').value;
   const payload={name,price,original_price:orig?Number(orig):null,items,description:desc,badge:badge||null,frequencia:freq||null,validade:valid||null,active:true,shop_id:S.shopId};
@@ -2046,16 +2083,16 @@ async function setDefaultShop(){
   // Remove default from all, set on current
   await db.from('shops').update({is_default:false}).neq('id',S.shopId);
   await db.from('shops').update({is_default:true}).eq('id',S.shopId);
-  toast('ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ Esta barbearia agora ÃƒÆ’Ã‚Â© a padrÃƒÆ’Ã‚Â£o do link principal!','ok');
+  toast('✅ Esta barbearia agora é a padrão do link principal!','ok');
 }
 function autoSlug(inp){
-  const slug=inp.value.toLowerCase().normalize('NFD').replace(/[ÃƒÅ’Ã¢â€šÂ¬-ÃƒÂÃ‚Â¯]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const slug=inp.value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const el=document.getElementById('ob-slug');if(el)el.value=slug;
   const prev=document.getElementById('slug-preview');if(prev)prev.textContent='app.barberos.click?s='+slug;
 }
 function copyShareLink(){
   const link=document.getElementById('cfg-share-link')?.textContent||'';
-  if(!link||link==='Carregando...'){toast('Link nÃƒÆ’Ã‚Â£o disponÃƒÆ’Ã‚Â­vel ainda.','err');return;}
+  if(!link||link==='Carregando...'){toast('Link não disponível ainda.','err');return;}
   navigator.clipboard.writeText(link).then(()=>toast('Link copiado!','ok')).catch(()=>toast('Link: '+link));
 }
 // =================== ONBOARDING ===================
@@ -2066,10 +2103,10 @@ async function saveOnboarding(){
   const btn=document.getElementById('btn-ob');btn.disabled=true;btn.textContent='Criando...';
   try{
     const{data:{session}}=await db.auth.getSession();
-    if(!session){toast('SessÃƒÆ’Ã‚Â£o expirada. FaÃƒÆ’Ã‚Â§a login novamente.','err');enterApp('adm-login');return;}
+    if(!session){toast('Sessão expirada. Faça login novamente.','err');enterApp('adm-login');return;}
     // Check slug availability
     const{data:existing}=await db.from('shops').select('id').eq('slug',slug).maybeSingle();
-    if(existing){toast('Identificador jÃƒÆ’Ã‚Â¡ em uso. Escolha outro.','err');btn.disabled=false;btn.textContent='Criar minha barbearia';return;}
+    if(existing){toast('Identificador já em uso. Escolha outro.','err');btn.disabled=false;btn.textContent='Criar minha barbearia';return;}
     const{data:shop,error}=await db.from('shops').insert({
       owner_id:session.user.id,name,slug,
       address:g('ob-addr'),whatsapp:g('ob-wa'),pix_key:g('ob-pix'),
@@ -2102,12 +2139,12 @@ async function setNewPassword(){
   const err  = document.getElementById('sp-err');
   const btn  = document.getElementById('btn-sp');
   err.style.display='none';
-  if(pwd.length<8){err.textContent='A senha deve ter no mÃƒÆ’Ã‚Â­nimo 8 caracteres.';err.style.display='block';return;}
-  if(pwd!==pwd2){err.textContent='As senhas nÃƒÆ’Ã‚Â£o coincidem.';err.style.display='block';return;}
+  if(pwd.length<8){err.textContent='A senha deve ter no mínimo 8 caracteres.';err.style.display='block';return;}
+  if(pwd!==pwd2){err.textContent='As senhas não coincidem.';err.style.display='block';return;}
   btn.innerHTML='<span class="spin"></span> Salvando...';btn.disabled=true;
   try{
     const{error}=await db.auth.updateUser({password:pwd});
-    btn.textContent='Criar senha e entrar ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢';btn.disabled=false;
+    btn.textContent='Criar senha e entrar →';btn.disabled=false;
     if(error){err.textContent='Erro: '+error.message;err.style.display='block';return;}
     toast('Senha criada com sucesso!','ok');
     await db.auth.refreshSession();
@@ -2116,11 +2153,9 @@ async function setNewPassword(){
       const uid=session.user.id;
       const{data:shopData}=await db.from('shops').select('*').eq('owner_id',uid).maybeSingle();
       if(shopData){S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;S.role='owner';applyShop(shopData);enterApp('admin');}
-      else{const{data:barberLink}=await db.from('barber_users').select('*,barbers(*),shops(*)').eq('user_id',uid).maybeSingle();if(barberLink&&barberLink.shops){S.shop=barberLink.shops;S.shopId=barberLink.shop_id;S.shopSlug=barberLink.shops.slug;S.role='barber';S.barberProfile=barberLink.barbers;applyShop(barberLink.shops);enterApp('barber');
-        setTimeout(()=>{document.querySelectorAll('.ni').forEach(n=>{const oc=n.getAttribute('onclick')||'';if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display='none';});},200);
-      }else{enterApp('onboarding');}}
+      else{const{data:barberLink}=await db.from('barber_users').select('*,barbers(*),shops(*)').eq('user_id',uid).maybeSingle();if(barberLink&&barberLink.shops){S.shop=barberLink.shops;S.shopId=barberLink.shop_id;S.shopSlug=barberLink.shops.slug;S.role='barber';S.barberProfile=barberLink.barbers;applyShop(barberLink.shops);enterApp('admin');setTimeout(()=>{document.querySelectorAll('.ni').forEach(n=>{const oc=n.getAttribute('onclick')||'';if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display='none';});},200);}else{enterApp('onboarding');}}
     }
-  }catch(e){btn.textContent='Criar senha e entrar ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
+  }catch(e){btn.textContent='Criar senha e entrar →';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
 }
 
 async function inviteClient(){
@@ -2131,7 +2166,7 @@ async function inviteClient(){
   const btn=document.getElementById('inv-btn');
   err.style.display='none';ok.style.display='none';
   if(!name){err.textContent='Informe o nome do cliente.';err.style.display='block';return;}
-  if(!email||!email.includes('@')){err.textContent='Informe um e-mail vÃƒÆ’Ã‚Â¡lido.';err.style.display='block';return;}
+  if(!email||!email.includes('@')){err.textContent='Informe um e-mail válido.';err.style.display='block';return;}
   btn.innerHTML='<span class="spin"></span> Enviando...';btn.disabled=true;
   try{
     const res=await fetch('https://seyadufuohsbpcqaguig.supabase.co/functions/v1/hotmart-webhook',{
@@ -2145,12 +2180,12 @@ async function inviteClient(){
       document.getElementById('inv-name').value='';
       document.getElementById('inv-email').value='';
     } else if(data.msg==='user already exists'){
-      err.textContent='Este e-mail jÃƒÆ’Ã‚Â¡ possui acesso ao BarberOS.';err.style.display='block';
+      err.textContent='Este e-mail já possui acesso ao BarberOS.';err.style.display='block';
     } else {
       err.textContent='Erro ao enviar convite: '+(data.error||'tente novamente');err.style.display='block';
     }
-  }catch(e){err.textContent='Erro de conexÃƒÆ’Ã‚Â£o.';err.style.display='block';}
-  btn.textContent='Enviar convite ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢';btn.disabled=false;
+  }catch(e){err.textContent='Erro de conexão.';err.style.display='block';}
+  btn.textContent='Enviar convite →';btn.disabled=false;
 }
 
 
@@ -2253,24 +2288,24 @@ async function deleteCliente(uid){
     if(n){const e=document.getElementById('prf-name');if(e)e.value=n;}
     if(p){const e=document.getElementById('prf-phone');if(e)e.value=p;const f=document.getElementById('my-ph');if(f)f.value=p;}
 
-    // 3. Carregar barbearia: por slug da URL ou barbearia padrÃƒÆ’Ã‚Â£o
+    // 3. Carregar barbearia: por slug da URL ou barbearia padrão
     if(S.shopSlug){
-      // URL tem ?s=slug ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â carrega essa barbearia especÃƒÆ’Ã‚Â­fica
+      // URL tem ?s=slug — carrega essa barbearia específica
       await loadShop(S.shopSlug, false);
     } else {
-      // Sem slug na URL ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â carrega a barbearia marcada como padrÃƒÆ’Ã‚Â£o (modo demo)
+      // Sem slug na URL — carrega a barbearia marcada como padrão (modo demo)
       try{
         const{data,error}=await db.from('shops').select('*').eq('is_default',true).eq('active',true).single();
         if(!error&&data){
           S.shop=data; S.shopId=data.id; S.shopSlug=data.slug;
           applyShop(data);
-          // Mostra banner SaaS pois estÃƒÆ’Ã‚Â¡ em modo demo (sem ?s= na URL)
+          // Mostra banner SaaS pois está em modo demo (sem ?s= na URL)
           S.isDemoMode=true;
         }
-      }catch(e){ console.warn('Erro ao carregar barbearia padrÃƒÆ’Ã‚Â£o:',e); }
+      }catch(e){ console.warn('Erro ao carregar barbearia padrão:',e); }
     }
 
-    // 4. Checar sessÃƒÆ’Ã‚Â£o existente
+    // 4. Checar sessão existente
     try{
       const{data:{session}}=await db.auth.getSession();
       if(session&&window.location.hash==='#admin'){
@@ -2291,9 +2326,9 @@ async function deleteFinalized(){var{count:cnt}=await db.from('appointments').se
 <div class="mov" id="mod-barber">
   <div class="msh"><div class="mhd"></div><div class="mt" id="mod-barber-title">Adicionar Barbeiro</div>
     <div class="fg"><label class="fl">Nome *</label><input class="fi" id="brb-name" placeholder="Nome do barbeiro"></div>
-    <div class="fg"><label class="fl">Especialidade</label><input class="fi" id="brb-spec" placeholder="Ex: DegradÃƒÆ’Ã‚Âª, Barba..."></div>
+    <div class="fg"><label class="fl">Especialidade</label><input class="fi" id="brb-spec" placeholder="Ex: Degradê, Barba..."></div>
     <div class="fg">
-      <label class="fl">ComissÃƒÆ’Ã‚Â£o: <span id="brb-comm-val">0</span>%</label>
+      <label class="fl">Comissão: <span id="brb-comm-val">0</span>%</label>
       <input type="range" id="brb-comm" min="0" max="100" value="0" step="5" oninput="document.getElementById('brb-comm-val').textContent=this.value" style="width:100%;accent-color:var(--gold)">
       <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txm)"><span>0%</span><span>50%</span><span>100%</span></div>
     </div>
@@ -2302,24 +2337,50 @@ async function deleteFinalized(){var{count:cnt}=await db.from('appointments').se
   </div>
 </div>
 
+<div class="mov" id="mod-barber">
+  <div class="msh"><div class="mhd"></div><div class="mt" id="mod-barber-title">Adicionar Barbeiro</div>
+    <div class="fg"><label class="fl">Nome *</label><input class="fi" id="brb-name" placeholder="Nome do barbeiro"></div>
+    <div class="fg"><label class="fl">Especialidade</label><input class="fi" id="brb-spec" placeholder="Ex: Degradê, Barba..."></div>
+    <div class="fg">
+      <label class="fl">Comissão: <span id="brb-comm-val">0</span>%</label>
+      <input type="range" id="brb-comm" min="0" max="100" value="0" step="5" oninput="document.getElementById('brb-comm-val').textContent=this.value" style="width:100%;accent-color:var(--gold)">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txm)"><span>0%</span><span>50%</span><span>100%</span></div>
+    </div>
+    <input type="hidden" id="brb-edit-id" value="">
+    <button class="btn" onclick="saveBarber()" style="width:100%;margin-top:12px">Salvar barbeiro</button>
+  </div>
+</div>
 <div class="mov" id="mod-barber-user">
   <div class="msh"><div class="mhd"></div><div class="mt">Criar Acesso para Barbeiro</div>
     <div id="buser-barber-name" style="color:var(--gold);font-weight:700;margin-bottom:12px"></div>
     <div class="fg"><label class="fl">E-mail do barbeiro *</label><input class="fi" id="buser-email" type="email" placeholder="email@exemplo.com"></div>
     <div class="fg"><label class="fl">Senha *</label><input class="fi" id="buser-pwd" type="text" placeholder="Minimo 6 caracteres"></div>
-    <div style="font-size:11px;color:var(--txm);margin-bottom:12px">O barbeiro usara essas credenciais para acessar o sistema e ver seus agendamentos e comissoes.</div>
+    <div style="font-size:11px;color:var(--txm);margin-bottom:12px">O barbeiro usará essas credenciais para acessar o sistema.</div>
     <input type="hidden" id="buser-barber-id" value="">
     <button class="btn" onclick="saveBarberUser()" style="width:100%;margin-top:8px">Criar acesso</button>
     <div id="buser-count" style="font-size:11px;color:var(--txm);text-align:center;margin-top:8px"></div>
   </div>
 </div>
 
+<div class="mov" id="mod-barber">
+  <div class="msh"><div class="mhd"></div><div class="mt" id="mod-barber-title">Adicionar Barbeiro</div>
+    <div class="fg"><label class="fl">Nome *</label><input class="fi" id="brb-name" placeholder="Nome do barbeiro"></div>
+    <div class="fg"><label class="fl">Especialidade</label><input class="fi" id="brb-spec" placeholder="Ex: Degradê, Barba..."></div>
+    <div class="fg">
+      <label class="fl">Comissão: <span id="brb-comm-val">0</span>%</label>
+      <input type="range" id="brb-comm" min="0" max="100" value="0" step="5" oninput="document.getElementById('brb-comm-val').textContent=this.value" style="width:100%;accent-color:var(--gold)">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txm)"><span>0%</span><span>50%</span><span>100%</span></div>
+    </div>
+    <input type="hidden" id="brb-edit-id" value="">
+    <button class="btn" onclick="saveBarber()" style="width:100%;margin-top:12px">Salvar barbeiro</button>
+  </div>
+</div>
 <div class="mov" id="mod-barber-user">
   <div class="msh"><div class="mhd"></div><div class="mt">Criar Acesso para Barbeiro</div>
     <div id="buser-barber-name" style="color:var(--gold);font-weight:700;margin-bottom:12px"></div>
     <div class="fg"><label class="fl">E-mail do barbeiro *</label><input class="fi" id="buser-email" type="email" placeholder="email@exemplo.com"></div>
     <div class="fg"><label class="fl">Senha *</label><input class="fi" id="buser-pwd" type="text" placeholder="Minimo 6 caracteres"></div>
-    <div style="font-size:11px;color:var(--txm);margin-bottom:12px">O barbeiro usara essas credenciais para acessar o sistema e ver seus agendamentos e comissoes.</div>
+    <div style="font-size:11px;color:var(--txm);margin-bottom:12px">O barbeiro usará essas credenciais para acessar o sistema.</div>
     <input type="hidden" id="buser-barber-id" value="">
     <button class="btn" onclick="saveBarberUser()" style="width:100%;margin-top:8px">Criar acesso</button>
     <div id="buser-count" style="font-size:11px;color:var(--txm);text-align:center;margin-top:8px"></div>
