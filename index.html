@@ -826,7 +826,7 @@ function icLabel(cat){const m={'Cortes':'CO','Barba':'BA','Combos':'CB','Tratame
 // =================== NAV ===================
 function enterApp(mode){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const idMap={client:'client-app',admin:'admin-app','adm-login':'adm-login',planos:'planos',splash:'splash',onboarding:'onboarding','set-password':'set-password'};
+  const idMap={client:'client-app',admin:'admin-app',barber:'admin-app','adm-login':'adm-login',planos:'planos',splash:'splash',onboarding:'onboarding','set-password':'set-password'};
   const target=document.getElementById(idMap[mode]||mode);
   if(target)target.classList.add('active');
   if(mode==='client'){showC('home');loadSvcs();loadBarbers();loadPromos();}
@@ -934,6 +934,7 @@ async function doLogin(){
     if(db&&db.auth&&result.access_token){
       try{await db.auth.setSession({access_token:result.access_token,refresh_token:result.refresh_token});}
       catch(se){console.warn('setSession:',se);}
+    S.session={access_token:result.access_token,refresh_token:result.refresh_token};
     }
     err.style.display='none';
     // Load this admin's shop
@@ -1547,6 +1548,78 @@ async function filterDash(period){
     
     document.getElementById('dash-profit-result').innerHTML=html2;
   }catch(e){document.getElementById('dash-profit-result').innerHTML='<span style="color:var(--red)">Erro: '+e.message+'</span>';}
+
+async function openCreateBarberUser(barberId, barberName){
+  // Verificar limite de 3 barbeiros com acesso
+  const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
+  const count=(existing||[]).length;
+  if(count>=3){toast('Limite de 3 barbeiros com acesso atingido.','err');return;}
+  document.getElementById('buser-barber-name').textContent=barberName;
+  document.getElementById('buser-barber-id').value=barberId;
+  document.getElementById('buser-email').value='';
+  document.getElementById('buser-pwd').value='';
+  document.getElementById('buser-count').textContent=count+'/3 acessos criados';
+  openMod('mod-barber-user');
+}
+
+async function saveBarberUser(){
+  const barberId=document.getElementById('buser-barber-id').value;
+  const email=document.getElementById('buser-email').value.trim().toLowerCase();
+  const pwd=document.getElementById('buser-pwd').value;
+  if(!email||!pwd){toast('Preencha e-mail e senha.','err');return;}
+  if(pwd.length<6){toast('Senha deve ter no minimo 6 caracteres.','err');return;}
+  
+  // Criar usuario via Edge Function (usa service_role internamente)
+  try{
+    const res=await fetch(SB_URL+'/functions/v1/create-barber-user',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.session.access_token},
+      body:JSON.stringify({email,password:pwd,barber_id:barberId,shop_id:S.shopId})
+    });
+    const data=await res.json();
+    if(!data.ok){toast('Erro: '+(data.error||'Falha ao criar'),'err');return;}
+    toast('Acesso criado para '+email+'!','ok');
+    closeMod('mod-barber-user');
+    loadBarbCfg();
+  }catch(e){toast('Erro: '+e.message,'err');}
+}
+
+
+async function openCreateBarberUser(barberId, barberName){
+  // Verificar limite de 3 barbeiros com acesso
+  const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
+  const count=(existing||[]).length;
+  if(count>=3){toast('Limite de 3 barbeiros com acesso atingido.','err');return;}
+  document.getElementById('buser-barber-name').textContent=barberName;
+  document.getElementById('buser-barber-id').value=barberId;
+  document.getElementById('buser-email').value='';
+  document.getElementById('buser-pwd').value='';
+  document.getElementById('buser-count').textContent=count+'/3 acessos criados';
+  openMod('mod-barber-user');
+}
+
+async function saveBarberUser(){
+  const barberId=document.getElementById('buser-barber-id').value;
+  const email=document.getElementById('buser-email').value.trim().toLowerCase();
+  const pwd=document.getElementById('buser-pwd').value;
+  if(!email||!pwd){toast('Preencha e-mail e senha.','err');return;}
+  if(pwd.length<6){toast('Senha deve ter no minimo 6 caracteres.','err');return;}
+  
+  // Criar usuario via Edge Function (usa service_role internamente)
+  try{
+    const res=await fetch(SB_URL+'/functions/v1/create-barber-user',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.session.access_token},
+      body:JSON.stringify({email,password:pwd,barber_id:barberId,shop_id:S.shopId})
+    });
+    const data=await res.json();
+    if(!data.ok){toast('Erro: '+(data.error||'Falha ao criar'),'err');return;}
+    toast('Acesso criado para '+email+'!','ok');
+    closeMod('mod-barber-user');
+    loadBarbCfg();
+  }catch(e){toast('Erro: '+e.message,'err');}
+}
+
 }
 
 
@@ -1856,11 +1929,17 @@ async function loadCfgForm(){
 }
 async function loadBarbCfg(){
   const{data}=await db.from('barbers').select('*').eq('shop_id',S.shopId).order('name');
+    const{data:bu}=await db.from('barber_users').select('barber_id').eq('shop_id',S.shopId);
+    const usersSet=new Set((bu||[]).map(x=>x.barber_id));
+    (data||[]).forEach(b=>{b.has_user=usersSet.has(b.id);});
+    const{data:bu}=await db.from('barber_users').select('barber_id').eq('shop_id',S.shopId);
+    const usersSet=new Set((bu||[]).map(x=>x.barber_id));
+    (data||[]).forEach(b=>{b.has_user=usersSet.has(b.id);});
   const el=document.getElementById('barb-cfg');if(!el)return;
   el.innerHTML=(data||[]).map(b=>`
     <div class="ci">
       <div class="cii">${b.avatar_emoji||'👤'}</div>
-      <div class="cit" style="flex:1;cursor:pointer" onclick="editBarber('${b.id}','${b.name}','${b.specialty||""}',${b.commission_pct||0})"><div class="citn">${b.name}</div><div class="cits">${b.specialty||''} &bull; Comissão: ${b.commission_pct||0}%</div></div>
+      <div class="cit" style="flex:1;cursor:pointer" onclick="editBarber('${b.id}','${b.name}','${b.specialty||""}',${b.commission_pct||0})"><div class="citn">${b.name}</div><div class="cits">${b.specialty||''} &bull; Comissão: ${b.commission_pct||0}%${b.has_user?' &bull; <span style=color:var(--grn)>✓ Acesso</span>':' &bull; <a onclick=\"event.stopPropagation();openCreateBarberUser(\''+b.id+'\',\''+b.name+'\')\" style=color:var(--gold);cursor:pointer;text-decoration:underline>Criar acesso</a>'}</div></div>
       <div class="tog${b.active?' on':''}" onclick="togBarb('${b.id}',${b.active})"></div>
       <button onclick="delBarb('${b.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:6px">✕</button>
     </div>`).join('');
@@ -2012,8 +2091,22 @@ async function setNewPassword(){
     if(session){
       const uid=session.user.id;
       const{data:shopData}=await db.from('shops').select('*').eq('owner_id',uid).maybeSingle();
-      if(shopData){S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;applyShop(shopData);enterApp('admin');}
-      else{enterApp('onboarding');}
+      if(shopData){S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;S.role='owner';applyShop(shopData);enterApp('admin');}
+      else{const{data:barberLink}=await db.from('barber_users').select('*,barbers(*),shops(*)').eq('user_id',uid).maybeSingle();if(barberLink&&barberLink.shops){S.shop=barberLink.shops;S.shopId=barberLink.shop_id;S.shopSlug=barberLink.shops.slug;S.role='barber';S.barberProfile=barberLink.barbers;applyShop(barberLink.shops);enterApp('barber');}
+      // Aplicar restricoes de barbeiro apos render
+      setTimeout(()=>{
+        document.querySelectorAll('.ni').forEach(n=>{
+          const oc=n.getAttribute('onclick')||'';
+          if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display='none';
+        });
+      },200);
+      // Aplicar restricoes de barbeiro apos render
+      setTimeout(()=>{
+        document.querySelectorAll('.ni').forEach(n=>{
+          const oc=n.getAttribute('onclick')||'';
+          if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display='none';
+        });
+      },200);else{enterApp('onboarding');}}
     }
   }catch(e){btn.textContent='Criar senha e entrar →';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
 }
@@ -2194,6 +2287,30 @@ async function deleteFinalized(){var{count:cnt}=await db.from('appointments').se
     </div>
     <input type="hidden" id="brb-edit-id" value="">
     <button class="btn" onclick="saveBarber()" style="width:100%;margin-top:12px">Salvar barbeiro</button>
+  </div>
+</div>
+
+<div class="mov" id="mod-barber-user">
+  <div class="msh"><div class="mhd"></div><div class="mt">Criar Acesso para Barbeiro</div>
+    <div id="buser-barber-name" style="color:var(--gold);font-weight:700;margin-bottom:12px"></div>
+    <div class="fg"><label class="fl">E-mail do barbeiro *</label><input class="fi" id="buser-email" type="email" placeholder="email@exemplo.com"></div>
+    <div class="fg"><label class="fl">Senha *</label><input class="fi" id="buser-pwd" type="text" placeholder="Minimo 6 caracteres"></div>
+    <div style="font-size:11px;color:var(--txm);margin-bottom:12px">O barbeiro usara essas credenciais para acessar o sistema e ver seus agendamentos e comissoes.</div>
+    <input type="hidden" id="buser-barber-id" value="">
+    <button class="btn" onclick="saveBarberUser()" style="width:100%;margin-top:8px">Criar acesso</button>
+    <div id="buser-count" style="font-size:11px;color:var(--txm);text-align:center;margin-top:8px"></div>
+  </div>
+</div>
+
+<div class="mov" id="mod-barber-user">
+  <div class="msh"><div class="mhd"></div><div class="mt">Criar Acesso para Barbeiro</div>
+    <div id="buser-barber-name" style="color:var(--gold);font-weight:700;margin-bottom:12px"></div>
+    <div class="fg"><label class="fl">E-mail do barbeiro *</label><input class="fi" id="buser-email" type="email" placeholder="email@exemplo.com"></div>
+    <div class="fg"><label class="fl">Senha *</label><input class="fi" id="buser-pwd" type="text" placeholder="Minimo 6 caracteres"></div>
+    <div style="font-size:11px;color:var(--txm);margin-bottom:12px">O barbeiro usara essas credenciais para acessar o sistema e ver seus agendamentos e comissoes.</div>
+    <input type="hidden" id="buser-barber-id" value="">
+    <button class="btn" onclick="saveBarberUser()" style="width:100%;margin-top:8px">Criar acesso</button>
+    <div id="buser-count" style="font-size:11px;color:var(--txm);text-align:center;margin-top:8px"></div>
   </div>
 </div>
 </body>
