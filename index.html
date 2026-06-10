@@ -2092,21 +2092,9 @@ async function setNewPassword(){
       const uid=session.user.id;
       const{data:shopData}=await db.from('shops').select('*').eq('owner_id',uid).maybeSingle();
       if(shopData){S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;S.role='owner';applyShop(shopData);enterApp('admin');}
-      else{const{data:barberLink}=await db.from('barber_users').select('*,barbers(*),shops(*)').eq('user_id',uid).maybeSingle();if(barberLink&&barberLink.shops){S.shop=barberLink.shops;S.shopId=barberLink.shop_id;S.shopSlug=barberLink.shops.slug;S.role='barber';S.barberProfile=barberLink.barbers;applyShop(barberLink.shops);enterApp('barber');}
-      // Aplicar restricoes de barbeiro apos render
-      setTimeout(()=>{
-        document.querySelectorAll('.ni').forEach(n=>{
-          const oc=n.getAttribute('onclick')||'';
-          if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display='none';
-        });
-      },200);
-      // Aplicar restricoes de barbeiro apos render
-      setTimeout(()=>{
-        document.querySelectorAll('.ni').forEach(n=>{
-          const oc=n.getAttribute('onclick')||'';
-          if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display='none';
-        });
-      },200);else{enterApp('onboarding');}}
+      else{const{data:barberLink}=await db.from('barber_users').select('*,barbers(*),shops(*)').eq('user_id',uid).maybeSingle();if(barberLink&&barberLink.shops){S.shop=barberLink.shops;S.shopId=barberLink.shop_id;S.shopSlug=barberLink.shops.slug;S.role='barber';S.barberProfile=barberLink.barbers;applyShop(barberLink.shops);enterApp('barber');
+        setTimeout(()=>{document.querySelectorAll('.ni').forEach(n=>{const oc=n.getAttribute('onclick')||'';if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display='none';});},200);
+      }else{enterApp('onboarding');}}
     }
   }catch(e){btn.textContent='Criar senha e entrar →';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
 }
