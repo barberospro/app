@@ -1,44 +1,13 @@
-function addBarber(){
-  document.getElementById('brb-name').value='';document.getElementById('brb-spec').value='';
-  document.getElementById('brb-comm').value='0';document.getElementById('brb-comm-val').textContent='0';
-  document.getElementById('brb-edit-id').value='';document.getElementById('mod-barber-title').textContent='Adicionar Barbeiro';
-  openMod('mod-barber');
-}
-function editBarber(id,name,spec,comm){
-  document.getElementById('brb-name').value=name||'';document.getElementById('brb-spec').value=spec||'';
-  document.getElementById('brb-comm').value=comm||0;document.getElementById('brb-comm-val').textContent=comm||0;
-  document.getElementById('brb-edit-id').value=id;document.getElementById('mod-barber-title').textContent='Editar Barbeiro';
-  openMod('mod-barber');
-}
-async function saveBarber(){
-  const name=document.getElementById('brb-name').value.trim();if(!name){toast('Informe o nome','err');return;}
-  const spec=document.getElementById('brb-spec').value.trim();
-  const comm=Number(document.getElementById('brb-comm').value)||0;
-  const eid=document.getElementById('brb-edit-id').value;let error;
-  if(eid){({error}=await db.from('barbers').update({name,specialty:spec,commission_pct:comm}).eq('id',eid));}
-  else{({error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec,avatar_emoji:'\u{1F464}',rating:5.0,reviews_count:0,active:true,commission_pct:comm}));}
-  if(error){toast('Erro: '+error.message,'err');return;}
-  toast(eid?'Barbeiro atualizado!':'Barbeiro adicionado!','ok');closeMod('mod-barber');loadBarbCfg();loadBarbers();
-}
-async function openCreateBarberUser(barberId,barberName){
-  const{data:existing}=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
-  if((existing||[]).length>=3){toast('Limite de 3 acessos atingido.','err');return;}
-  document.getElementById('buser-barber-name').textContent=barberName;
-  document.getElementById('buser-barber-id').value=barberId;
-  document.getElementById('buser-email').value='';document.getElementById('buser-pwd').value='';
-  document.getElementById('buser-count').textContent=(existing||[]).length+'/3 acessos';
-  openMod('mod-barber-user');
-}
-async function saveBarberUser(){
-  const barberId=document.getElementById('buser-barber-id').value;
-  const email=document.getElementById('buser-email').value.trim().toLowerCase();
-  const pwd=document.getElementById('buser-pwd').value;
-  if(!email||!pwd){toast('Preencha e-mail e senha.','err');return;}
-  if(pwd.length<6){toast('Senha minimo 6 caracteres.','err');return;}
-  try{const res=await fetch(SB_URL+'/functions/v1/create-barber-user',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+(S.session?S.session.access_token:'')},body:JSON.stringify({email,password:pwd,barber_id:barberId,shop_id:S.shopId})});
-  const d=await res.json();if(!d.ok){toast('Erro: '+(d.error||'Falha'),'err');return;}
-  toast('Acesso criado!','ok');closeMod('mod-barber-user');loadBarbCfg();}catch(e){toast('Erro: '+e.message,'err');}
-}
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BarberOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+<style>
+:root{--gold:#C9A84C;--gd:#8B6914;--dk:#0E0E0E;--dk2:#1A1A1A;--dk3:#242424;--dk4:#2E2E2E;--dk5:#3A3A3A;--tx:#F0EBE0;--txm:#9A9080;--red:#C0392B;--grn:#27AE60;--r:14px;--rs:8px}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-height:100vh;overflow-x:hidden;overscroll-behavior-y:none}
 .screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
@@ -155,13 +124,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .sr:last-child{border-bottom:none}
 .srl{font-size:13px;color:var(--txm)}.srv{font-size:14px;font-weight:600}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--dk4);border-radius:4px}
-.fbtn{background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}.fbtn.active,.fbtn:hover{background:var(--gold);color:var(--dk);border-color:var(--gold)}
-.fbtn{background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}.fbtn.active,.fbtn:hover{background:var(--gold);color:var(--dk);border-color:var(--gold)}
-.be{background:rgba(52,152,219,.15);color:#3498DB}.bf{background:rgba(39,174,96,.15);color:#27AE60}
-.fbtn{background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;transition:all .2s}.fbtn.active,.fbtn:hover{background:var(--gold);color:var(--dk);border-color:var(--gold)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 </head>
 <body>
 <div id="toast"></div>
@@ -536,59 +500,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 
     <!-- DASHBOARD -->
     <div id="as-dash">
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Agenda de Hoje</div>
-          </div>
-          <!-- SECAO LUCROS -->
-          <div style="padding:0 20px 16px">
-            <div style="background:var(--dk2);border-radius:var(--rs);padding:16px;margin-bottom:12px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-                <div style="font-weight:700;font-size:15px;color:var(--gold)">Lucros e Comissoes</div>
-              </div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-                <button class="fbtn" onclick="filterDash('week')" id="fd-week">Semanal</button>
-                <button class="fbtn" onclick="filterDash('biweek')" id="fd-biweek">Quinzenal</button>
-                <button class="fbtn" onclick="filterDash('month')" id="fd-month">Mensal</button>
-                <button class="fbtn" onclick="filterDash('year')" id="fd-year">Anual</button>
-                <button class="fbtn" onclick="filterDash('custom')" id="fd-custom">Periodo</button>
-              </div>
-              <div id="dash-period-custom" style="display:none;margin-bottom:12px">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                  <div class="fg"><label class="fl">De</label><input type="date" class="fi" id="dash-from"></div>
-                  <div class="fg"><label class="fl">Ate</label><input type="date" class="fi" id="dash-to"></div>
-                </div>
-                <button class="btn btn-out" onclick="filterDash('custom')" style="margin-top:8px;font-size:12px;padding:8px">Consultar</button>
-              </div>
-              <div id="dash-profit-result" style="font-size:13px;color:var(--txm)">Selecione um periodo acima.</div>
-            </div>
-          </div>
-          <div style="padding:0 20px 8px;display:flex;align-items:center;justify-content:space-between">
-            <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Agenda de Hoje</div>
-          </div>
-          <!-- SECAO LUCROS -->
-          <div style="padding:0 20px 16px">
-            <div style="background:var(--dk2);border-radius:var(--rs);padding:16px;margin-bottom:12px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-                <div style="font-weight:700;font-size:15px;color:var(--gold)">Lucros e Comissoes</div>
-              </div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-                <button class="fbtn" onclick="filterDash('week')" id="fd-week">Semanal</button>
-                <button class="fbtn" onclick="filterDash('biweek')" id="fd-biweek">Quinzenal</button>
-                <button class="fbtn" onclick="filterDash('month')" id="fd-month">Mensal</button>
-                <button class="fbtn" onclick="filterDash('year')" id="fd-year">Anual</button>
-                <button class="fbtn" onclick="filterDash('custom')" id="fd-custom">Periodo</button>
-              </div>
-              <div id="dash-period-custom" style="display:none;margin-bottom:12px">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                  <div class="fg"><label class="fl">De</label><input type="date" class="fi" id="dash-from"></div>
-                  <div class="fg"><label class="fl">Ate</label><input type="date" class="fi" id="dash-to"></div>
-                </div>
-                <button class="btn btn-out" onclick="filterDash('custom')" style="margin-top:8px;font-size:12px;padding:8px">Consultar</button>
-              </div>
-              <div id="dash-profit-result" style="font-size:13px;color:var(--txm)">Selecione um periodo acima.</div>
-            </div>
-          </div>
-          <div style="padding:0 20px 8px;display:flex;align-items:center;justify-content:space-between">
-            <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Agenda de Hoje</div>
+      <div style="padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700">Dashboard</div>
+        <button onclick="exportDash()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">⬇ Excel</button>
+      </div>
+      <div class="sg">
+        <div class="sc"><div class="sl">Hoje</div><div class="sv" id="st-today">-</div></div>
+        <div class="sc"><div class="sl">Receita hoje</div><div class="sv" id="st-rtd">-</div></div>
+        <div class="sc"><div class="sl">Este mes</div><div class="sv" id="st-month">-</div></div>
+        <div class="sc"><div class="sl">Receita mes</div><div class="sv" id="st-rm">-</div></div>
+      </div>
+      <div style="padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Agenda de Hoje</div>
         <div style="background:var(--dk4);border-radius:50px;padding:4px 10px;font-size:11px;color:var(--txm)" id="td-lbl"></div>
       </div>
       <div id="dash-list"></div>
@@ -967,7 +890,6 @@ async function doLogin(){
     if(db&&db.auth&&result.access_token){
       try{await db.auth.setSession({access_token:result.access_token,refresh_token:result.refresh_token});}
       catch(se){console.warn('setSession:',se);}
-    S.session={access_token:result.access_token,refresh_token:result.refresh_token};
     }
     err.style.display='none';
     // Load this admin's shop
@@ -1473,8 +1395,8 @@ async function loadMyAppts(){
   el.innerHTML='<div style="text-align:center;padding:20px"><div class="spin"></div></div>';
   const{data}=await db.from('appointments').select('*').eq('client_phone',ph).order('appointment_date',{ascending:false});
   if(!data||!data.length){el.innerHTML='<div style="color:var(--txm);font-size:13px;padding:10px 0">Nenhum agendamento encontrado.</div>';return;}
-  const sl={pending:'bp',confirmed:'bc',executed:'be',done:'bd',finished:'bf',cancelled:'bx'};
-  const st={pending:'Pendente',confirmed:'Confirmado',executed:'Executado',done:'Feito',finished:'Finalizado',cancelled:'Cancelado'};
+  const sl={pending:'bp',confirmed:'bc',done:'bd',cancelled:'bx'};
+  const st={pending:'Pendente',confirmed:'Confirmado',done:'Feito',cancelled:'Cancelado'};
   el.innerHTML=data.map(a=>`
     <div style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r);padding:16px;margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">
@@ -1507,9 +1429,9 @@ async function loadDash(){
     const{data:ta}=await db.from('appointments').select('*').eq('appointment_date',td).eq('shop_id',S.shopId).neq('status','cancelled').order('appointment_time');
     const{data:ma}=await db.from('appointments').select('service_price,status').gte('appointment_date',td.slice(0,7)+'-01').eq('shop_id',S.shopId).neq('status','cancelled');
     const tc=(ta||[]).length;
-    const tr=(ta||[]).filter(a=>['done','executed','finished'].includes(a.status)).reduce((s,a)=>s+Number(a.service_price),0);
+    const tr=(ta||[]).filter(a=>a.status==='done').reduce((s,a)=>s+Number(a.service_price),0);
     const mc=(ma||[]).length;
-    const mr=(ma||[]).filter(a=>['done','executed','finished'].includes(a.status)).reduce((s,a)=>s+Number(a.service_price),0);
+    const mr=(ma||[]).filter(a=>a.status==='done').reduce((s,a)=>s+Number(a.service_price),0);
     document.getElementById('st-today').textContent=tc;
     document.getElementById('st-rtd').textContent=fmt(tr);
     document.getElementById('st-month').textContent=mc;
@@ -1517,138 +1439,6 @@ async function loadDash(){
     const dl=document.getElementById('dash-list');
     dl.innerHTML=(ta&&ta.length)?ta.map(a=>agItemHTML(a)).join(''):'<div style="text-align:center;padding:30px;color:var(--txm)">Nenhum agendamento hoje.</div>';
   }catch(e){}
-
-async function filterDash(period){
-  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
-  const btn=document.getElementById('fd-'+period);
-  if(btn)btn.classList.add('active');
-  const customDiv=document.getElementById('dash-period-custom');
-  if(period==='custom'){customDiv.style.display='block';}else{customDiv.style.display='none';}
-  
-  const now=new Date();
-  let from,to=now.toISOString().split('T')[0];
-  if(period==='week'){from=new Date(now-7*86400000).toISOString().split('T')[0];}
-  else if(period==='biweek'){from=new Date(now-14*86400000).toISOString().split('T')[0];}
-  else if(period==='month'){from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];}
-  else if(period==='year'){from=new Date(now.getFullYear(),0,1).toISOString().split('T')[0];}
-  else if(period==='custom'){
-    from=document.getElementById('dash-from').value;
-    to=document.getElementById('dash-to').value;
-    if(!from||!to){document.getElementById('dash-profit-result').innerHTML='<span style="color:var(--red)">Selecione as datas.</span>';return;}
-  }
-  
-  try{
-    const{data}=await db.from('appointments').select('service_price,barber_name,barber_id,status').gte('appointment_date',from).lte('appointment_date',to).eq('shop_id',S.shopId).in('status',['done','executed','finished']);
-    
-    // Buscar barbeiros com comissao
-    const{data:barbers}=await db.from('barbers').select('id,name,commission_pct').eq('shop_id',S.shopId);
-    const barbMap={};(barbers||[]).forEach(b=>{barbMap[b.id]={name:b.name,pct:Number(b.commission_pct)||0};});
-    
-    const total=(data||[]).reduce((s,a)=>s+Number(a.service_price||0),0);
-    
-    // Calcular comissoes por barbeiro
-    const comByBarber={};
-    (data||[]).forEach(a=>{
-      const bid=a.barber_id||'sem-barbeiro';
-      const bname=a.barber_name||'Sem barbeiro';
-      if(!comByBarber[bid])comByBarber[bid]={name:bname,total:0,commission:0,pct:0};
-      const price=Number(a.service_price||0);
-      comByBarber[bid].total+=price;
-      const pct=barbMap[bid]?barbMap[bid].pct:0;
-      comByBarber[bid].pct=pct;
-      comByBarber[bid].commission+=price*(pct/100);
-    });
-    
-    const totalCommission=Object.values(comByBarber).reduce((s,b)=>s+b.commission,0);
-    const lucroLiquido=total-totalCommission;
-    
-    let html2='<div style="margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-    html2+='<div style="background:var(--dk3);border-radius:8px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--txm)">Receita Bruta</div><div style="font-size:18px;font-weight:700;color:var(--gold)">'+fmt(total)+'</div></div>';
-    html2+='<div style="background:var(--dk3);border-radius:8px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--txm)">Lucro Liquido</div><div style="font-size:18px;font-weight:700;color:var(--grn)">'+fmt(lucroLiquido)+'</div></div>';
-    html2+='</div></div>';
-    
-    html2+='<div style="font-weight:600;font-size:13px;margin-bottom:8px;color:var(--tx)">Comissoes por Barbeiro:</div>';
-    const barberList=Object.values(comByBarber).sort((a,b)=>b.commission-a.commission);
-    if(barberList.length===0){html2+='<div style="color:var(--txm);font-size:12px">Nenhum atendimento finalizado no periodo.</div>';}
-    else{barberList.forEach(b=>{
-      html2+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--dk3);border-radius:6px;margin-bottom:4px">';
-      html2+='<div><span style="font-weight:600;font-size:13px">'+b.name+'</span><span style="color:var(--txm);font-size:11px;margin-left:6px">('+b.pct+'%)</span></div>';
-      html2+='<div style="text-align:right"><div style="font-size:13px;font-weight:600;color:var(--gold)">'+fmt(b.commission)+'</div><div style="font-size:10px;color:var(--txm)">de '+fmt(b.total)+' em servicos</div></div>';
-      html2+='</div>';
-    });}
-    
-    html2+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--dk4);display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--txm)">Total comissoes:</span><span style="font-weight:700;color:var(--red)">-'+fmt(totalCommission)+'</span></div>';
-    
-    document.getElementById('dash-profit-result').innerHTML=html2;
-  }catch(e){document.getElementById('dash-profit-result').innerHTML='<span style="color:var(--red)">Erro: '+e.message+'</span>';}
-}
-
-
-async function filterDash(period){
-  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
-  const btn=document.getElementById('fd-'+period);
-  if(btn)btn.classList.add('active');
-  const customDiv=document.getElementById('dash-period-custom');
-  if(period==='custom'){customDiv.style.display='block';}else{customDiv.style.display='none';}
-  
-  const now=new Date();
-  let from,to=now.toISOString().split('T')[0];
-  if(period==='week'){from=new Date(now-7*86400000).toISOString().split('T')[0];}
-  else if(period==='biweek'){from=new Date(now-14*86400000).toISOString().split('T')[0];}
-  else if(period==='month'){from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];}
-  else if(period==='year'){from=new Date(now.getFullYear(),0,1).toISOString().split('T')[0];}
-  else if(period==='custom'){
-    from=document.getElementById('dash-from').value;
-    to=document.getElementById('dash-to').value;
-    if(!from||!to){document.getElementById('dash-profit-result').innerHTML='<span style="color:var(--red)">Selecione as datas.</span>';return;}
-  }
-  
-  try{
-    const{data}=await db.from('appointments').select('service_price,barber_name,barber_id,status').gte('appointment_date',from).lte('appointment_date',to).eq('shop_id',S.shopId).in('status',['done','executed','finished']);
-    
-    // Buscar barbeiros com comissao
-    const{data:barbers}=await db.from('barbers').select('id,name,commission_pct').eq('shop_id',S.shopId);
-    const barbMap={};(barbers||[]).forEach(b=>{barbMap[b.id]={name:b.name,pct:Number(b.commission_pct)||0};});
-    
-    const total=(data||[]).reduce((s,a)=>s+Number(a.service_price||0),0);
-    
-    // Calcular comissoes por barbeiro
-    const comByBarber={};
-    (data||[]).forEach(a=>{
-      const bid=a.barber_id||'sem-barbeiro';
-      const bname=a.barber_name||'Sem barbeiro';
-      if(!comByBarber[bid])comByBarber[bid]={name:bname,total:0,commission:0,pct:0};
-      const price=Number(a.service_price||0);
-      comByBarber[bid].total+=price;
-      const pct=barbMap[bid]?barbMap[bid].pct:0;
-      comByBarber[bid].pct=pct;
-      comByBarber[bid].commission+=price*(pct/100);
-    });
-    
-    const totalCommission=Object.values(comByBarber).reduce((s,b)=>s+b.commission,0);
-    const lucroLiquido=total-totalCommission;
-    
-    let html2='<div style="margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-    html2+='<div style="background:var(--dk3);border-radius:8px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--txm)">Receita Bruta</div><div style="font-size:18px;font-weight:700;color:var(--gold)">'+fmt(total)+'</div></div>';
-    html2+='<div style="background:var(--dk3);border-radius:8px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--txm)">Lucro Liquido</div><div style="font-size:18px;font-weight:700;color:var(--grn)">'+fmt(lucroLiquido)+'</div></div>';
-    html2+='</div></div>';
-    
-    html2+='<div style="font-weight:600;font-size:13px;margin-bottom:8px;color:var(--tx)">Comissoes por Barbeiro:</div>';
-    const barberList=Object.values(comByBarber).sort((a,b)=>b.commission-a.commission);
-    if(barberList.length===0){html2+='<div style="color:var(--txm);font-size:12px">Nenhum atendimento finalizado no periodo.</div>';}
-    else{barberList.forEach(b=>{
-      html2+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--dk3);border-radius:6px;margin-bottom:4px">';
-      html2+='<div><span style="font-weight:600;font-size:13px">'+b.name+'</span><span style="color:var(--txm);font-size:11px;margin-left:6px">('+b.pct+'%)</span></div>';
-      html2+='<div style="text-align:right"><div style="font-size:13px;font-weight:600;color:var(--gold)">'+fmt(b.commission)+'</div><div style="font-size:10px;color:var(--txm)">de '+fmt(b.total)+' em servicos</div></div>';
-      html2+='</div>';
-    });}
-    
-    html2+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--dk4);display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--txm)">Total comissoes:</span><span style="font-weight:700;color:var(--red)">-'+fmt(totalCommission)+'</span></div>';
-    
-    document.getElementById('dash-profit-result').innerHTML=html2;
-  }catch(e){document.getElementById('dash-profit-result').innerHTML='<span style="color:var(--red)">Erro: '+e.message+'</span>';}
-}
-
 }
 
 function agItemHTML(a){
@@ -1890,51 +1680,23 @@ async function loadCfgForm(){
 }
 async function loadBarbCfg(){
   const{data}=await db.from('barbers').select('*').eq('shop_id',S.shopId).order('name');
-  const{data:bu}=await db.from('barber_users').select('barber_id').eq('shop_id',S.shopId);
-  const usersSet=new Set((bu||[]).map(x=>x.barber_id));
   const el=document.getElementById('barb-cfg');if(!el)return;
-  el.innerHTML=(data||[]).map(b=>{
-    const hu=usersSet.has(b.id);
-    const nm=(b.name||'').replace(/'/g,'');const sp=(b.specialty||'').replace(/'/g,'');
-    const acc=hu?'<span style="color:#27AE60;font-size:11px">\u2713 Acesso</span>':'<button onclick="event.stopPropagation();openCreateBarberUser(\''+b.id+'\',\''+nm+'\')" style="background:#C9A84C;color:#0E0E0E;border:none;border-radius:50px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer">Criar acesso</button>';
-    return '<div class="ci" style="flex-wrap:wrap;gap:8px"><div class="cii">'+(b.avatar_emoji||'\u{1F464}')+'</div><div class="cit" style="flex:1;min-width:120px;cursor:pointer" onclick="editBarber(\''+b.id+'\',\''+nm+'\',\''+sp+'\','+(b.commission_pct||0)+')"><div class="citn">'+b.name+'</div><div class="cits">'+(b.specialty||'')+' \u2022 Comiss\u00e3o: '+(b.commission_pct||0)+'%</div></div><div style="display:flex;align-items:center;gap:6px">'+acc+'<div class="tog'+(b.active?' on':'')+'" onclick="togBarb(\''+b.id+'\','+b.active+')"></div><button onclick="delBarb(\''+b.id+'\')" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">\u2715</button></div></div>';
-  }).join('');
+  el.innerHTML=(data||[]).map(b=>`
+    <div class="ci">
+      <div class="cii">${b.avatar_emoji||'👤'}</div>
+      <div class="cit"><div class="citn">${b.name}</div><div class="cits">${b.specialty||''}</div></div>
+      <div class="tog${b.active?' on':''}" onclick="togBarb('${b.id}',${b.active})"></div>
+      <button onclick="delBarb('${b.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:6px">✕</button>
+    </div>`).join('');
 }
 async function togBarb(id,cur){await db.from('barbers').update({active:!cur}).eq('id',id);loadBarbCfg();loadBarbers();}
 async function delBarb(id){if(!confirm('Remover barbeiro?'))return;await db.from('barbers').delete().eq('id',id);loadBarbCfg();loadBarbers();}
-function addBarber(){
-  document.getElementById('brb-name').value='';
-  document.getElementById('brb-spec').value='';
-  document.getElementById('brb-comm').value='0';
-  document.getElementById('brb-comm-val').textContent='0';
-  document.getElementById('brb-edit-id').value='';
-  document.getElementById('mod-barber-title').textContent='Adicionar Barbeiro';
-  openMod('mod-barber');
-}
-function editBarber(id,name,spec,comm){
-  document.getElementById('brb-name').value=name||'';
-  document.getElementById('brb-spec').value=spec||'';
-  document.getElementById('brb-comm').value=comm||0;
-  document.getElementById('brb-comm-val').textContent=comm||0;
-  document.getElementById('brb-edit-id').value=id;
-  document.getElementById('mod-barber-title').textContent='Editar Barbeiro';
-  openMod('mod-barber');
-}
-async function saveBarber(){
-  const name=document.getElementById('brb-name').value.trim();
-  if(!name){toast('Informe o nome do barbeiro','err');return;}
-  const spec=document.getElementById('brb-spec').value.trim();
-  const comm=Number(document.getElementById('brb-comm').value)||0;
-  const editId=document.getElementById('brb-edit-id').value;
-  let error;
-  if(editId){
-    ({error}=await db.from('barbers').update({name,specialty:spec,commission_pct:comm}).eq('id',editId));
-  } else {
-    ({error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec,avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true,commission_pct:comm}));
-  }
+async function addBarber(){
+  const name=prompt('Nome do barbeiro:');if(!name)return;
+  const spec=prompt('Especialidade:');
+  const{error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec||'',avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true});
   if(error){toast('Erro: '+error.message,'err');return;}
-  toast(editId?'Barbeiro atualizado!':'Barbeiro adicionado!','ok');
-  closeMod('mod-barber');loadBarbCfg();loadBarbers();
+  toast('Barbeiro adicionado!','ok');loadBarbCfg();loadBarbers();
 }
 
 // Override saveSvc/savePkg to include shop_id
@@ -2047,8 +1809,8 @@ async function setNewPassword(){
     if(session){
       const uid=session.user.id;
       const{data:shopData}=await db.from('shops').select('*').eq('owner_id',uid).maybeSingle();
-      if(shopData){S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;S.role='owner';applyShop(shopData);enterApp('admin');}
-      else{const{data:bl}=await db.from('barber_users').select('*,barbers(*),shops(*)').eq('user_id',uid).maybeSingle();if(bl&&bl.shops){S.shop=bl.shops;S.shopId=bl.shop_id;S.role='barber';S.barberProfile=bl.barbers;applyShop(bl.shops);enterApp('admin');setTimeout(()=>{document.querySelectorAll('.ni').forEach(n=>{const oc=n.getAttribute('onclick')||'';if(oc.includes("'cfg'")||oc.includes("'svcs'"))n.style.display='none';});},200);}else{enterApp('onboarding');}}
+      if(shopData){S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;applyShop(shopData);enterApp('admin');}
+      else{enterApp('onboarding');}
     }
   }catch(e){btn.textContent='Criar senha e entrar →';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
 }
@@ -2217,21 +1979,5 @@ async function deleteFinalized(){var{count:cnt}=await db.from('appointments').se
 })();
 </script>
 <script src="pkg_booking.js?v=2"></script>
-
-<div class="mov" id="mod-barber">
-  <div class="msh"><div class="mhd"></div><div class="mt" id="mod-barber-title">Adicionar Barbeiro</div>
-    <div class="fg"><label class="fl">Nome *</label><input class="fi" id="brb-name" placeholder="Nome do barbeiro"></div>
-    <div class="fg"><label class="fl">Especialidade</label><input class="fi" id="brb-spec" placeholder="Ex: Degradê, Barba..."></div>
-    <div class="fg">
-      <label class="fl">Comissão: <span id="brb-comm-val">0</span>%</label>
-      <input type="range" id="brb-comm" min="0" max="100" value="0" step="5" oninput="document.getElementById('brb-comm-val').textContent=this.value" style="width:100%;accent-color:var(--gold)">
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txm)"><span>0%</span><span>50%</span><span>100%</span></div>
-    </div>
-    <input type="hidden" id="brb-edit-id" value="">
-    <button class="btn" onclick="saveBarber()" style="width:100%;margin-top:12px">Salvar barbeiro</button>
-  </div>
-</div>
-<div class="mov" id="mod-barber"><div class="msh"><div class="mhd"></div><div class="mt" id="mod-barber-title">Adicionar Barbeiro</div><div class="fg"><label class="fl">Nome *</label><input class="fi" id="brb-name" placeholder="Nome do barbeiro"></div><div class="fg"><label class="fl">Especialidade</label><input class="fi" id="brb-spec" placeholder="Ex: Degradê, Barba..."></div><div class="fg"><label class="fl">Comissão: <span id="brb-comm-val">0</span>%</label><input type="range" id="brb-comm" min="0" max="100" value="0" step="5" oninput="document.getElementById('brb-comm-val').textContent=this.value" style="width:100%;accent-color:var(--gold)"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txm)"><span>0%</span><span>50%</span><span>100%</span></div></div><input type="hidden" id="brb-edit-id" value=""><button class="btn" onclick="saveBarber()" style="width:100%;margin-top:12px">Salvar barbeiro</button></div></div>
-<div class="mov" id="mod-barber-user"><div class="msh"><div class="mhd"></div><div class="mt">Criar Acesso - Barbeiro</div><div id="buser-barber-name" style="color:var(--gold);font-weight:700;margin-bottom:12px"></div><div class="fg"><label class="fl">E-mail *</label><input class="fi" id="buser-email" type="email" placeholder="email@exemplo.com"></div><div class="fg"><label class="fl">Senha *</label><input class="fi" id="buser-pwd" type="text" placeholder="Minimo 6 caracteres"></div><input type="hidden" id="buser-barber-id" value=""><button class="btn" onclick="saveBarberUser()" style="width:100%;margin-top:8px">Criar acesso</button><div id="buser-count" style="font-size:11px;color:var(--txm);text-align:center;margin-top:8px"></div></div></div>
 </body>
 </html>
