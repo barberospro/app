@@ -335,9 +335,7 @@ function init(){
   injectUI();
   startObserving();
   // Override loadDash para barbeiro - filtrar apenas seus agendamentos
-  if(S.role === 'barber'){
-    overrideLoadDashForBarber();
-  }
+  // Override será aplicado via interval abaixo
   // Re-render barber list after a delay
   setTimeout(function(){
     if(S.shopId) enhanceBarbList();
@@ -502,5 +500,19 @@ var _dashOverrideInterval = setInterval(function(){
     });
   }, 3000);
 }, 1500);
+
+
+// === WATCHER: quando S.role vira 'barber', aplica override ===
+var _roleWatcher = setInterval(function(){
+  if(!window.S || !S.role) return;
+  if(S.role === 'barber' && S.shopId && !window._barberOverrideApplied){
+    window._barberOverrideApplied = true;
+    clearInterval(_roleWatcher);
+    overrideLoadDashForBarber();
+  }
+  if(S.role === 'owner'){
+    clearInterval(_roleWatcher);
+  }
+}, 500);
 
 })();
