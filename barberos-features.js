@@ -1,3 +1,4 @@
+// v1781136246802
 // BarberOS V2 Features v3.0 - Comissao, Dashboard, Acesso Barbeiro
 (function(){
 
