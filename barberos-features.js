@@ -558,4 +558,19 @@ setInterval(function(){
 // Event delegation removido - usando onclick direto
 
 
+
+// Funcao global chamada pelo onclick dos botoes Editar barbeiro
+window._doEditBarber = function(id){
+  var d = window._barbersData && window._barbersData[id];
+  if(d) {
+    editBarber(d.id, d.name, d.specialty, d.commission_pct);
+  } else {
+    if(window.db && window.S && S.shopId){
+      db.from('barbers').select('*').eq('id',id).maybeSingle().then(function(r){
+        if(r&&r.data) editBarber(r.data.id, r.data.name||'', r.data.specialty||'', r.data.commission_pct||0);
+      });
+    }
+  }
+};
+
 })();
