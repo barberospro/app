@@ -88,7 +88,8 @@ window.addBarber = function(){
   openMod("mod-barber");
 };
 
-window.editBarber = async function(id,name,spec,comm){
+window.editBarber = function(id,name,spec,comm){
+    if(!document.getElementById("mod-barber")){ injectUI(); }
     if(!document.getElementById("mod-barber")) return;
     document.getElementById("brb-name").value=name||"";
     document.getElementById("brb-spec").value=spec||"";
@@ -96,13 +97,22 @@ window.editBarber = async function(id,name,spec,comm){
     document.getElementById("brb-comm-val").textContent=comm||0;
     document.getElementById("brb-edit-id").value=id;
     document.getElementById("mod-barber-title").textContent="Editar Barbeiro";
+    // Seção de senha simples
     var accSec=document.getElementById("brb-access-section");
-    if(!accSec){var md=document.querySelector("#mod-barber .msh");if(md){accSec=document.createElement("div");accSec.id="brb-access-section";accSec.innerHTML='<div style="border-top:1px solid rgba(154,144,128,.3);margin-top:12px;padding-top:12px"><div style="font-size:13px;font-weight:700;color:#C9A84C;margin-bottom:8px">Acesso do Barbeiro</div><div class="fg"><label class="fl">E-mail de login</label><input class="fi" id="brb-access-email" type="email" placeholder="email@exemplo.com"></div><div class="fg"><label class="fl">Nova senha (vazio = manter)</label><input class="fi" id="brb-access-pwd" type="text" placeholder="Min 6 caracteres"></div><div id="brb-access-status" style="font-size:11px;color:#9A9080;margin-top:6px"></div></div>';var sb=md.querySelector("button");if(sb)md.insertBefore(accSec,sb);else md.appendChild(accSec);}}
+    if(!accSec){
+      var md=document.querySelector("#mod-barber .msh");
+      if(md){
+        accSec=document.createElement("div");
+        accSec.id="brb-access-section";
+        accSec.innerHTML='<div style="border-top:1px solid rgba(154,144,128,.3);margin-top:12px;padding-top:12px"><div style="font-size:13px;font-weight:700;color:#C9A84C;margin-bottom:8px">Acesso do Barbeiro</div><div class="fg"><label class="fl">Nova senha (vazio = manter)</label><input class="fi" id="brb-access-pwd" type="text" placeholder="Min 6 caracteres"></div></div>';
+        var sb=md.querySelector("button");
+        if(sb)md.insertBefore(accSec,sb);else md.appendChild(accSec);
+      }
+    }
     if(accSec)accSec.style.display="block";
     var pwdF=document.getElementById("brb-access-pwd");if(pwdF)pwdF.value="";
-    var stEl=document.getElementById("brb-access-status");if(stEl)stEl.textContent="Verificando...";
-    try{var buC=await db.from("barber_users").select("user_id").eq("barber_id",id).maybeSingle();var emailF=document.getElementById("brb-access-email");if(buC&&buC.data&&buC.data.user_id){accSec.dataset.userId=buC.data.user_id;var sess2=await db.auth.getSession();var tk2=sess2.data.session?sess2.data.session.access_token:"";try{var uRes=await fetch(SB_URL+"/functions/v1/create-barber-user",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+tk2},body:JSON.stringify({action:"get_user",user_id:buC.data.user_id})});var uData=await uRes.json();if(uData.ok&&uData.email&&emailF)emailF.value=uData.email;}catch(e2){}if(stEl)stEl.innerHTML='<span style="color:#27AE60">\u2713 Acesso ativo.</span> Altere email/senha se necessario.';}else{if(emailF)emailF.value="";if(stEl)stEl.innerHTML='Sem acesso. Use "Criar acesso" na lista.';accSec.dataset.userId="";}}catch(e){if(stEl)stEl.textContent="";}
-    if(typeof openMod==="function")openMod("mod-barber");else if(typeof window.openMod==="function")window.openMod("mod-barber");else{var m=document.getElementById("mod-barber");if(m)m.classList.add("open");}
+    if(typeof openMod==="function")openMod("mod-barber");
+    else{var m=document.getElementById("mod-barber");if(m)m.classList.add("open");}
   };
 
 window.saveBarber = async function(){
