@@ -196,15 +196,28 @@ async function checkBarberRole(){
     if(bCheck.data){
       S.role="barber";
       S.barberUserId=bCheck.data.barber_id;
-      // Hide owner-only tabs
+      // Hide owner-only tabs (config, services, barbers list, clients)
       document.querySelectorAll(".ni").forEach(function(n){
         var oc=n.getAttribute("onclick")||"";
         if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display="none";
       });
-      // Hide "mark done" buttons via observer
+      // Block onboarding - barbeiros nao podem criar barbearia
+      var origEnterApp = window.enterApp;
+      if(typeof origEnterApp === "function"){
+        window.enterApp = function(mode){
+          if(mode === "onboarding" && S.role === "barber") mode = "admin";
+          origEnterApp(mode);
+        };
+      }
+      // Hide "Encerrar" button via observer - barbeiro pode Confirmar, Cancelar, Feito, mas NAO Encerrar
       var obs=new MutationObserver(function(){
-        document.querySelectorAll("[onclick*=\"done\"]").forEach(function(el){
-          if(el.textContent&&(el.textContent.includes("Feito")||el.textContent.includes("Finalizar")))el.style.display="none";
+        document.querySelectorAll("button,a,[onclick]").forEach(function(el){
+          var txt=(el.textContent||"").toLowerCase();
+          var oc=(el.getAttribute("onclick")||"").toLowerCase();
+          // Ocultar botoes de "encerrar" / "finished" / "encerrado" para barbeiros
+          if(txt.includes("encerrar")||txt.includes("finalizar")||oc.includes("finished")||oc.includes("encerr")){
+            el.style.display="none";
+          }
         });
       });
       var app=document.getElementById("admin-app");
