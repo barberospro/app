@@ -50,11 +50,10 @@ async function enhanceBarbList(){
       editBtn.className = "btn-edit-barber";
       editBtn.textContent = "\u270F";
       editBtn.style.cssText = "background:#C9A84C;color:#0E0E0E;border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;margin-right:4px";
-      editBtn.addEventListener("click", function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        try{ editBarber(b.id, b.name||"", b.specialty||"", b.commission_pct||0); }catch(err){toast("Erro: "+err.message,"err");}
-      });
+      editBtn.setAttribute("data-barber-edit-id", b.id);
+      editBtn.setAttribute("data-barber-edit-name", b.name||"");
+      editBtn.setAttribute("data-barber-edit-spec", b.specialty||"");
+      editBtn.setAttribute("data-barber-edit-comm", b.commission_pct||0);
       // Inserir antes do toggle
       var togDiv = item.querySelector(".tog");
       if(togDiv && togDiv.parentNode) togDiv.parentNode.insertBefore(editBtn, togDiv);
@@ -546,13 +545,7 @@ var _roleWatcher = setInterval(async function(){
 }, 1500);
 
 
-// === Event delegation para cliques (single click) ===
-document.addEventListener('click', function(e){
-  var editEl = e.target.closest('[data-edit-barber]');
-  if(editEl) { editBarber(editEl.dataset.editBarber, editEl.dataset.bn||'', editEl.dataset.bs||'', editEl.dataset.bc||0); return; }
-  var accEl = e.target.closest('[data-create-access]');
-  if(accEl) { e.stopPropagation(); openCreateBarberUser(accEl.dataset.createAccess, accEl.dataset.accessName||''); return; }
-});
+
 
 
 // Periodic check para garantir que barbeiros são enhanced
@@ -562,5 +555,28 @@ setInterval(function(){
     enhanceBarbList();
   }
 }, 2000);
+
+
+// === Event delegation global (funciona com elementos dinamicos) ===
+document.addEventListener("click", function(e){
+  // Botao editar barbeiro
+  var editBtn = e.target.closest("[data-barber-edit-id]");
+  if(editBtn){
+    e.stopPropagation();
+    var id = editBtn.getAttribute("data-barber-edit-id");
+    var nm = editBtn.getAttribute("data-barber-edit-name");
+    var sp = editBtn.getAttribute("data-barber-edit-spec");
+    var cm = editBtn.getAttribute("data-barber-edit-comm");
+    editBarber(id, nm, sp, cm);
+    return;
+  }
+  // Botao criar acesso
+  var accBtn = e.target.closest("[data-create-access]");
+  if(accBtn){
+    e.stopPropagation();
+    openCreateBarberUser(accBtn.getAttribute("data-create-access"), accBtn.getAttribute("data-access-name")||"");
+    return;
+  }
+}, true);
 
 })();
