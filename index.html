@@ -851,7 +851,7 @@ function showC(sec){
   if(m[sec]){const el=document.getElementById(m[sec]);if(el)el.classList.add('active');}
   document.getElementById('cc').scrollTop=0;
   if(sec==='agendar'){resetBooking();renderCal();}
-  if(sec==='servicos')renderSvcMenu();loadAdmPromos();
+  if(sec==='servicos'){renderSvcMenu();loadAdmPromos();}
   if(sec==='pacotes')loadPkgs();
   if(sec==='perfil')loadProfile();
 }
@@ -1551,12 +1551,12 @@ async function openPromoMod(id){
   var el=document.getElementById('mod-promo');
   if(!el){
     el=document.createElement('div');el.className='mov';el.id='mod-promo';
-    el.innerHTML='<div class="msh"><div class="mhd"></div><div class="mt" id="promo-mod-title">Nova Promocao</div><div class="fg"><label class="fl">Nome *</label><input class="fi" id="pm-name" placeholder="Ex: Combo Corte + Barba"></div><div class="fg"><label class="fl">Descricao</label><input class="fi" id="pm-desc" placeholder="Descricao da promo"></div><div class="fg"><label class="fl">Emoji</label><input class="fi" id="pm-emoji" placeholder="Ex: \u{1F525}" value="\u{1F525}"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fg"><label class="fl">Preco original</label><input class="fi" id="pm-orig" type="number" placeholder="0"></div><div class="fg"><label class="fl">Preco promo *</label><input class="fi" id="pm-price" type="number" placeholder="0"></div></div><input type="hidden" id="pm-edit-id" value=""><button class="btn" onclick="savePromo()" style="width:100%;margin-top:12px">Salvar promocao</button></div>';
+    el.innerHTML='<div class="msh"><div class="mhd"></div><div class="mt" id="promo-mod-title">Nova Promocao</div><div class="fg"><label class="fl">Nome *</label><input class="fi" id="pm-name" placeholder="Ex: Combo Corte + Barba"></div><div class="fg"><label class="fl">Descricao</label><input class="fi" id="pm-desc" placeholder="Descricao da promo"></div><div class="fg"><label class="fl">Emoji</label><input class="fi" id="pm-emoji" placeholder="Ex: 🔥" value="🔥"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fg"><label class="fl">Preco original</label><input class="fi" id="pm-orig" type="number" placeholder="0"></div><div class="fg"><label class="fl">Preco promo *</label><input class="fi" id="pm-price" type="number" placeholder="0"></div></div><input type="hidden" id="pm-edit-id" value=""><button class="btn" onclick="savePromo()" style="width:100%;margin-top:12px">Salvar promocao</button></div>';
     document.body.appendChild(el);
   }
   document.getElementById('pm-name').value='';
   document.getElementById('pm-desc').value='';
-  document.getElementById('pm-emoji').value='\u{1F525}';
+  document.getElementById('pm-emoji').value='🔥';
   document.getElementById('pm-orig').value='';
   document.getElementById('pm-price').value='';
   document.getElementById('pm-edit-id').value='';
