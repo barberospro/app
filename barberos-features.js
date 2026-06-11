@@ -40,10 +40,10 @@ async function enhanceBarbList(){
     var cm = b.commission_pct || 0;
     var accBtn = hu
       ? '<span style="color:#27AE60;font-size:11px">\u2713 Acesso ativo</span>'
-      : '<button onclick="event.stopPropagation();openCreateBarberUser(\x27'+b.id+'\x27,\x27'+nm+'\x27)" style="background:#C9A84C;color:#0E0E0E;border:none;border-radius:50px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-left:6px">+ Criar acesso</button>';
+      : '<button data-create-access="'+b.id+'" data-access-name="'+nm+'" style="background:#C9A84C;color:#0E0E0E;border:none;border-radius:50px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-left:6px">+ Criar acesso</button>';
     return '<div class="ci" style="flex-wrap:wrap;gap:8px;align-items:center">'
       +'<div class="cii">'+(b.avatar_emoji||'\u{1F464}')+'</div>'
-      +'<div class="cit" style="flex:1;min-width:100px;cursor:pointer" onclick="editBarber(\x27'+b.id+'\x27,\x27'+nm+'\x27,\x27'+sp+'\x27,'+cm+')">'
+      +'<div class="cit" style="flex:1;min-width:100px;cursor:pointer" data-edit-barber="'+b.id+'" data-bn="'+nm+'" data-bs="'+sp+'" data-bc="'+cm+'">'
       +'<div class="citn">'+b.name+'</div>'
       +'<div class="cits">'+(b.specialty||'')+' \u2022 Comiss\u00e3o: '+cm+'%</div>'
       +'</div>'
@@ -536,5 +536,14 @@ var _roleWatcher = setInterval(async function(){
     }
   }catch(e){}
 }, 1500);
+
+
+// === Event delegation para cliques (single click) ===
+document.addEventListener('click', function(e){
+  var editEl = e.target.closest('[data-edit-barber]');
+  if(editEl) { editBarber(editEl.dataset.editBarber, editEl.dataset.bn||'', editEl.dataset.bs||'', editEl.dataset.bc||0); return; }
+  var accEl = e.target.closest('[data-create-access]');
+  if(accEl) { e.stopPropagation(); openCreateBarberUser(accEl.dataset.createAccess, accEl.dataset.accessName||''); return; }
+});
 
 })();
