@@ -898,9 +898,19 @@ async function doLogin(){
     const hasShop=await loadShop(userId,true);
     btn.textContent='Entrar';btn.disabled=false;
     if(!hasShop){
-      // New subscriber — go to onboarding
-      enterApp('onboarding');
+      // Check if user is a barber linked to a shop
+      var _bur=await db.from('barber_users').select('*').eq('user_id',userId);
+      var _bud=(_bur.data&&_bur.data.length>0)?_bur.data[0]:null;
+      if(_bud&&_bud.shop_id){
+        var _shr2=await db.from('shops').select('*').eq('id',_bud.shop_id).maybeSingle();
+        if(_shr2&&_shr2.data){
+          S.shop=_shr2.data;S.shopId=_shr2.data.id;S.shopSlug=_shr2.data.slug;
+          S.role='barber';S.barberUserId=_bud.barber_id;
+          applyShop(_shr2.data);enterApp('admin');
+        } else { enterApp('onboarding'); }
+      } else { enterApp('onboarding'); }
     } else {
+      S.role='owner';
       enterApp('admin');
     }
   }catch(e){
