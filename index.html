@@ -909,12 +909,13 @@ async function doLogin(){
         if(_shr2&&_shr2.data){
           S.shop=_shr2.data;S.shopId=_shr2.data.id;S.shopSlug=_shr2.data.slug;
           S.role='barber';S.barberUserId=_bud.barber_id;setTimeout(function(){document.querySelectorAll('.ni').forEach(function(n){var oc=n.getAttribute('onclick')||'';if(oc.indexOf("'config'")>-1||oc.indexOf("'servicos'")>-1||oc.indexOf("'clientes'")>-1)n.style.display='none';});},100);
-          applyShop(_shr2.data);enterApp('admin');
+          applyShop(_shr2.data);enterApp('admin');if(typeof updateLoggedName==='function')updateLoggedName(email);
         } else { enterApp('onboarding'); }
       } else { enterApp('onboarding'); }
     } else {
       S.role='owner';
       enterApp('admin');
+      if(typeof updateLoggedName==='function')updateLoggedName(email);
     }
   }catch(e){
     btn.textContent='Entrar';btn.disabled=false;
@@ -929,7 +930,7 @@ async function doForgot(){
   if(error){toast('Erro: '+error.message,'err');return;}
   toast('Email de recuperacao enviado! Verifique sua caixa.','ok');
 }
-async function doLogout(){await db.auth.signOut();enterApp('splash');}
+async function doLogout(){await db.auth.signOut();S.role=null;S.shopId=null;S.shop={};S.barberUserId=null;S.session=null;var _nel=document.getElementById('logged-user-name');if(_nel)_nel.textContent='';enterApp('splash');}
 
 // =================== SETTINGS (legacy compat) ===================
 async function loadSettings(){
@@ -2014,25 +2015,17 @@ async function deleteFinalized(){var{count:cnt}=await db.from('appointments').se
 })();
 
 
-// Display logged user name
-(async function(){
-  try{
-    var _s=await db.auth.getSession();
-    if(_s&&_s.data&&_s.data.session){
-      var _u=_s.data.session.user;
-      var _name=_u.user_metadata&&_u.user_metadata.full_name?_u.user_metadata.full_name:_u.email;
-      var _el=document.getElementById('logged-user-name');
-      if(_el)_el.textContent=_name;
-      // If barber, show barber name from barbers table
-      if(S.role==='barber'&&S.barberUserId){
-        var _br=await db.from('barbers').select('name').eq('id',S.barberUserId).maybeSingle();
-        if(_br&&_br.data)_el.textContent=_br.data.name+' (Barbeiro)';
-      } else if(S.role==='owner'){
-        if(_el)_el.textContent=(S.shop&&S.shop.name)||_u.email;
-      }
-    }
-  }catch(e){}
-})();
+// Display logged user name - chamado apos login
+window.updateLoggedName = async function(email){
+  var _el=document.getElementById('logged-user-name');
+  if(!_el)return;
+  if(S.role==='barber'&&S.barberUserId){
+    var _br=await db.from('barbers').select('name').eq('id',S.barberUserId).maybeSingle();
+    if(_br&&_br.data){_el.textContent=_br.data.name+' (Barbeiro)';return;}
+  }
+  if(S.role==='owner'){_el.textContent=(S.shop&&S.shop.name)||email||'';return;}
+  _el.textContent=email||'';
+};
 
 window.S=S;window.db=db;window.SB_URL=SB_URL;window.SB_KEY=SB_KEY;
 </script>
