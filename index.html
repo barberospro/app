@@ -851,7 +851,7 @@ function showC(sec){
   if(m[sec]){const el=document.getElementById(m[sec]);if(el)el.classList.add('active');}
   document.getElementById('cc').scrollTop=0;
   if(sec==='agendar'){resetBooking();renderCal();}
-  if(sec==='servicos'){renderSvcMenu();loadAdmPromos();}
+  if(sec==='servicos'){loadAdmSvcs();loadAdmPkgs();loadAdmPromos();}
   if(sec==='pacotes')loadPkgs();
   if(sec==='perfil')loadProfile();
 }
@@ -863,7 +863,7 @@ function showA(sec){
   if(m[sec]){const el=document.getElementById(m[sec]);if(el)el.classList.add('active');}
   if(sec==='dash')loadDash();
   if(sec==='agenda')loadAgenda('hoje');
-  if(sec==='servicos'){loadAdmSvcs();loadAdmPkgs();}
+  // servicos handler already above
   if(sec==='config'){loadCfgForm();loadBarbCfg();}
   if(sec==='clientes')loadClientes();
   var _ac=document.getElementById('ac');
