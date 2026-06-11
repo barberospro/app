@@ -1812,9 +1812,13 @@ async function setNewPassword(){
       if(shopData){S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;applyShop(shopData);enterApp('admin');}
       else{
         // Check if user is a barber
-        var _bl=await db.from('barber_users').select('*,shops(*)').eq('user_id',uid).maybeSingle();
-        if(_bl&&_bl.data&&_bl.data.shops){S.shop=_bl.data.shops;S.shopId=_bl.data.shop_id;S.shopSlug=_bl.data.shops.slug;S.role='barber';S.barberUserId=_bl.data.barber_id;applyShop(_bl.data.shops);enterApp('admin');}
-        else{enterApp('onboarding');}
+        var _blr=await db.from('barber_users').select('*').eq('user_id',uid);
+        var _bld=(_blr.data&&_blr.data.length>0)?_blr.data[0]:null;
+        if(_bld&&_bld.shop_id){
+          var _shr=await db.from('shops').select('*').eq('id',_bld.shop_id).single();
+          if(_shr.data){S.shop=_shr.data;S.shopId=_shr.data.id;S.shopSlug=_shr.data.slug;S.role='barber';S.barberUserId=_bld.barber_id;applyShop(_shr.data);enterApp('admin');}
+          else{enterApp('onboarding');}
+        }else{enterApp('onboarding');}
       }
     }
   }catch(e){btn.textContent='Criar senha e entrar →';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
