@@ -908,7 +908,7 @@ async function doLogin(){
         var _shr2=await db.from('shops').select('*').eq('id',_bud.shop_id).maybeSingle();
         if(_shr2&&_shr2.data){
           S.shop=_shr2.data;S.shopId=_shr2.data.id;S.shopSlug=_shr2.data.slug;
-          S.role='barber';S.barberUserId=_bud.barber_id;setTimeout(function(){document.querySelectorAll('.ni').forEach(function(n){var oc=n.getAttribute('onclick')||'';if(oc.indexOf("'cfg'")>-1||oc.indexOf("'svcs'")>-1||oc.indexOf("'barbs'")>-1||oc.indexOf("'clientes'")>-1)n.style.display='none';});},100);
+          S.role='barber';S.barberUserId=_bud.barber_id;setTimeout(function(){document.querySelectorAll('.ni').forEach(function(n){var oc=n.getAttribute('onclick')||'';if(oc.indexOf("'config'")>-1||oc.indexOf("'servicos'")>-1||oc.indexOf("'clientes'")>-1)n.style.display='none';});},100);
           applyShop(_shr2.data);enterApp('admin');
         } else { enterApp('onboarding'); }
       } else { enterApp('onboarding'); }
