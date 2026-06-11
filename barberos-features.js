@@ -172,6 +172,62 @@ window.filterDash = async function(period){
 };
 
 // === UI INJECTION ===
+
+async function overrideLoadDashForBarber(){
+  // Buscar barber_id real da sessao
+  var sess=await db.auth.getSession();
+  if(!sess||!sess.data||!sess.data.session)return;
+  var uid=sess.data.session.user.id;
+  var buR=await db.from('barber_users').select('barber_id').eq('user_id',uid).maybeSingle();
+  if(!buR||!buR.data)return;
+  var myBid=buR.data.barber_id;
+  S.barberUserId=myBid;
+
+  // Sobrescrever loadDash
+  window.loadDash = async function(){
+    var td=new Date().toISOString().split('T')[0];
+    var el=document.getElementById('td-lbl');
+    if(el)el.textContent='Hoje '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+    try{
+      // Buscar apenas agendamentos DESTE barbeiro
+      var r1=await db.from('appointments').select('*').eq('appointment_date',td).eq('shop_id',S.shopId).eq('barber_id',myBid).neq('status','cancelled').order('appointment_time');
+      var ta=r1.data||[];
+      var monthStart=td.slice(0,7)+'-01';
+      var r2=await db.from('appointments').select('service_price,status').gte('appointment_date',monthStart).eq('shop_id',S.shopId).eq('barber_id',myBid).neq('status','cancelled');
+      var ma=r2.data||[];
+      // Pegar comissao
+      var brR=await db.from('barbers').select('commission_pct').eq('id',myBid).maybeSingle();
+      var pct=(brR&&brR.data)?Number(brR.data.commission_pct)||0:0;
+      var tc=ta.length;
+      var tr=ta.filter(function(a){return a.status==='done'||a.status==='finished';}).reduce(function(s,a){return s+Number(a.service_price||0)*(pct/100);},0);
+      var mc=ma.length;
+      var mr=ma.filter(function(a){return a.status==='done'||a.status==='finished';}).reduce(function(s,a){return s+Number(a.service_price||0)*(pct/100);},0);
+      var stToday=document.getElementById('st-today');if(stToday)stToday.textContent=tc;
+      var stRtd=document.getElementById('st-rtd');if(stRtd)stRtd.textContent=fmt(tr);
+      var stMonth=document.getElementById('st-month');if(stMonth)stMonth.textContent=mc;
+      var stRm=document.getElementById('st-rm');if(stRm)stRm.textContent=fmt(mr);
+      // Labels
+      document.querySelectorAll('.sl').forEach(function(l){
+        if(l.textContent.includes('Receita hoje')||l.textContent.includes('Comissao hoje'))l.textContent='Comissao hoje';
+        if(l.textContent.includes('Receita mes')||l.textContent.includes('Comissao mes'))l.textContent='Comissao mes';
+        if(l.textContent==='Hoje'||l.textContent==='Meus hoje')l.textContent='Meus hoje';
+        if(l.textContent==='Este mes'||l.textContent==='Meus no mes')l.textContent='Meus no mes';
+      });
+      // Renderizar lista de agendamentos (apenas os do barbeiro)
+      var dl=document.getElementById('dash-list');
+      if(dl){
+        if(ta.length>0){
+          dl.innerHTML=ta.map(function(a){return typeof agItemHTML==='function'?agItemHTML(a):'';}).join('');
+        } else {
+          dl.innerHTML='<div style="text-align:center;padding:30px;color:#9A9080">Nenhum agendamento seu hoje.</div>';
+        }
+      }
+    }catch(e){console.warn('loadDash barber error:',e);}
+  };
+  // Executar imediatamente
+  window.loadDash();
+}
+
 function injectUI(){
   // Modal Barbeiro
   if(!document.getElementById("mod-barber")){
@@ -253,6 +309,10 @@ async function checkBarberRole(){
 function init(){
   injectUI();
   startObserving();
+  // Override loadDash para barbeiro - filtrar apenas seus agendamentos
+  if(S.role === 'barber'){
+    overrideLoadDashForBarber();
+  }
   // Re-render barber list after a delay
   setTimeout(function(){
     if(S.shopId) enhanceBarbList();
