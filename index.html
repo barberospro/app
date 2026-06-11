@@ -1458,8 +1458,8 @@ async function loadDash(){
 function agItemHTML(a){
   const t=(a.appointment_time||'00:00').slice(0,5);
   const[h,m]=t.split(':');
-  const sl={pending:'bp',confirmed:'bc',done:'bd',cancelled:'bx'};
-  const st={pending:'Pendente',confirmed:'Confirmado',done:'Feito',cancelled:'Cancelado'};
+  const sl={pending:'bp',confirmed:'bc',done:'bd',finished:'bf',cancelled:'bx'};
+  const st={pending:'Pendente',confirmed:'Confirmado',done:'Feito',finished:'Encerrado',cancelled:'Cancelado'};
   const hasAct=a.status==='confirmed'||a.status==='done';
   const pkgNum=a.package_group_id?((a.package_ref||'PKT')+' '+( a.package_session_num||'?')+'/'+(a.package_total_sessions||'?')):'';
   const pkgLabel=pkgNum?(' <span style="background:rgba(201,168,76,.2);color:var(--gold);font-size:9px;border-radius:3px;padding:1px 5px">'+pkgNum+'</span>'):'';
