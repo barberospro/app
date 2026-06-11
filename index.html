@@ -1537,16 +1537,23 @@ async function editApptModal(id){
 }
 // === PROMOCOES ===
 async function loadAdmPromos(){
-  var el=document.getElementById('adm-promo-list');if(!el)return;
-  var{data}=await db.from('promotions').select('*').order('created_at',{ascending:false});
-  if(!data||data.length===0){el.innerHTML='<div style="padding:16px 20px;color:var(--txm);font-size:13px">Nenhuma promocao cadastrada.</div>';return;}
-  el.innerHTML=data.map(function(p){
-    return '<div style="padding:12px 20px;border-bottom:1px solid var(--dk4);display:flex;align-items:center;justify-content:space-between">'
-      +'<div><div style="font-weight:600;font-size:14px">'+(p.emoji||'')+ ' '+p.name+'</div><div style="font-size:12px;color:var(--txm)">'+(p.description||'')+'</div><div style="font-size:12px;margin-top:2px"><span style="text-decoration:line-through;color:var(--txm)">R$ '+(p.original_price||0)+'</span> <span style="color:var(--gold);font-weight:700">R$ '+p.promo_price+'</span></div></div>'
-      +'<div style="display:flex;gap:6px"><button onclick="openPromoMod(\x27'+p.id+'\x27)" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">Editar</button><button onclick="delPromo(\x27'+p.id+'\x27)" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">X</button></div>'
-      +'</div>';
-  }).join('');
+  var el=document.getElementById('adm-promo-list');
+  if(!el){console.warn('adm-promo-list not found');return;}
+  try{
+    var q=db.from('promotions').select('*').order('created_at',{ascending:false});
+    if(S.shopId)q=q.eq('shop_id',S.shopId);
+    var r=await q;
+    var data=r.data||[];
+    if(data.length===0){el.innerHTML='<div style="padding:16px 20px;color:var(--txm);font-size:13px">Nenhuma promocao cadastrada.</div>';return;}
+    el.innerHTML=data.map(function(p){
+      return '<div style="padding:12px 20px;border-bottom:1px solid var(--dk4);display:flex;align-items:center;justify-content:space-between">'
+        +'<div><div style="font-weight:600;font-size:14px">'+(p.emoji||'')+' '+p.name+'</div><div style="font-size:12px;color:var(--txm)">'+(p.description||'')+'</div><div style="font-size:12px;margin-top:2px"><span style="text-decoration:line-through;color:var(--txm)">R$ '+(p.original_price||0)+'</span> <span style="color:var(--gold);font-weight:700">R$ '+p.promo_price+'</span></div></div>'
+        +'<div style="display:flex;gap:6px"><button onclick="openPromoMod(\x27'+p.id+'\x27)" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">Editar</button><button onclick="delPromo(\x27'+p.id+'\x27)" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">X</button></div>'
+        +'</div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div style="padding:16px 20px;color:#E74C3C;font-size:12px">Erro: '+e.message+'</div>';}
 }
+
 async function openPromoMod(id){
   var el=document.getElementById('mod-promo');
   if(!el){
