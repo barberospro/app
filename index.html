@@ -1443,9 +1443,9 @@ async function loadDash(){
     const{data:ta}=await db.from('appointments').select('*').eq('appointment_date',td).eq('shop_id',S.shopId).neq('status','cancelled').order('appointment_time');
     const{data:ma}=await db.from('appointments').select('service_price,status').gte('appointment_date',td.slice(0,7)+'-01').eq('shop_id',S.shopId).neq('status','cancelled');
     const tc=(ta||[]).length;
-    const tr=(ta||[]).filter(a=>a.status==='done').reduce((s,a)=>s+Number(a.service_price),0);
+    const tr=(ta||[]).filter(a=>a.status==='done'||a.status==='finished').reduce((s,a)=>s+Number(a.service_price),0);
     const mc=(ma||[]).length;
-    const mr=(ma||[]).filter(a=>a.status==='done').reduce((s,a)=>s+Number(a.service_price),0);
+    const mr=(ma||[]).filter(a=>a.status==='done'||a.status==='finished').reduce((s,a)=>s+Number(a.service_price),0);
     document.getElementById('st-today').textContent=tc;
     document.getElementById('st-rtd').textContent=fmt(tr);
     document.getElementById('st-month').textContent=mc;
