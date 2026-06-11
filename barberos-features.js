@@ -502,17 +502,32 @@ var _dashOverrideInterval = setInterval(function(){
 }, 1500);
 
 
-// === WATCHER: quando S.role vira 'barber', aplica override ===
-var _roleWatcher = setInterval(function(){
-  if(!window.S || !S.role) return;
-  if(S.role === 'barber' && S.shopId && !window._barberOverrideApplied){
-    window._barberOverrideApplied = true;
-    clearInterval(_roleWatcher);
-    overrideLoadDashForBarber();
-  }
-  if(S.role === 'owner'){
-    clearInterval(_roleWatcher);
-  }
-}, 500);
+// === WATCHER: verifica se user atual e realmente barbeiro ===
+var _roleWatcher = setInterval(async function(){
+  if(!window.S || !window.db || !S.shopId) return;
+  if(window._barberOverrideApplied) { clearInterval(_roleWatcher); return; }
+  try{
+    var sess=await db.auth.getSession();
+    if(!sess||!sess.data||!sess.data.session)return;
+    var uid=sess.data.session.user.id;
+    // Verificar se este user é owner da shop
+    var ownerCheck=await db.from('shops').select('id').eq('owner_id',uid).maybeSingle();
+    if(ownerCheck&&ownerCheck.data){
+      // É owner - NAO aplicar override
+      S.role='owner';
+      clearInterval(_roleWatcher);
+      return;
+    }
+    // Verificar se é barbeiro
+    var barberCheck=await db.from('barber_users').select('barber_id').eq('user_id',uid).maybeSingle();
+    if(barberCheck&&barberCheck.data){
+      S.role='barber';
+      S.barberUserId=barberCheck.data.barber_id;
+      window._barberOverrideApplied=true;
+      clearInterval(_roleWatcher);
+      overrideLoadDashForBarber();
+    }
+  }catch(e){}
+}, 1500);
 
 })();
