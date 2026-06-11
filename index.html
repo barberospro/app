@@ -72,7 +72,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .bp{background:rgba(201,168,76,.15);color:var(--gold)}
 .bc{background:rgba(39,174,96,.15);color:var(--grn)}
 .bd{background:rgba(154,144,128,.15);color:var(--txm)}
-.bx{background:rgba(192,57,43,.15);color:var(--red)}
+.bx{background:rgba(192,57,43,.15);color:var(--red)}.bf{background:rgba(142,68,173,.15);color:#8E44AD}
 /* STATS */
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px 4px}
 .sc{background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r);padding:16px}
@@ -1409,8 +1409,8 @@ async function loadMyAppts(){
   el.innerHTML='<div style="text-align:center;padding:20px"><div class="spin"></div></div>';
   const{data}=await db.from('appointments').select('*').eq('client_phone',ph).order('appointment_date',{ascending:false});
   if(!data||!data.length){el.innerHTML='<div style="color:var(--txm);font-size:13px;padding:10px 0">Nenhum agendamento encontrado.</div>';return;}
-  const sl={pending:'bp',confirmed:'bc',done:'bd',cancelled:'bx'};
-  const st={pending:'Pendente',confirmed:'Confirmado',done:'Feito',cancelled:'Cancelado'};
+  const sl={pending:'bp',confirmed:'bc',done:'bd',finished:'bf',cancelled:'bx'};
+  const st={pending:'Pendente',confirmed:'Confirmado',done:'Feito',finished:'Encerrado',cancelled:'Cancelado'};
   el.innerHTML=data.map(a=>`
     <div style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r);padding:16px;margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">
@@ -1502,13 +1502,13 @@ async function openApptMod(id){
 async function encerrarAppt(apptId, barberId){
   if(S.role==='barber'){toast('Apenas o proprietario pode encerrar.','err');return;}
   if(!confirm('Encerrar agendamento e gerar comissao?'))return;
-  // Atualizar status para 'finished'
   var r=await db.from('appointments').update({status:'finished'}).eq('id',apptId);
   if(r.error){toast('Erro: '+r.error.message,'err');return;}
-  toast('Agendamento encerrado! Comissao gerada.','ok');
-  // Recarregar agenda
-  if(typeof loadDash==='function')loadDash();
-  if(typeof showA==='function'){var el=document.querySelector('.ai-modal.open,.mov.open');if(el)el.classList.remove('open');}
+  toast('Encerrado! Comissao gerada.','ok');
+  closeMod('mod-appt');
+  var activeTab=document.querySelector('#ag-tabs .tab.active');
+  if(activeTab)loadAgenda(activeTab.textContent.toLowerCase().trim()||'hoje');
+  else loadDash();
 }
 
 async function updAppt(id,status){
