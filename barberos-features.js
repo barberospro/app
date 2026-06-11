@@ -172,7 +172,13 @@ function injectUI(){
   }
   // Dashboard filters
   var dl=document.getElementById("dash-list");
-  if(S.role==='barber'){if(typeof loadBarberDash==='function')setTimeout(loadBarberDash,500);return;} // Barbeiro tem dash próprio
+  // Esconder seção de lucros do proprietário se for barbeiro
+  if(S.role==='barber'){
+    var profitSec=document.getElementById('dash-profit-section');
+    if(profitSec)profitSec.style.display='none';
+    if(typeof loadBarberDash==='function')setTimeout(loadBarberDash,500);
+    return;
+  }
   if(dl&&!document.getElementById("dash-profit-section")){
     var sec=document.createElement("div");sec.id="dash-profit-section";sec.style.padding="0 20px 16px";
     sec.innerHTML='<div style="background:var(--dk2);border-radius:12px;padding:16px"><div style="font-weight:700;font-size:15px;color:#C9A84C;margin-bottom:12px">Lucros e Comiss\u00f5es</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"><button class="fbtn" onclick="filterDash(\x27week\x27)" id="fd-week">Semanal</button><button class="fbtn" onclick="filterDash(\x27biweek\x27)" id="fd-biweek">Quinzenal</button><button class="fbtn" onclick="filterDash(\x27month\x27)" id="fd-month">Mensal</button><button class="fbtn" onclick="filterDash(\x27year\x27)" id="fd-year">Anual</button><button class="fbtn" onclick="filterDash(\x27custom\x27)" id="fd-custom">Periodo</button></div><div id="dash-period-custom" style="display:none;margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fg"><label class="fl">De</label><input type="date" class="fi" id="dash-from"></div><div class="fg"><label class="fl">At\u00e9</label><input type="date" class="fi" id="dash-to"></div></div><button class="btn btn-out" onclick="filterDash(\x27custom\x27)" style="margin-top:8px;font-size:12px;padding:8px">Consultar</button></div><div id="dash-profit-result" style="font-size:13px;color:#9A9080">Selecione um per\u00edodo.</div></div>';
@@ -324,6 +330,14 @@ window.loadBarberDash = async function(){
 };
 
 // Auto-load barber dash when barber enters
+// Esconder lucros do proprietario quando barbeiro
+var _hideOwnerDash = setInterval(function(){
+  if(S.role==='barber'){
+    var ps=document.getElementById('dash-profit-section');
+    if(ps){ps.style.display='none';clearInterval(_hideOwnerDash);}
+  } else if(S.role==='owner'){clearInterval(_hideOwnerDash);}
+},1000);
+
 var _barberDashInterval = setInterval(function(){
   if(S.role === 'barber' && S.barberUserId && S.shopId && document.getElementById('dash-list')){
     clearInterval(_barberDashInterval);
