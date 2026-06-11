@@ -345,4 +345,53 @@ var _barberDashInterval = setInterval(function(){
   }
 },1000);
 
+
+// === Override loadDash para barbeiro ===
+var _origLoadDash = null;
+var _dashOverrideInterval = setInterval(function(){
+  if(typeof window.loadDash === 'undefined' && typeof loadDash === 'undefined') return;
+  if(S.role !== 'barber') { clearInterval(_dashOverrideInterval); return; }
+  clearInterval(_dashOverrideInterval);
+  
+  // Override: substituir os valores dos cards para mostrar apenas dados do barbeiro
+  setTimeout(async function updateBarberCards(){
+    if(!S.barberUserId || !S.shopId) return;
+    var td = new Date().toISOString().split('T')[0];
+    var monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+    var pctR = await db.from('barbers').select('commission_pct').eq('id', S.barberUserId).maybeSingle();
+    var pct = (pctR && pctR.data) ? Number(pctR.data.commission_pct) || 0 : 0;
+    
+    // Hoje - apenas agendamentos deste barbeiro
+    var todayR = await db.from('appointments').select('service_price,status').eq('appointment_date', td).eq('shop_id', S.shopId).eq('barber_id', S.barberUserId).neq('status','cancelled');
+    var todayData = todayR.data || [];
+    var todayCount = todayData.length;
+    var todayRevenue = todayData.filter(function(a){return a.status==='finished';}).reduce(function(s,a){return s+Number(a.service_price||0)*(pct/100);},0);
+    
+    // Mes - apenas agendamentos deste barbeiro
+    var monthR = await db.from('appointments').select('service_price,status').gte('appointment_date', monthStart).eq('shop_id', S.shopId).eq('barber_id', S.barberUserId).neq('status','cancelled');
+    var monthData = monthR.data || [];
+    var monthCount = monthData.length;
+    var monthRevenue = monthData.filter(function(a){return a.status==='finished';}).reduce(function(s,a){return s+Number(a.service_price||0)*(pct/100);},0);
+    
+    // Atualizar cards
+    var stToday = document.getElementById('st-today');
+    var stRtd = document.getElementById('st-rtd');
+    var stMonth = document.getElementById('st-month');
+    var stRm = document.getElementById('st-rm');
+    if(stToday) stToday.textContent = todayCount;
+    if(stRtd) stRtd.textContent = fmt(todayRevenue);
+    if(stMonth) stMonth.textContent = monthCount;
+    if(stRm) stRm.textContent = fmt(monthRevenue);
+    
+    // Mudar labels para indicar que é comissão
+    var labels = document.querySelectorAll('.sl');
+    labels.forEach(function(l){
+      if(l.textContent === 'Receita hoje') l.textContent = 'Comissao hoje';
+      if(l.textContent === 'Receita mes') l.textContent = 'Comissao mes';
+      if(l.textContent === 'Hoje') l.textContent = 'Meus hoje';
+      if(l.textContent === 'Este mes') l.textContent = 'Meus no mes';
+    });
+  }, 2000);
+}, 1500);
+
 })();
