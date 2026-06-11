@@ -296,18 +296,26 @@ function applyBarberMode(){
 
 // === BARBER DASHBOARD ===
 window.loadBarberDash = async function(){
-  if(S.role !== 'barber' || !S.barberUserId) return;
+  if(S.role !== 'barber') return;
   var dl = document.getElementById('dash-list');
   if(!dl) return;
+  // Buscar o barber_id do user logado ATUAL
+  var sess = await db.auth.getSession();
+  if(!sess||!sess.data||!sess.data.session) return;
+  var currentUid = sess.data.session.user.id;
+  var buR = await db.from('barber_users').select('barber_id').eq('user_id',currentUid).maybeSingle();
+  if(!buR||!buR.data) return;
+  var myBarberId = buR.data.barber_id;
+  myBarberId = myBarberId; // Atualizar
   // Buscar comissão do barbeiro
-  var br = await db.from('barbers').select('name,commission_pct').eq('id',S.barberUserId).maybeSingle();
+  var br = await db.from('barbers').select('name,commission_pct').eq('id',myBarberId).maybeSingle();
   var pct = (br&&br.data) ? Number(br.data.commission_pct)||0 : 0;
   var bName = (br&&br.data) ? br.data.name : '';
   // Buscar agendamentos encerrados deste barbeiro
   var now = new Date();
   var monthStart = new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
   var today = now.toISOString().split('T')[0];
-  var r = await db.from('appointments').select('service_price,appointment_date,status,service_name').eq('barber_id',S.barberUserId).eq('shop_id',S.shopId).in('status',['finished']).gte('appointment_date',monthStart).lte('appointment_date',today);
+  var r = await db.from('appointments').select('service_price,appointment_date,status,service_name').eq('barber_id',myBarberId).eq('shop_id',S.shopId).in('status',['finished']).gte('appointment_date',monthStart).lte('appointment_date',today);
   var appts = r.data || [];
   var totalServicos = appts.reduce(function(s,a){return s+Number(a.service_price||0);},0);
   var minhaComissao = totalServicos * (pct/100);
@@ -370,20 +378,21 @@ var _dashOverrideInterval = setInterval(function(){
   
   // Override: substituir os valores dos cards para mostrar apenas dados do barbeiro
   setTimeout(async function updateBarberCards(){
-    if(!S.barberUserId || !S.shopId) return;
+    if(!S.shopId) return;
+    var _sess2=await db.auth.getSession();if(!_sess2||!_sess2.data||!_sess2.data.session)return;var _uid2=_sess2.data.session.user.id;var _buR2=await db.from("barber_users").select("barber_id").eq("user_id",_uid2).maybeSingle();if(!_buR2||!_buR2.data)return;var _myBid=_buR2.data.barber_id;_myBid=_myBid;
     var td = new Date().toISOString().split('T')[0];
     var monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-    var pctR = await db.from('barbers').select('commission_pct').eq('id', S.barberUserId).maybeSingle();
+    var pctR = await db.from('barbers').select('commission_pct').eq('id', _myBid).maybeSingle();
     var pct = (pctR && pctR.data) ? Number(pctR.data.commission_pct) || 0 : 0;
     
     // Hoje - apenas agendamentos deste barbeiro
-    var todayR = await db.from('appointments').select('service_price,status').eq('appointment_date', td).eq('shop_id', S.shopId).eq('barber_id', S.barberUserId).neq('status','cancelled');
+    var todayR = await db.from('appointments').select('service_price,status').eq('appointment_date', td).eq('shop_id', S.shopId).eq('barber_id', _myBid).neq('status','cancelled');
     var todayData = todayR.data || [];
     var todayCount = todayData.length;
     var todayRevenue = todayData.filter(function(a){return a.status==='finished';}).reduce(function(s,a){return s+Number(a.service_price||0)*(pct/100);},0);
     
     // Mes - apenas agendamentos deste barbeiro
-    var monthR = await db.from('appointments').select('service_price,status').gte('appointment_date', monthStart).eq('shop_id', S.shopId).eq('barber_id', S.barberUserId).neq('status','cancelled');
+    var monthR = await db.from('appointments').select('service_price,status').gte('appointment_date', monthStart).eq('shop_id', S.shopId).eq('barber_id', _myBid).neq('status','cancelled');
     var monthData = monthR.data || [];
     var monthCount = monthData.length;
     var monthRevenue = monthData.filter(function(a){return a.status==='finished';}).reduce(function(s,a){return s+Number(a.service_price||0)*(pct/100);},0);
