@@ -24,35 +24,42 @@ async function enhanceBarbList(){
   var el = document.getElementById("barb-cfg");
   if(!el || !el.children.length) return;
   
-  // Fetch barbers with commission and user access info
-  var r1 = await db.from("barbers").select("*").eq("shop_id", S.shopId).order("name");
-  var data = r1.data || [];
+  // Buscar dados de comissão e acesso
+  var r1 = await db.from("barbers").select("id,name,specialty,commission_pct").eq("shop_id", S.shopId).order("name");
+  var barbers = r1.data || [];
   var usersSet = new Set();
-  try {
-    var r2 = await db.from("barber_users").select("barber_id").eq("shop_id", S.shopId);
-    usersSet = new Set((r2.data||[]).map(function(x){return x.barber_id;}));
-  } catch(e){ console.log("barber_users error:", e); }
+  try { var r2 = await db.from("barber_users").select("barber_id").eq("shop_id", S.shopId); usersSet = new Set((r2.data||[]).map(function(x){return x.barber_id;})); } catch(e){}
   
-  el.innerHTML = data.map(function(b){
-    var hu = usersSet.has(b.id);
-    var nm = (b.name||"").replace(/'/g,"");
-    var sp = (b.specialty||"").replace(/'/g,"");
-    var cm = b.commission_pct || 0;
-    var accBtn = hu
-      ? '<span style="color:#27AE60;font-size:11px">\u2713 Acesso ativo</span>'
-      : '<button data-create-access="'+b.id+'" data-access-name="'+nm+'" style="background:#C9A84C;color:#0E0E0E;border:none;border-radius:50px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;margin-left:6px">+ Criar acesso</button>';
-    return '<div class="ci" style="flex-wrap:wrap;gap:8px;align-items:center">'
-      +'<div class="cii">'+(b.avatar_emoji||'\u{1F464}')+'</div>'
-      +'<div class="cit" style="flex:1;min-width:100px;cursor:pointer" data-edit-barber="'+b.id+'" data-bn="'+nm+'" data-bs="'+sp+'" data-bc="'+cm+'">'
-      +'<div class="citn">'+b.name+'</div>'
-      +'<div class="cits">'+(b.specialty||'')+' \u2022 Comiss\u00e3o: '+cm+'%</div>'
-      +'</div>'
-      +'<div style="display:flex;align-items:center;gap:6px">'
-      +accBtn
-      +'<div class="tog'+(b.active?' on':'')+'" onclick="togBarb(\x27'+b.id+'\x27,'+b.active+')"></div>'
-      +'<button onclick="delBarb(\x27'+b.id+'\x27)" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer">\u2715</button>'
-      +'</div></div>';
-  }).join("");
+  // Para cada item .ci na lista, adicionar info e botão editar
+  var items = el.querySelectorAll(".ci");
+  items.forEach(function(item, idx){
+    if(item.dataset.enhanced) return;
+    item.dataset.enhanced = "1";
+    var b = barbers[idx];
+    if(!b) return;
+    
+    // Atualizar subtitle com comissão
+    var sub = item.querySelector(".cits");
+    if(sub && !sub.textContent.includes("Comiss")) {
+      sub.textContent = (b.specialty||"") + " \u2022 Comiss\u00e3o: " + (b.commission_pct||0) + "%";
+    }
+    
+    // Adicionar botão Editar se não existe
+    if(!item.querySelector(".btn-edit-barber")){
+      var editBtn = document.createElement("button");
+      editBtn.className = "btn-edit-barber";
+      editBtn.textContent = "\u270F";
+      editBtn.style.cssText = "background:#C9A84C;color:#0E0E0E;border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;margin-right:4px";
+      editBtn.addEventListener("click", function(e){
+        e.stopPropagation();
+        editBarber(b.id, b.name||"", b.specialty||"", b.commission_pct||0);
+      });
+      // Inserir antes do toggle
+      var togDiv = item.querySelector(".tog");
+      if(togDiv && togDiv.parentNode) togDiv.parentNode.insertBefore(editBtn, togDiv);
+      else item.appendChild(editBtn);
+    }
+  });
 }
 
 // === FUNCTIONS ===
@@ -545,5 +552,14 @@ document.addEventListener('click', function(e){
   var accEl = e.target.closest('[data-create-access]');
   if(accEl) { e.stopPropagation(); openCreateBarberUser(accEl.dataset.createAccess, accEl.dataset.accessName||''); return; }
 });
+
+
+// Periodic check para garantir que barbeiros são enhanced
+setInterval(function(){
+  var el = document.getElementById("barb-cfg");
+  if(el && el.children.length > 0 && !el.querySelector(".btn-edit-barber")){
+    enhanceBarbList();
+  }
+}, 2000);
 
 })();
