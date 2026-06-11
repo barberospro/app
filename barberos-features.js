@@ -172,6 +172,7 @@ function injectUI(){
   }
   // Dashboard filters
   var dl=document.getElementById("dash-list");
+  if(S.role==='barber'){if(typeof loadBarberDash==='function')setTimeout(loadBarberDash,500);return;} // Barbeiro tem dash próprio
   if(dl&&!document.getElementById("dash-profit-section")){
     var sec=document.createElement("div");sec.id="dash-profit-section";sec.style.padding="0 20px 16px";
     sec.innerHTML='<div style="background:var(--dk2);border-radius:12px;padding:16px"><div style="font-weight:700;font-size:15px;color:#C9A84C;margin-bottom:12px">Lucros e Comiss\u00f5es</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"><button class="fbtn" onclick="filterDash(\x27week\x27)" id="fd-week">Semanal</button><button class="fbtn" onclick="filterDash(\x27biweek\x27)" id="fd-biweek">Quinzenal</button><button class="fbtn" onclick="filterDash(\x27month\x27)" id="fd-month">Mensal</button><button class="fbtn" onclick="filterDash(\x27year\x27)" id="fd-year">Anual</button><button class="fbtn" onclick="filterDash(\x27custom\x27)" id="fd-custom">Periodo</button></div><div id="dash-period-custom" style="display:none;margin-bottom:12px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fg"><label class="fl">De</label><input type="date" class="fi" id="dash-from"></div><div class="fg"><label class="fl">At\u00e9</label><input type="date" class="fi" id="dash-to"></div></div><button class="btn btn-out" onclick="filterDash(\x27custom\x27)" style="margin-top:8px;font-size:12px;padding:8px">Consultar</button></div><div id="dash-profit-result" style="font-size:13px;color:#9A9080">Selecione um per\u00edodo.</div></div>';
@@ -270,5 +271,64 @@ function applyBarberMode(){
     if(app)obs.observe(app,{childList:true,subtree:true});
   },300);
 }
+
+
+// === BARBER DASHBOARD ===
+window.loadBarberDash = async function(){
+  if(S.role !== 'barber' || !S.barberUserId) return;
+  var dl = document.getElementById('dash-list');
+  if(!dl) return;
+  // Buscar comissão do barbeiro
+  var br = await db.from('barbers').select('name,commission_pct').eq('id',S.barberUserId).maybeSingle();
+  var pct = (br&&br.data) ? Number(br.data.commission_pct)||0 : 0;
+  var bName = (br&&br.data) ? br.data.name : '';
+  // Buscar agendamentos encerrados deste barbeiro
+  var now = new Date();
+  var monthStart = new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+  var today = now.toISOString().split('T')[0];
+  var r = await db.from('appointments').select('service_price,appointment_date,status,service_name').eq('barber_id',S.barberUserId).eq('shop_id',S.shopId).in('status',['finished']).gte('appointment_date',monthStart).lte('appointment_date',today);
+  var appts = r.data || [];
+  var totalServicos = appts.reduce(function(s,a){return s+Number(a.service_price||0);},0);
+  var minhaComissao = totalServicos * (pct/100);
+  // Contar atendimentos
+  var totalAtend = appts.length;
+  // Criar HTML do dashboard do barbeiro
+  var sec = document.getElementById('barber-dash-section');
+  if(!sec){
+    sec = document.createElement('div');
+    sec.id = 'barber-dash-section';
+    sec.style.padding = '0 20px 16px';
+    var parent = dl.parentNode;
+    parent.insertBefore(sec, dl);
+  }
+  sec.innerHTML = '<div style="background:var(--dk2);border-radius:12px;padding:16px;margin-bottom:12px">'
+    +'<div style="font-weight:700;font-size:16px;color:var(--gold);margin-bottom:14px">\u{1F4B0} Minhas Comiss\u00f5es - '+bName+'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">'
+    +'<div style="background:var(--dk3);border-radius:8px;padding:14px;text-align:center"><div style="font-size:11px;color:#9A9080">Comiss\u00e3o ('+pct+'%)</div><div style="font-size:20px;font-weight:700;color:var(--gold)">'+fmt(minhaComissao)+'</div></div>'
+    +'<div style="background:var(--dk3);border-radius:8px;padding:14px;text-align:center"><div style="font-size:11px;color:#9A9080">Atendimentos (m\u00eas)</div><div style="font-size:20px;font-weight:700;color:#27AE60">'+totalAtend+'</div></div>'
+    +'</div>'
+    +'<div style="font-size:12px;color:#9A9080;margin-bottom:8px">Servicos encerrados este m\u00eas:</div>';
+  if(appts.length === 0){
+    sec.innerHTML += '<div style="color:#9A9080;font-size:12px;padding:10px;text-align:center">Nenhum atendimento encerrado este m\u00eas.</div>';
+  } else {
+    var listHtml = '';
+    appts.forEach(function(a){
+      listHtml += '<div style="display:flex;justify-content:space-between;padding:8px;background:var(--dk3);border-radius:6px;margin-bottom:4px">'
+        +'<div style="font-size:12px"><span style="font-weight:600">'+a.service_name+'</span><br><span style="color:#9A9080;font-size:10px">'+new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')+'</span></div>'
+        +'<div style="text-align:right"><div style="font-weight:600;color:var(--gold);font-size:12px">'+fmt(Number(a.service_price||0)*(pct/100))+'</div><div style="font-size:10px;color:#9A9080">de '+fmt(Number(a.service_price||0))+'</div></div>'
+        +'</div>';
+    });
+    sec.innerHTML += listHtml;
+  }
+  sec.innerHTML += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--dk4);display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:700">Total do m\u00eas:</span><span style="font-weight:700;color:var(--gold)">'+fmt(minhaComissao)+'</span></div></div>';
+};
+
+// Auto-load barber dash when barber enters
+var _barberDashInterval = setInterval(function(){
+  if(S.role === 'barber' && S.barberUserId && S.shopId && document.getElementById('dash-list')){
+    clearInterval(_barberDashInterval);
+    loadBarberDash();
+  }
+},1000);
 
 })();
