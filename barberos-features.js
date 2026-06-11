@@ -1,6 +1,20 @@
 // v1781192785901
 // BarberOS V2 Features v3.0 - Comissao, Dashboard, Acesso Barbeiro
 (function(){
+// Funcao global chamada pelo onclick dos botoes Editar barbeiro
+window._doEditBarber = function(id){
+  var d = window._barbersData && window._barbersData[id];
+  if(d) {
+    editBarber(d.id, d.name, d.specialty, d.commission_pct);
+  } else {
+    if(window.db && window.S && S.shopId){
+      db.from('barbers').select('*').eq('id',id).maybeSingle().then(function(r){
+        if(r&&r.data) editBarber(r.data.id, r.data.name||'', r.data.specialty||'', r.data.commission_pct||0);
+      });
+    }
+  }
+};
+
 
 var featReady = false;
 
@@ -281,7 +295,7 @@ function injectUI(){
   // Dashboard filters
   var dl=document.getElementById("dash-list");
   // Esconder seção de lucros do proprietário se for barbeiro
-  if(S.role==='barber'){
+  if(window.S&&S.role==='barber'){
     var profitSec=document.getElementById('dash-profit-section');
     if(profitSec)profitSec.style.display='none';
     if(typeof loadBarberDash==='function')setTimeout(loadBarberDash,500);
@@ -450,10 +464,10 @@ window.loadBarberDash = async function(){ return; // Desativado - overrideLoadDa
 // Auto-load barber dash when barber enters
 // Esconder lucros do proprietario quando barbeiro
 var _hideOwnerDash = setInterval(function(){
-  if(S.role==='barber'){
+  if(window.S&&window.S.role==='barber'){
     var ps=document.getElementById('dash-profit-section');
     if(ps){ps.remove();clearInterval(_hideOwnerDash);}
-  } else if(S.role==='owner'){clearInterval(_hideOwnerDash);}
+  } else if(window.S&&S.role==='owner'){clearInterval(_hideOwnerDash);}
 },500);
 
 var _barberDashInterval = setInterval(function(){ return; // Desativado
@@ -559,18 +573,6 @@ setInterval(function(){
 
 
 
-// Funcao global chamada pelo onclick dos botoes Editar barbeiro
-window._doEditBarber = function(id){
-  var d = window._barbersData && window._barbersData[id];
-  if(d) {
-    editBarber(d.id, d.name, d.specialty, d.commission_pct);
-  } else {
-    if(window.db && window.S && S.shopId){
-      db.from('barbers').select('*').eq('id',id).maybeSingle().then(function(r){
-        if(r&&r.data) editBarber(r.data.id, r.data.name||'', r.data.specialty||'', r.data.commission_pct||0);
-      });
-    }
-  }
-};
+
 
 })();
