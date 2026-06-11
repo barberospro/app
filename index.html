@@ -1577,9 +1577,9 @@ async function openPromoMod(id){
 }
 async function savePromo(){
   var name=document.getElementById('pm-name').value.trim();
-  var price=Number(document.getElementById('pm-price').value);
+  var price=Number(document.getElementById('pm-price').value.replace(',','.'));
   if(!name||!price){toast('Nome e preco promo obrigatorios','err');return;}
-  var payload={name:name,description:document.getElementById('pm-desc').value.trim(),emoji:document.getElementById('pm-emoji').value.trim(),original_price:Number(document.getElementById('pm-orig').value)||null,promo_price:price,active:true};
+  var payload={name:name,description:document.getElementById('pm-desc').value.trim(),emoji:document.getElementById('pm-emoji').value.trim(),original_price:Number(document.getElementById('pm-orig').value.replace(',','.'))||null,promo_price:price,active:true};
   var eid=document.getElementById('pm-edit-id').value;
   var error;
   if(eid){var r=await db.from('promotions').update(payload).eq('id',eid);error=r.error;}
