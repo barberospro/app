@@ -222,7 +222,32 @@ async function overrideLoadDashForBarber(){
           dl.innerHTML='<div style="text-align:center;padding:30px;color:#9A9080">Nenhum agendamento seu hoje.</div>';
         }
       }
-    }catch(e){console.warn('loadDash barber error:',e);}
+    
+      // Injetar seção "Minhas Comissões"
+      var brNameR=await db.from('barbers').select('name,commission_pct').eq('id',myBid).maybeSingle();
+      var bName=(brNameR&&brNameR.data)?brNameR.data.name:'';
+      var bPct=(brNameR&&brNameR.data)?Number(brNameR.data.commission_pct)||0:0;
+      var comSec=document.getElementById('barber-dash-section');
+      if(!comSec){comSec=document.createElement('div');comSec.id='barber-dash-section';comSec.style.padding='0 20px 16px';var dlParent=dl.parentNode;dlParent.insertBefore(comSec,dl);}
+      // Buscar atendimentos encerrados do mes
+      var encR=await db.from('appointments').select('service_price,appointment_date,service_name').eq('barber_id',myBid).eq('shop_id',S.shopId).in('status',['finished']).gte('appointment_date',monthStart);
+      var encData=encR.data||[];
+      var totalEnc=encData.reduce(function(s,a){return s+Number(a.service_price||0);},0);
+      var myComm=totalEnc*(bPct/100);
+      var comHtml='<div style="background:var(--dk2);border-radius:12px;padding:16px">'
+        +'<div style="font-weight:700;font-size:16px;color:#C9A84C;margin-bottom:14px">\u{1F4B0} Minhas Comiss\u00f5es - '+bName+'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">'
+        +'<div style="background:var(--dk3);border-radius:8px;padding:14px;text-align:center"><div style="font-size:11px;color:#9A9080">Comiss\u00e3o ('+bPct+'%)</div><div style="font-size:20px;font-weight:700;color:#C9A84C">'+fmt(myComm)+'</div></div>'
+        +'<div style="background:var(--dk3);border-radius:8px;padding:14px;text-align:center"><div style="font-size:11px;color:#9A9080">Atendimentos (m\u00eas)</div><div style="font-size:20px;font-weight:700;color:#27AE60">'+encData.length+'</div></div>'
+        +'</div>';
+      if(encData.length>0){
+        comHtml+='<div style="font-size:12px;color:#9A9080;margin-bottom:8px">Servi\u00e7os encerrados:</div>';
+        encData.forEach(function(a){comHtml+='<div style="display:flex;justify-content:space-between;padding:6px;background:var(--dk3);border-radius:6px;margin-bottom:3px"><div style="font-size:12px"><b>'+a.service_name+'</b><br><span style="color:#9A9080;font-size:10px">'+new Date(a.appointment_date+"T12:00").toLocaleDateString("pt-BR")+'</span></div><div style="text-align:right"><div style="font-weight:600;color:#C9A84C;font-size:12px">'+fmt(Number(a.service_price||0)*(bPct/100))+'</div></div></div>';});
+        comHtml+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(154,144,128,.3);display:flex;justify-content:space-between;font-size:13px"><b>Total:</b><span style="font-weight:700;color:#C9A84C">'+fmt(myComm)+'</span></div>';
+      } else { comHtml+='<div style="color:#9A9080;font-size:12px;padding:10px;text-align:center">Nenhum encerrado este m\u00eas.</div>'; }
+      comHtml+='</div>';
+      comSec.innerHTML=comHtml;
+}catch(e){console.warn('loadDash barber error:',e);}
   };
   // Executar imediatamente
   window.loadDash();
@@ -355,7 +380,7 @@ function applyBarberMode(){
 
 
 // === BARBER DASHBOARD ===
-window.loadBarberDash = async function(){
+window.loadBarberDash = async function(){ return; // Desativado - overrideLoadDashForBarber faz tudo
   if(S.role !== 'barber') return;
   var dl = document.getElementById('dash-list');
   if(!dl) return;
@@ -421,7 +446,7 @@ var _hideOwnerDash = setInterval(function(){
   } else if(S.role==='owner'){clearInterval(_hideOwnerDash);}
 },500);
 
-var _barberDashInterval = setInterval(function(){
+var _barberDashInterval = setInterval(function(){ return; // Desativado
   if(S.role === 'barber' && S.barberUserId && S.shopId && document.getElementById('dash-list')){
     clearInterval(_barberDashInterval);
     loadBarberDash();
@@ -437,7 +462,7 @@ var _dashOverrideInterval = setInterval(function(){
   clearInterval(_dashOverrideInterval);
   
   // Override: substituir os valores dos cards para mostrar apenas dados do barbeiro
-  var _cardUpdateCount=0;var _cardInterval=setInterval(async function updateBarberCards(){_cardUpdateCount++;if(_cardUpdateCount>5)clearInterval(_cardInterval);
+  var _cardUpdateCount=0;var _cardInterval=setInterval(async function updateBarberCards(){return; // Desativado_cardUpdateCount++;if(_cardUpdateCount>5)clearInterval(_cardInterval);
     if(!S.shopId) return;
     var _sess2=await db.auth.getSession();if(!_sess2||!_sess2.data||!_sess2.data.session)return;var _uid2=_sess2.data.session.user.id;var _buR2=await db.from("barber_users").select("barber_id").eq("user_id",_uid2).maybeSingle();if(!_buR2||!_buR2.data)return;var _myBid=_buR2.data.barber_id;_myBid=_myBid;
     var td = new Date().toISOString().split('T')[0];
