@@ -377,7 +377,7 @@ var _dashOverrideInterval = setInterval(function(){
   clearInterval(_dashOverrideInterval);
   
   // Override: substituir os valores dos cards para mostrar apenas dados do barbeiro
-  setTimeout(async function updateBarberCards(){
+  var _cardUpdateCount=0;var _cardInterval=setInterval(async function updateBarberCards(){_cardUpdateCount++;if(_cardUpdateCount>5)clearInterval(_cardInterval);
     if(!S.shopId) return;
     var _sess2=await db.auth.getSession();if(!_sess2||!_sess2.data||!_sess2.data.session)return;var _uid2=_sess2.data.session.user.id;var _buR2=await db.from("barber_users").select("barber_id").eq("user_id",_uid2).maybeSingle();if(!_buR2||!_buR2.data)return;var _myBid=_buR2.data.barber_id;_myBid=_myBid;
     var td = new Date().toISOString().split('T')[0];
@@ -415,7 +415,7 @@ var _dashOverrideInterval = setInterval(function(){
       if(l.textContent === 'Hoje') l.textContent = 'Meus hoje';
       if(l.textContent === 'Este mes') l.textContent = 'Meus no mes';
     });
-  }, 2000);
+  }, 3000);
 }, 1500);
 
 })();
