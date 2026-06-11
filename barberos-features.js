@@ -48,8 +48,7 @@ async function enhanceBarbList(){
     if(!item.querySelector(".btn-edit-barber")){
       var editBtn = document.createElement("button");
       editBtn.className = "btn-edit-barber";
-      editBtn.textContent = "\u270F";
-      editBtn.style.cssText = "background:#C9A84C;color:#0E0E0E;border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;margin-right:4px";
+      editBtn.style.cssText = "background:#C9A84C;color:#0E0E0E;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;margin-right:4px;position:relative;z-index:10;font-weight:700";editBtn.textContent="Editar";
       editBtn.setAttribute("data-barber-edit-id", b.id);
       editBtn.setAttribute("data-barber-edit-name", b.name||"");
       editBtn.setAttribute("data-barber-edit-spec", b.specialty||"");
