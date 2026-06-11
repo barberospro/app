@@ -790,6 +790,8 @@ function icLabel(cat){const m={'Cortes':'CO','Barba':'BA','Combos':'CB','Tratame
 
 // =================== NAV ===================
 function enterApp(mode){
+  window.scrollTo(0,0);
+
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const idMap={client:'client-app',admin:'admin-app','adm-login':'adm-login',planos:'planos',splash:'splash',onboarding:'onboarding','set-password':'set-password'};
   const target=document.getElementById(idMap[mode]||mode);
@@ -842,6 +844,7 @@ function applyShop(d){
 // Verifica se é modo demo: sem ?s= na URL
 function isDemoMode(){return!new URLSearchParams(window.location.search).get('s');}
 function showC(sec){
+  window.scrollTo(0,0);
   document.querySelectorAll('.csec').forEach(s=>s.style.display='none');
   const t=document.getElementById('sc-'+sec);if(t)t.style.display='block';
   // Mostra banner SaaS apenas quando não há ?s= na URL
