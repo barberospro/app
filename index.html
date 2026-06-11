@@ -1815,7 +1815,7 @@ async function setNewPassword(){
         var _blr=await db.from('barber_users').select('*').eq('user_id',uid);
         var _bld=(_blr.data&&_blr.data.length>0)?_blr.data[0]:null;
         if(_bld&&_bld.shop_id){
-          var _shr=await db.from('shops').select('*').eq('id',_bld.shop_id).single();
+          var _shr=await db.from('shops').select('*').eq('id',_bld.shop_id).maybeSingle();
           if(_shr.data){S.shop=_shr.data;S.shopId=_shr.data.id;S.shopSlug=_shr.data.slug;S.role='barber';S.barberUserId=_bld.barber_id;applyShop(_shr.data);enterApp('admin');}
           else{enterApp('onboarding');}
         }else{enterApp('onboarding');}
