@@ -494,7 +494,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 <div id="admin-app" class="screen">
   <div class="hdr">
     <div class="logo">⚙ BarberOS</div>
-    <button onclick="doLogout()" style="background:transparent;border:1px solid var(--dk5);color:var(--txm);border-radius:50px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Sair</button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="logged-user-name" style="font-size:12px;color:var(--gold);font-weight:600"></span>
+      <button onclick="doLogout()" style="background:transparent;border:1px solid var(--dk5);color:var(--txm);border-radius:50px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Sair</button>
+    </div>
   </div>
   <div class="content" id="ac">
 
@@ -1995,6 +1998,27 @@ var PKB={pkg:null,totalSessions:0,currentSession:0,sessions:[],calM:new Date().g
 function calcSessions(f,v){var fM={Semanal:4,Quinzenal:2,Mensal:1};var vM={Mensal:1,Bimestral:2,Semestral:6};return(fM[f]||1)*(vM[v]||1);}
 
 async function deleteFinalized(){var{count:cnt}=await db.from('appointments').select('id',{count:'exact',head:true}).eq('shop_id',S.shopId).in('status',['done','cancelled']);var n=cnt||0;if(n===0){toast('Nenhum agendamento finalizado.','ok');return;}var exp=confirm('Encontrado(s) '+n+' agendamento(s) finalizados. Exportar Excel antes de apagar?');if(exp)await exportAgenda();var ok=confirm('Apagar permanentemente '+n+' agendamento(s) finalizados?');if(!ok)return;var{error}=await db.from('appointments').delete().eq('shop_id',S.shopId).in('status',['done','cancelled']);if(error){toast('Erro: '+error.message,'err');return;}toast(n+' apagado(s)!','ok');loadAgenda('todos');}
+})();
+
+
+// Display logged user name
+(async function(){
+  try{
+    var _s=await db.auth.getSession();
+    if(_s&&_s.data&&_s.data.session){
+      var _u=_s.data.session.user;
+      var _name=_u.user_metadata&&_u.user_metadata.full_name?_u.user_metadata.full_name:_u.email;
+      var _el=document.getElementById('logged-user-name');
+      if(_el)_el.textContent=_name;
+      // If barber, show barber name from barbers table
+      if(S.role==='barber'&&S.barberUserId){
+        var _br=await db.from('barbers').select('name').eq('id',S.barberUserId).maybeSingle();
+        if(_br&&_br.data)_el.textContent=_br.data.name+' (Barbeiro)';
+      } else if(S.role==='owner'){
+        if(_el)_el.textContent=(S.shop&&S.shop.name)||_u.email;
+      }
+    }
+  }catch(e){}
 })();
 
 window.S=S;window.db=db;window.SB_URL=SB_URL;window.SB_KEY=SB_KEY;
