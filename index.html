@@ -1583,7 +1583,7 @@ async function savePromo(){
   var price=parseFloat(priceStr);
   if(!name||isNaN(price)||price<=0){toast('Nome e preco promo obrigatorios','err');return;}
   var origStr=(document.getElementById('prm-orig')?document.getElementById('prm-orig').value.trim().replace(',','.'):'');
-  var payload={name:name,description:(document.getElementById('prm-desc')?document.getElementById('prm-desc').value.trim():''),emoji:(document.getElementById('prm-emoji')?document.getElementById('prm-emoji').value.trim():''),original_price:parseFloat(origStr)||null,promo_price:price,active:true};
+  var payload={name:name,shop_id:S.shopId,description:(document.getElementById('prm-desc')?document.getElementById('prm-desc').value.trim():''),emoji:(document.getElementById('prm-emoji')?document.getElementById('prm-emoji').value.trim():''),original_price:parseFloat(origStr)||null,promo_price:price,active:true};
   var eid=document.getElementById('prm-edit-id')?document.getElementById('prm-edit-id').value:'';
   var error;
   if(eid){var r=await db.from('promotions').update(payload).eq('id',eid);error=r.error;}
