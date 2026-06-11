@@ -24,43 +24,41 @@ async function enhanceBarbList(){
   var el = document.getElementById("barb-cfg");
   if(!el || !el.children.length) return;
   
-  // Buscar dados de comissão e acesso
   var r1 = await db.from("barbers").select("id,name,specialty,commission_pct").eq("shop_id", S.shopId).order("name");
   var barbers = r1.data || [];
-  var usersSet = new Set();
-  try { var r2 = await db.from("barber_users").select("barber_id").eq("shop_id", S.shopId); usersSet = new Set((r2.data||[]).map(function(x){return x.barber_id;})); } catch(e){}
   
-  // Para cada item .ci na lista, adicionar info e botão editar
+  // Guardar dados globalmente
+  if(!window._barbersData) window._barbersData={};
+  barbers.forEach(function(b){ window._barbersData[b.id]={id:b.id,name:b.name||"",specialty:b.specialty||"",commission_pct:b.commission_pct||0}; });
+  
   var items = el.querySelectorAll(".ci");
   items.forEach(function(item, idx){
-    if(item.dataset.enhanced) return;
-    item.dataset.enhanced = "1";
+    if(item.getAttribute("data-enhanced")==="1") return;
+    item.setAttribute("data-enhanced","1");
     var b = barbers[idx];
     if(!b) return;
     
-    // Atualizar subtitle com comissão
+    // Atualizar subtitle
     var sub = item.querySelector(".cits");
     if(sub && !sub.textContent.includes("Comiss")) {
       sub.textContent = (b.specialty||"") + " \u2022 Comiss\u00e3o: " + (b.commission_pct||0) + "%";
     }
     
-    // Adicionar botão Editar se não existe
+    // Adicionar botão com onclick attribute (string HTML - mais robusto)
     if(!item.querySelector(".btn-edit-barber")){
-      // Guardar dados no array global
-      if(!window._barbersData) window._barbersData={};
-      window._barbersData[b.id]={id:b.id,name:b.name||"",specialty:b.specialty||"",commission_pct:b.commission_pct||0};
-      var editBtn = document.createElement("button");
-      editBtn.className = "btn-edit-barber";
-      editBtn.style.cssText = "background:#C9A84C;color:#0E0E0E;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;margin-right:4px;font-weight:700";
-      editBtn.textContent="Editar";
-      editBtn.onclick=function(){var d=window._barbersData[""+b.id+""];if(d)editBarber(d.id,d.name,d.specialty,d.commission_pct);};
-      // Inserir antes do toggle
+      var wrapper = item.querySelector('[style*="display:flex"][style*="gap"]') || item;
+      var btn = document.createElement("button");
+      btn.className = "btn-edit-barber";
+      btn.innerHTML = "Editar";
+      btn.setAttribute("style","background:#C9A84C;color:#0E0E0E;border:none;border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;font-weight:700;-webkit-tap-highlight-color:rgba(201,168,76,0.3);touch-action:manipulation");
+      btn.setAttribute("onclick","window._doEditBarber('"+b.id+"')");
       var togDiv = item.querySelector(".tog");
-      if(togDiv && togDiv.parentNode) togDiv.parentNode.insertBefore(editBtn, togDiv);
-      else item.appendChild(editBtn);
+      if(togDiv && togDiv.parentNode) togDiv.parentNode.insertBefore(btn, togDiv);
+      else item.appendChild(btn);
     }
   });
 }
+
 
 // === FUNCTIONS ===
 window.addBarber = function(){
@@ -548,10 +546,10 @@ var _roleWatcher = setInterval(async function(){
 
 
 
-// Periodic check para garantir que barbeiros são enhanced
+// Periodic check - só enhance se necessário
 setInterval(function(){
   var el = document.getElementById("barb-cfg");
-  if(el && el.children.length > 0 && !el.querySelector(".btn-edit-barber")){
+  if(el && el.children.length > 0 && el.querySelector(".ci:not([data-enhanced])")){
     enhanceBarbList();
   }
 }, 2000);
