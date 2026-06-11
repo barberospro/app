@@ -1810,7 +1810,12 @@ async function setNewPassword(){
       const uid=session.user.id;
       const{data:shopData}=await db.from('shops').select('*').eq('owner_id',uid).maybeSingle();
       if(shopData){S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;applyShop(shopData);enterApp('admin');}
-      else{enterApp('onboarding');}
+      else{
+        // Check if user is a barber
+        var _bl=await db.from('barber_users').select('*,shops(*)').eq('user_id',uid).maybeSingle();
+        if(_bl&&_bl.data&&_bl.data.shops){S.shop=_bl.data.shops;S.shopId=_bl.data.shop_id;S.shopSlug=_bl.data.shops.slug;S.role='barber';S.barberUserId=_bl.data.barber_id;applyShop(_bl.data.shops);enterApp('admin');}
+        else{enterApp('onboarding');}
+      }
     }
   }catch(e){btn.textContent='Criar senha e entrar →';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
 }

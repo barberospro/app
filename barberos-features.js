@@ -244,7 +244,31 @@ var checkInterval = setInterval(function(){
   if(window.db && window.S && window.S.shopId){
     clearInterval(checkInterval);
     init();
+    // Apply barber restrictions immediately if role is set
+    if(S.role === "barber") applyBarberMode();
   }
 },500);
+
+function applyBarberMode(){
+  // Hide tabs: config, services, barbers list, clients
+  setTimeout(function(){
+    document.querySelectorAll(".ni").forEach(function(n){
+      var oc=n.getAttribute("onclick")||"";
+      if(oc.includes("'cfg'")||oc.includes("'svcs'")||oc.includes("'barbs'")||oc.includes("'clientes'"))n.style.display="none";
+    });
+    // Watch for "Encerrar" buttons and hide them
+    var obs=new MutationObserver(function(){
+      document.querySelectorAll("button,a,[onclick]").forEach(function(el){
+        var txt=(el.textContent||"").toLowerCase();
+        var oc=(el.getAttribute("onclick")||"").toLowerCase();
+        if(txt.includes("encerrar")||txt.includes("finalizar")||oc.includes("finished")||oc.includes("encerr")){
+          el.style.display="none";
+        }
+      });
+    });
+    var app=document.getElementById("admin-app");
+    if(app)obs.observe(app,{childList:true,subtree:true});
+  },300);
+}
 
 })();
