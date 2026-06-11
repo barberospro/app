@@ -594,6 +594,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
           </select>
         </div>
         <div id="super-admin-section" style="display:none"><div style="height:8px;background:var(--dk);margin:8px -20px"></div>
+<div class="sa-only" style="display:none">
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">Hotmart — Links de Assinatura</div>
         <div class="fg"><label class="fl">Link Plano Mensal (Hotmart)</label><input class="fi" id="cfg-hm-monthly" placeholder="https://pay.hotmart.com/..."></div>
         <div class="fg"><label class="fl">Link Plano Anual (Hotmart)</label><input class="fi" id="cfg-hm-annual" placeholder="https://pay.hotmart.com/..."></div>
@@ -611,7 +612,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
           </div>
         </div>
         <div style="height:8px;background:var(--dk);margin:8px -20px"></div>
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">👤 Convidar Cliente</div>
+</div>
+
+        <div class="sa-only" style="display:none"><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">👤 Convidar Cliente</div>
         <div class="card" style="margin-bottom:14px">
           <div class="fg"><label class="fl">Nome do cliente</label><input class="fi" id="inv-name" placeholder="Ex: João Silva"></div>
           <div class="fg"><label class="fl">E-mail do cliente</label><input class="fi" type="email" id="inv-email" placeholder="cliente@email.com"></div>
@@ -621,7 +624,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
         </div>
         </div>
         <button class="btn btn-gold" onclick="saveSettings()">Salvar configuracoes</button>
-      </div>
+      </div></div>
       <div class="divider"></div>
       <div style="padding:20px 20px 12px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🔗 Link da sua barbearia</div>
       <div style="padding:0 20px 20px">
@@ -804,10 +807,10 @@ function checkSuperAdmin(){
   const SUPER_ADMIN='covalsqui.arrabal1@gmail.com';
   db.auth.getSession().then(({data:{session}})=>{
     const isSA=session&&session.user.email===SUPER_ADMIN;
-    const el=document.getElementById('super-admin-section');
-    if(el)el.style.display=isSA?'block':'none';
-    const tab=document.getElementById('an-clientes');
-    if(tab)tab.style.display=isSA?'flex':'none';
+    // Esconder/mostrar elementos exclusivos do super admin
+    document.querySelectorAll('.sa-only').forEach(function(el){el.style.display=isSA?'block':'none';});
+    var tab=document.getElementById('an-clientes');if(tab)tab.style.display=isSA?'flex':'none';
+    var el=document.getElementById('super-admin-section');if(el)el.style.display=isSA?'block':'none';
   });
 }
 function loadHotmartLinks(){
