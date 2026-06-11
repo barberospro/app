@@ -1576,11 +1576,15 @@ async function openPromoMod(id){
   openMod('mod-promo');
 }
 async function savePromo(){
-  var name=document.getElementById('pm-name').value.trim();
-  var price=Number(document.getElementById('pm-price').value.replace(',','.'));
-  if(!name||!price){toast('Nome e preco promo obrigatorios','err');return;}
-  var payload={name:name,description:document.getElementById('pm-desc').value.trim(),emoji:document.getElementById('pm-emoji').value.trim(),original_price:Number(document.getElementById('pm-orig').value.replace(',','.'))||null,promo_price:price,active:true};
-  var eid=document.getElementById('pm-edit-id').value;
+  var nameEl=document.getElementById('pm-name');
+  var priceEl=document.getElementById('pm-price');
+  var name=nameEl?nameEl.value.trim():'';
+  var priceStr=priceEl?priceEl.value.trim().replace(',','.'):'';
+  var price=parseFloat(priceStr);
+  if(!name||isNaN(price)||price<=0){toast('Nome e preco promo obrigatorios','err');return;}
+  var origStr=(document.getElementById('pm-orig')?document.getElementById('pm-orig').value.trim().replace(',','.'):'');
+  var payload={name:name,description:(document.getElementById('pm-desc')?document.getElementById('pm-desc').value.trim():''),emoji:(document.getElementById('pm-emoji')?document.getElementById('pm-emoji').value.trim():''),original_price:parseFloat(origStr)||null,promo_price:price,active:true};
+  var eid=document.getElementById('pm-edit-id')?document.getElementById('pm-edit-id').value:'';
   var error;
   if(eid){var r=await db.from('promotions').update(payload).eq('id',eid);error=r.error;}
   else{var r2=await db.from('promotions').insert(payload);error=r2.error;}
