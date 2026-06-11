@@ -57,6 +57,8 @@ async function enhanceBarbList(){
 
 // === FUNCTIONS ===
 window.addBarber = function(){
+
+    var _as3=document.getElementById("brb-access-section");if(_as3)_as3.style.display="none";
   if(!document.getElementById("mod-barber")) return;
   document.getElementById("brb-name").value="";
   document.getElementById("brb-spec").value="";
@@ -67,7 +69,7 @@ window.addBarber = function(){
   openMod("mod-barber");
 };
 
-window.editBarber = function(id,name,spec,comm){
+window.editBarber = async function(id,name,spec,comm){
   if(!document.getElementById("mod-barber")) return;
   document.getElementById("brb-name").value=name||"";
   document.getElementById("brb-spec").value=spec||"";
@@ -79,16 +81,29 @@ window.editBarber = function(id,name,spec,comm){
 };
 
 window.saveBarber = async function(){
+
+    var _sbtn=document.querySelector("#mod-barber .btn");if(_sbtn&&_sbtn.disabled)return;if(_sbtn)_sbtn.disabled=true;setTimeout(function(){if(_sbtn)_sbtn.disabled=false;},3000);
   var name=document.getElementById("brb-name").value.trim();
   if(!name){toast("Informe o nome","err");return;}
   var spec=document.getElementById("brb-spec").value.trim();
   var comm=Number(document.getElementById("brb-comm").value)||0;
   var eid=document.getElementById("brb-edit-id").value;
   var error;
-  if(eid){var r=await db.from("barbers").update({name:name,specialty:spec,commission_pct:comm}).eq("id",eid);error=r.error;}
+  if(eid){
+      var r=await db.from("barbers").update({name:name,specialty:spec,commission_pct:comm}).eq("id",eid);error=r.error;
+      // Atualizar acesso se campos preenchidos
+      var accSec=document.getElementById("brb-access-section");
+      var accPwd=document.getElementById("brb-access-pwd");
+      if(accSec&&accSec.dataset.userId&&accPwd&&accPwd.value.length>=6){
+        try{var sess2=await db.auth.getSession();var tk2=sess2.data.session?sess2.data.session.access_token:"";
+        await fetch(SB_URL+"/functions/v1/create-barber-user",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+tk2},body:JSON.stringify({action:"update_password",user_id:accSec.dataset.userId,password:accPwd.value})});
+        }catch(e2){}
+      }
+    }
   else{var r2=await db.from("barbers").insert({shop_id:S.shopId,name:name,specialty:spec,avatar_emoji:"\u{1F464}",rating:5.0,reviews_count:0,active:true,commission_pct:comm});error=r2.error;}
   if(error){toast("Erro: "+error.message,"err");return;}
-  toast(eid?"Atualizado!":"Adicionado!","ok");
+  if(_btn)_btn.disabled=false;
+    toast(eid?"Atualizado!":"Adicionado!","ok");
   closeMod("mod-barber");
   // Trigger original loadBarbCfg which will then be enhanced by observer
   if(typeof loadBarbers==="function")loadBarbers();
