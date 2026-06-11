@@ -1497,7 +1497,37 @@ async function openApptMod(id){
       ${pkgSessions.length>1?`<div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:var(--rs);padding:12px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:8px">PACOTE ${pkgSessions.length} SESSOES</div>${pkgSessions.map(s=>('<div style="font-size:12px;padding:4px 0;display:flex;justify-content:space-between"><span style=color:var(--txm)>Sessao '+s.package_session_num+'</span><span>'+new Date(s.appointment_date+'T12:00').toLocaleDateString('pt-BR')+' '+s.appointment_time.slice(0,5)+'</span><span style=color:var(--gold)>'+(s.status==='done'?'Feito':s.status==='cancelled'?'Cancelado':'Pendente')+'</span></div>')).join('')}</div>`:''}
       ${a.client_phone?`<button class="btn btn-out" onclick="window.open('https://wa.me/${a.client_phone.replace(/\D/g,'')}','_blank')">💬 WhatsApp do cliente</button>`:''}
       <button class="btn-red" onclick="updAppt('${a.id}','cancelled')">Cancelar agendamento</button>
+      ${S.role!=="barber"?'<div style="display:flex;gap:8px;margin-top:8px"><button onclick="editApptModal(\x27'+a.id+'\x27)" style="flex:1;background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:10px;font-size:13px;cursor:pointer">\u270F Editar</button><button onclick="deleteAppt(\x27'+a.id+'\x27)" style="flex:1;background:rgba(192,57,43,.1);border:1px solid #E74C3C;color:#E74C3C;border-radius:50px;padding:10px;font-size:13px;cursor:pointer">\u{1F5D1} Excluir</button></div>':''}
     </div>`;
+}
+async function deleteAppt(id){
+  if(S.role==='barber'){toast('Apenas o proprietario pode excluir.','err');return;}
+  if(!confirm('Excluir este agendamento permanentemente?'))return;
+  var r=await db.from('appointments').delete().eq('id',id);
+  if(r.error){toast('Erro: '+r.error.message,'err');return;}
+  toast('Agendamento excluido!','ok');closeMod('mod-appt');
+  var activeTab=document.querySelector('#ag-tabs .tab.active');
+  if(activeTab)loadAgenda(activeTab.textContent.toLowerCase().trim()||'todos');
+  else loadDash();
+}
+async function editApptModal(id){
+  if(S.role==='barber'){toast('Apenas o proprietario pode editar.','err');return;}
+  var r=await db.from('appointments').select('*').eq('id',id).maybeSingle();
+  if(!r||!r.data){toast('Agendamento nao encontrado','err');return;}
+  var a=r.data;
+  var newDate=prompt('Data (AAAA-MM-DD):',a.appointment_date);
+  if(!newDate)return;
+  var newTime=prompt('Horario (HH:MM):',a.appointment_time?a.appointment_time.slice(0,5):'');
+  if(!newTime)return;
+  var newStatus=prompt('Status (pending/confirmed/done/finished/cancelled):',a.status);
+  if(!newStatus)return;
+  var upd={appointment_date:newDate,appointment_time:newTime,status:newStatus};
+  var r2=await db.from('appointments').update(upd).eq('id',id);
+  if(r2.error){toast('Erro: '+r2.error.message,'err');return;}
+  toast('Agendamento atualizado!','ok');closeMod('mod-appt');
+  var activeTab=document.querySelector('#ag-tabs .tab.active');
+  if(activeTab)loadAgenda(activeTab.textContent.toLowerCase().trim()||'todos');
+  else loadDash();
 }
 async function encerrarAppt(apptId, barberId){
   if(S.role==='barber'){toast('Apenas o proprietario pode encerrar.','err');return;}
