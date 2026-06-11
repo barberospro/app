@@ -548,6 +548,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
         <button onclick="openPkgMod(null)" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">+ Novo</button>
       </div>
       <div id="adm-pkg-list"></div>
+      <div class="divider"></div>
+      <div style="padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700">Promocoes</div>
+        <button onclick="openPromoMod(null)" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">+ Nova</button>
+      </div>
+      <div id="adm-promo-list"></div>
     </div>
 
     <!-- CLIENTES (super admin only) -->
@@ -845,7 +851,7 @@ function showC(sec){
   if(m[sec]){const el=document.getElementById(m[sec]);if(el)el.classList.add('active');}
   document.getElementById('cc').scrollTop=0;
   if(sec==='agendar'){resetBooking();renderCal();}
-  if(sec==='servicos')renderSvcMenu();
+  if(sec==='servicos')renderSvcMenu();loadAdmPromos();
   if(sec==='pacotes')loadPkgs();
   if(sec==='perfil')loadProfile();
 }
@@ -1529,6 +1535,65 @@ async function editApptModal(id){
   if(activeTab)loadAgenda(activeTab.textContent.toLowerCase().trim()||'todos');
   else loadDash();
 }
+// === PROMOCOES ===
+async function loadAdmPromos(){
+  var el=document.getElementById('adm-promo-list');if(!el)return;
+  var{data}=await db.from('promotions').select('*').order('created_at',{ascending:false});
+  if(!data||data.length===0){el.innerHTML='<div style="padding:16px 20px;color:var(--txm);font-size:13px">Nenhuma promocao cadastrada.</div>';return;}
+  el.innerHTML=data.map(function(p){
+    return '<div style="padding:12px 20px;border-bottom:1px solid var(--dk4);display:flex;align-items:center;justify-content:space-between">'
+      +'<div><div style="font-weight:600;font-size:14px">'+(p.emoji||'')+ ' '+p.name+'</div><div style="font-size:12px;color:var(--txm)">'+(p.description||'')+'</div><div style="font-size:12px;margin-top:2px"><span style="text-decoration:line-through;color:var(--txm)">R$ '+(p.original_price||0)+'</span> <span style="color:var(--gold);font-weight:700">R$ '+p.promo_price+'</span></div></div>'
+      +'<div style="display:flex;gap:6px"><button onclick="openPromoMod(''+p.id+'')" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">Editar</button><button onclick="delPromo(''+p.id+'')" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">X</button></div>'
+      +'</div>';
+  }).join('');
+}
+async function openPromoMod(id){
+  var el=document.getElementById('mod-promo');
+  if(!el){
+    el=document.createElement('div');el.className='mov';el.id='mod-promo';
+    el.innerHTML='<div class="msh"><div class="mhd"></div><div class="mt" id="promo-mod-title">Nova Promocao</div><div class="fg"><label class="fl">Nome *</label><input class="fi" id="pm-name" placeholder="Ex: Combo Corte + Barba"></div><div class="fg"><label class="fl">Descricao</label><input class="fi" id="pm-desc" placeholder="Descricao da promo"></div><div class="fg"><label class="fl">Emoji</label><input class="fi" id="pm-emoji" placeholder="Ex: \u{1F525}" value="\u{1F525}"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fg"><label class="fl">Preco original</label><input class="fi" id="pm-orig" type="number" placeholder="0"></div><div class="fg"><label class="fl">Preco promo *</label><input class="fi" id="pm-price" type="number" placeholder="0"></div></div><input type="hidden" id="pm-edit-id" value=""><button class="btn" onclick="savePromo()" style="width:100%;margin-top:12px">Salvar promocao</button></div>';
+    document.body.appendChild(el);
+  }
+  document.getElementById('pm-name').value='';
+  document.getElementById('pm-desc').value='';
+  document.getElementById('pm-emoji').value='\u{1F525}';
+  document.getElementById('pm-orig').value='';
+  document.getElementById('pm-price').value='';
+  document.getElementById('pm-edit-id').value='';
+  document.getElementById('promo-mod-title').textContent='Nova Promocao';
+  if(id){
+    document.getElementById('promo-mod-title').textContent='Editar Promocao';
+    document.getElementById('pm-edit-id').value=id;
+    var{data}=await db.from('promotions').select('*').eq('id',id).maybeSingle();
+    if(data){
+      document.getElementById('pm-name').value=data.name||'';
+      document.getElementById('pm-desc').value=data.description||'';
+      document.getElementById('pm-emoji').value=data.emoji||'';
+      document.getElementById('pm-orig').value=data.original_price||'';
+      document.getElementById('pm-price').value=data.promo_price||'';
+    }
+  }
+  openMod('mod-promo');
+}
+async function savePromo(){
+  var name=document.getElementById('pm-name').value.trim();
+  var price=Number(document.getElementById('pm-price').value);
+  if(!name||!price){toast('Nome e preco promo obrigatorios','err');return;}
+  var payload={name:name,description:document.getElementById('pm-desc').value.trim(),emoji:document.getElementById('pm-emoji').value.trim(),original_price:Number(document.getElementById('pm-orig').value)||null,promo_price:price,active:true};
+  var eid=document.getElementById('pm-edit-id').value;
+  var error;
+  if(eid){var r=await db.from('promotions').update(payload).eq('id',eid);error=r.error;}
+  else{var r2=await db.from('promotions').insert(payload);error=r2.error;}
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast(eid?'Promocao atualizada!':'Promocao criada!','ok');
+  closeMod('mod-promo');loadAdmPromos();
+}
+async function delPromo(id){
+  if(!confirm('Excluir esta promocao?'))return;
+  await db.from('promotions').delete().eq('id',id);
+  toast('Promocao excluida!','ok');loadAdmPromos();
+}
+
 async function encerrarAppt(apptId, barberId){
   if(S.role==='barber'){toast('Apenas o proprietario pode encerrar.','err');return;}
   if(!confirm('Encerrar agendamento e gerar comissao?'))return;
