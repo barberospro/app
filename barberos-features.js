@@ -141,10 +141,9 @@ window.saveBarber = async function(){
   if(_btn)_btn.disabled=false;
     toast(eid?"Atualizado!":"Adicionado!","ok");
   closeMod("mod-barber");
-  // Trigger original loadBarbCfg which will then be enhanced by observer
-  if(typeof loadBarbers==="function")loadBarbers();
-  // Force re-render
-  setTimeout(enhanceBarbList, 300);
+  // Forcar reload da lista
+  if(typeof window.loadBarbCfg==="function") await window.loadBarbCfg();
+  if(typeof loadBarbers==="function") await loadBarbers();
 };
 
 window.openCreateBarberUser = async function(bid,bn){
