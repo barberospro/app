@@ -1844,11 +1844,24 @@ async function loadBarbCfg(){
 async function togBarb(id,cur){await db.from('barbers').update({active:!cur}).eq('id',id);loadBarbCfg();loadBarbers();}
 async function delBarb(id){if(!confirm('Remover barbeiro?'))return;await db.from('barbers').delete().eq('id',id);loadBarbCfg();loadBarbers();}
 async function addBarber(){
+  // Tenta usar modal do features.js
+  if(document.getElementById('mod-barber')){
+    document.getElementById('brb-name').value='';
+    document.getElementById('brb-spec').value='';
+    document.getElementById('brb-comm').value='0';
+    document.getElementById('brb-comm-val').textContent='0';
+    document.getElementById('brb-edit-id').value='';
+    document.getElementById('mod-barber-title').textContent='Adicionar Barbeiro';
+    openMod('mod-barber');
+    return;
+  }
+  // Fallback: prompt
   const name=prompt('Nome do barbeiro:');if(!name)return;
   const spec=prompt('Especialidade:');
-  const{error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec||'',avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true});
+  const comm=Number(prompt('Comissao % (0-100):'))||0;
+  const{error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec||'',avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true,commission_pct:comm});
   if(error){toast('Erro: '+error.message,'err');return;}
-  toast('Barbeiro adicionado!','ok');loadBarbCfg();loadBarbers();
+  toast('Barbeiro adicionado!','ok');await loadBarbCfg();await loadBarbers();
 }
 
 // Override saveSvc/savePkg to include shop_id
@@ -1870,16 +1883,16 @@ async function saveSvc(){
 }
 async function savePkg(){
   const name=document.getElementById('pm-name').value.trim();
-  const price=Number(document.getElementById('pm-price').value);
+  const price=parseFloat((document.getElementById('pm-price').value||'').replace(/[^0-9.,]/g,'').replace(',','.'));
   const orig=document.getElementById('pm-orig').value;
   const items=document.getElementById('pm-items').value.split('\n').map(s=>s.trim()).filter(Boolean);
   const desc=document.getElementById('pm-desc').value.trim();
   const badge=document.getElementById('pm-badge').value.trim();
   const eid=document.getElementById('pm-id').value;
-  if(!name||!price){toast('Preencha nome e preço.','err');return;}
+  if(!name||isNaN(price)||price<=0){toast('Preencha nome e preço.','err');return;}
   const freq=document.getElementById('pm-freq').value;
   const valid=document.getElementById('pm-valid').value;
-  const payload={name,price,original_price:orig?Number(orig):null,items,description:desc,badge:badge||null,frequencia:freq||null,validade:valid||null,active:true,shop_id:S.shopId};
+  const payload={name,price,original_price:orig?parseFloat(orig.replace(/[^0-9.,]/g,'').replace(',','.')):null,items,description:desc,badge:badge||null,frequencia:freq||null,validade:valid||null,active:true,shop_id:S.shopId};
   let error;
   if(eid){({error}=await db.from('packages').update(payload).eq('id',eid));}
   else{({error}=await db.from('packages').insert(payload));}
