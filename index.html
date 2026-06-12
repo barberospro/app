@@ -942,7 +942,7 @@ async function doForgot(){
   if(error){toast('Erro: '+error.message,'err');return;}
   toast('Email de recuperacao enviado! Verifique sua caixa.','ok');
 }
-async function doLogout(){await db.auth.signOut();S.role=null;S.shopId=null;S.shop={};S.barberUserId=null;S.session=null;var _nel=document.getElementById('logged-user-name');if(_nel)_nel.textContent='';enterApp('splash');}
+async function doLogout(){await db.auth.signOut();window.location.reload();}
 
 // =================== SETTINGS (legacy compat) ===================
 async function loadSettings(){
