@@ -2187,7 +2187,7 @@ if(typeof window.openCreateBarberUser==='undefined'){
       var res=await fetch(SB_URL+'/functions/v1/create-barber-user',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({email:email,password:pwd,barber_id:bid,shop_id:S.shopId})});
       var d=await res.json();
       if(!d.ok){toast('Erro: '+(d.error||'Falha'),'err');return;}
-      toast('Acesso criado!','ok');loadBarbCfg();
+      toast('Acesso criado!','ok');await loadBarbCfg();
     }catch(e){toast('Erro: '+e.message,'err');}
   };
 }

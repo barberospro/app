@@ -172,6 +172,7 @@ window.saveBarberUser = async function(){
     if(!d.ok){toast("Erro: "+(d.error||"Falha ao criar"),"err");return;}
     toast("Acesso criado para "+email+"!","ok");
     closeMod("mod-barber-user");
+    await loadBarbCfg();
     setTimeout(enhanceBarbList, 300);
   }catch(e){toast("Erro: "+e.message,"err");}
 };
