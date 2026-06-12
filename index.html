@@ -221,7 +221,7 @@ html,body{overscroll-behavior-y:none;}
         <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Notificacao WhatsApp automatica</div>
         <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Relatorios financeiros</div>
       </div>
-      <a id="btn-hotmart-monthly" href="https://pay.hotmart.com/SEU_PRODUTO_MENSAL" target="_blank" style="display:block;background:var(--gold);color:var(--dk);border-radius:50px;padding:15px;text-align:center;font-weight:700;font-size:15px;text-decoration:none;margin-top:8px">Assinar por R$ 47/mes</a>
+      <a id="btn-hotmart-monthly" href="https://pay.hotmart.com/SEU_PRODUTO_MENSAL" target="_blank" style="display:block;background:var(--gold);color:var(--dk);border-radius:50px;padding:15px;text-align:center;font-weight:700;font-size:15px;text-decoration:none;margin-top:8px" id="plan-btn-monthly-text">Assinar por R$ 47/mes</a>
     </div>
 
     <!-- PLANO ANUAL -->
@@ -236,7 +236,7 @@ html,body{overscroll-behavior-y:none;}
         <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Suporte prioritario</div>
         <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Acesso a novidades em primeira mao</div>
       </div>
-      <a id="btn-hotmart-annual" href="https://pay.hotmart.com/SEU_PRODUTO_ANUAL" target="_blank" style="display:block;background:var(--gold);color:var(--dk);border-radius:50px;padding:15px;text-align:center;font-weight:700;font-size:15px;text-decoration:none;margin-top:8px">Assinar por R$ 397/ano</a>
+      <a id="btn-hotmart-annual" href="https://pay.hotmart.com/SEU_PRODUTO_ANUAL" target="_blank" style="display:block;background:var(--gold);color:var(--dk);border-radius:50px;padding:15px;text-align:center;font-weight:700;font-size:15px;text-decoration:none;margin-top:8px" id="plan-btn-annual-text">Assinar por R$ 397/ano</a>
     </div>
 
     <div style="font-size:11px;color:var(--txm);text-align:center;line-height:1.7;margin-bottom:20px">
@@ -599,6 +599,16 @@ html,body{overscroll-behavior-y:none;}
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">Hotmart — Links de Assinatura</div>
         <div class="fg"><label class="fl">Link Plano Mensal (Hotmart)</label><input class="fi" id="cfg-hm-monthly" placeholder="https://pay.hotmart.com/..."></div>
         <div class="fg"><label class="fl">Link Plano Anual (Hotmart)</label><input class="fi" id="cfg-hm-annual" placeholder="https://pay.hotmart.com/..."></div>
+        <div style="height:8px;background:var(--dk);margin:8px -20px"></div>
+        <div style="font-size:12px;font-weight:700;color:var(--txm);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px">Textos dos Planos</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="fg"><label class="fl">Texto botao mensal</label><input class="fi" id="cfg-plan-monthly-text" placeholder="Assinar por R$ 47/mes"></div>
+          <div class="fg"><label class="fl">Texto botao anual</label><input class="fi" id="cfg-plan-annual-text" placeholder="Assinar por R$ 397/ano"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="fg"><label class="fl">Preco mensal (ex: R$ 47)</label><input class="fi" id="cfg-plan-monthly-price" placeholder="R$ 47"></div>
+          <div class="fg"><label class="fl">Preco anual (ex: R$ 397)</label><input class="fi" id="cfg-plan-annual-price" placeholder="R$ 397"></div>
+        </div>
         <div style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--rs);padding:12px;margin-bottom:14px;font-size:12px;color:var(--txm);line-height:1.7">
           <strong style="color:var(--gold)">Webhook Hotmart:</strong><br>
           Configure na Hotmart em: Ferramentas → Webhooks<br>
@@ -816,6 +826,12 @@ function checkSuperAdmin(){
 }
 function loadHotmartLinks(){
   const s=S.shop;
+  // Atualizar textos dos botoes de plano
+  if(s.plan_monthly_text){var mt=document.getElementById('plan-btn-monthly-text');if(mt)mt.textContent=s.plan_monthly_text;}
+  if(s.plan_annual_text){var at2=document.getElementById('plan-btn-annual-text');if(at2)at2.textContent=s.plan_annual_text;}
+  // Atualizar precos exibidos
+  if(s.plan_monthly_price){var mp=document.querySelector('[id="planos"] div[style*="font-size:38px"]');/* handled by text */}
+  if(s.plan_annual_price){/* handled by text */}
   if(s.hotmart_monthly){const e=document.getElementById('btn-hotmart-monthly');if(e)e.href=s.hotmart_monthly;}
   if(s.hotmart_annual){const e=document.getElementById('btn-hotmart-annual');if(e)e.href=s.hotmart_annual;}
 }
@@ -1792,7 +1808,7 @@ async function saveSettings(){
     opening_time:g('cfg-open'),closing_time:g('cfg-close'),
     lunch_start:g('cfg-lunch-start'),lunch_end:g('cfg-lunch-end'),
     slot_duration:Number(document.getElementById('cfg-slot')?.value||30),
-    hotmart_monthly:g('cfg-hm-monthly'),hotmart_annual:g('cfg-hm-annual')
+    hotmart_monthly:g('cfg-hm-monthly'),hotmart_annual:g('cfg-hm-annual'),plan_monthly_text:g('cfg-plan-monthly-text'),plan_annual_text:g('cfg-plan-annual-text'),plan_monthly_price:g('cfg-plan-monthly-price'),plan_annual_price:g('cfg-plan-annual-price')
   };
   const{error}=await db.from('shops').update(updates).eq('id',S.shopId);
   if(error){toast('Erro: '+error.message,'err');return;}
