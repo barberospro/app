@@ -2047,7 +2047,6 @@ async function deleteCliente(uid){
   try{var r=await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({user_id:uid})});var d=await r.json();if(d.ok){toast("Cliente excluido!","ok");loadClientes();}else{toast("Erro","err");}}catch(e){toast("Erro","err");}
 }
 
-}
 function openEditCliente(uid){
   var c=_allClientes.find(function(x){return x.id===uid;});if(!c)return;
   _editUID=uid;
