@@ -211,13 +211,9 @@ window.filterDash = async function(period){
 
 async function overrideLoadDashForBarber(){
   // Buscar barber_id real da sessao
-  var sess=await db.auth.getSession();
-  if(!sess||!sess.data||!sess.data.session)return;
-  var uid=sess.data.session.user.id;
-  var buR=await db.from('barber_users').select('barber_id').eq('user_id',uid).maybeSingle();
-  if(!buR||!buR.data)return;
-  var myBid=buR.data.barber_id;
-  S.barberUserId=myBid;
+  // Usar S.barberUserId que já foi definido no doLogin
+  var myBid=window.S&&window.S.barberUserId;
+  if(!myBid)return;
 
   // Sobrescrever loadDash
   window.loadDash = async function(){
