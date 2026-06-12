@@ -1861,7 +1861,7 @@ async function addBarber(){
   const comm=Number(prompt('Comissao % (0-100):'))||0;
   const{error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec||'',avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true,commission_pct:comm});
   if(error){toast('Erro: '+error.message,'err');return;}
-  toast('Barbeiro adicionado!','ok');showA('config');
+  toast('Barbeiro adicionado!','ok');setTimeout(function(){window.location.reload();},500);
 }
 
 // Override saveSvc/savePkg to include shop_id

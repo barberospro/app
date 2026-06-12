@@ -141,8 +141,7 @@ window.saveBarber = async function(){
   if(_btn)_btn.disabled=false;
     toast(eid?"Atualizado!":"Adicionado!","ok");
   closeMod("mod-barber");
-  // Forcar reload completo da secao
-  if(typeof window.showA==="function") window.showA("config");
+  window.location.reload();
 };
 
 window.openCreateBarberUser = async function(bid,bn){
@@ -170,7 +169,7 @@ window.saveBarberUser = async function(){
     if(!d.ok){toast("Erro: "+(d.error||"Falha ao criar"),"err");return;}
     toast("Acesso criado para "+email+"!","ok");
     closeMod("mod-barber-user");
-    if(typeof window.showA==="function") window.showA("config");
+    window.location.reload();
   }catch(e){toast("Erro: "+e.message,"err");}
 };
 
