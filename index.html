@@ -2175,20 +2175,62 @@ window.updateLoggedName = async function(email){
   _el.textContent=email||'';
 };
 
+
+// saveBarber global (mesmo escopo que loadBarbCfg)
+async function saveBarber(){
+  var nameEl=document.getElementById('brb-name');
+  var name=nameEl?nameEl.value.trim():'';
+  if(!name){toast('Informe o nome','err');return;}
+  var spec=document.getElementById('brb-spec')?document.getElementById('brb-spec').value.trim():'';
+  var comm=Number(document.getElementById('brb-comm')?document.getElementById('brb-comm').value:0)||0;
+  var eid=document.getElementById('brb-edit-id')?document.getElementById('brb-edit-id').value:'';
+  var error;
+  if(eid){var r=await db.from('barbers').update({name:name,specialty:spec,commission_pct:comm}).eq('id',eid);error=r.error;}
+  else{var r2=await db.from('barbers').insert({shop_id:S.shopId,name:name,specialty:spec,avatar_emoji:'\u{1F464}',rating:5.0,reviews_count:0,active:true,commission_pct:comm});error=r2.error;}
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast(eid?'Barbeiro atualizado!':'Barbeiro adicionado!','ok');
+  closeMod('mod-barber');
+  await loadBarbCfg();
+}
+
+// saveBarberUser global (mesmo escopo que loadBarbCfg)
+async function saveBarberUser(){
+  var bid=document.getElementById('buser-barber-id')?document.getElementById('buser-barber-id').value:'';
+  var email=document.getElementById('buser-email')?document.getElementById('buser-email').value.trim().toLowerCase():'';
+  var pwd=document.getElementById('buser-pwd')?document.getElementById('buser-pwd').value:'';
+  if(!email||!pwd){toast('Preencha e-mail e senha.','err');return;}
+  if(pwd.length<6){toast('Senha minimo 6 caracteres.','err');return;}
+  try{
+    var sess=await db.auth.getSession();
+    var tk=sess.data.session?sess.data.session.access_token:'';
+    var res=await fetch(SB_URL+'/functions/v1/create-barber-user',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({email:email,password:pwd,barber_id:bid,shop_id:S.shopId})});
+    var d=await res.json();
+    if(!d.ok){toast('Erro: '+(d.error||'Falha ao criar'),'err');return;}
+    toast('Acesso criado para '+email+'!','ok');
+    closeMod('mod-barber-user');
+    await loadBarbCfg();
+  }catch(e){toast('Erro: '+e.message,'err');}
+}
+
 window.S=S;window.db=db;window.SB_URL=SB_URL;window.SB_KEY=SB_KEY;
 
 // Fallback para criar acesso barbeiro (caso features.js nao carregue)
 if(typeof window.openCreateBarberUser==='undefined'){
   window.openCreateBarberUser=async function(bid,bn){
-    var email=prompt('E-mail para o barbeiro '+bn+':');if(!email)return;
-    var pwd=prompt('Senha (min 6 chars):');if(!pwd||pwd.length<6){toast('Senha min 6 chars','err');return;}
-    try{
-      var sess=await db.auth.getSession();var tk=sess.data.session?sess.data.session.access_token:'';
-      var res=await fetch(SB_URL+'/functions/v1/create-barber-user',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({email:email,password:pwd,barber_id:bid,shop_id:S.shopId})});
-      var d=await res.json();
-      if(!d.ok){toast('Erro: '+(d.error||'Falha'),'err');return;}
-      toast('Acesso criado!','ok');await loadBarbCfg();
-    }catch(e){toast('Erro: '+e.message,'err');}
+    // Criar modal se nao existe
+    if(!document.getElementById('mod-barber-user')){
+      var d=document.createElement('div');d.className='mov';d.id='mod-barber-user';
+      d.innerHTML='<div class="msh"><div class="mhd"></div><div class="mt">Criar Acesso</div><div id="buser-barber-name" style="color:#C9A84C;font-weight:700;margin-bottom:12px"></div><div class="fg"><label class="fl">E-mail *</label><input class="fi" id="buser-email" type="email" placeholder="email@exemplo.com"></div><div class="fg"><label class="fl">Senha *</label><input class="fi" id="buser-pwd" type="text" placeholder="Min 6 caracteres"></div><input type="hidden" id="buser-barber-id" value=""><button class="btn" onclick="saveBarberUser()" style="width:100%;margin-top:8px">Criar acesso</button><div id="buser-count" style="font-size:11px;color:#9A9080;text-align:center;margin-top:8px"></div></div>';
+      document.body.appendChild(d);
+    }
+    var r=await db.from('barber_users').select('id').eq('shop_id',S.shopId);
+    if((r.data||[]).length>=3){toast('Limite de 3 acessos atingido.','err');return;}
+    document.getElementById('buser-barber-name').textContent=bn;
+    document.getElementById('buser-barber-id').value=bid;
+    document.getElementById('buser-email').value='';
+    document.getElementById('buser-pwd').value='';
+    document.getElementById('buser-count').textContent=(r.data||[]).length+'/3 acessos criados';
+    openMod('mod-barber-user');
   };
 }
 
