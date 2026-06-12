@@ -1783,17 +1783,7 @@ async function togPkg(id,cur){await db.from('packages').update({active:!cur}).eq
 async function delPkg(id){if(!confirm('Deletar pacote?'))return;await db.from('packages').delete().eq('id',id);toast('Pacote removido!','ok');loadAdmPkgs();}
 
 // =================== CONFIG ===================
-async function loadCfgForm(){
-  const{data}=await db.from('settings').select('*').eq('id',1).single();
-  if(!data)return;S.settings=data;
-  const f=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v||'';};
-  f('cfg-name',data.shop_name);f('cfg-addr',data.address);f('cfg-wa',data.whatsapp);
-  f('cfg-ig',data.instagram);f('cfg-pix',data.pix_key);
-  f('cfg-open',data.opening_time);f('cfg-close',data.closing_time);
-  f('cfg-lunch-start',data.lunch_start);f('cfg-lunch-end',data.lunch_end);
-  const slotEl=document.getElementById('cfg-slot');if(slotEl&&data.slot_duration)slotEl.value=String(data.slot_duration);
-  f('cfg-hm-monthly',data.hotmart_monthly);f('cfg-hm-annual',data.hotmart_annual);
-}
+// loadCfgForm legada removida - usando versao S.shop abaixo
 async function saveSettings(){
   const g=id=>document.getElementById(id)?.value.trim()||'';
   const updates={
@@ -1816,6 +1806,10 @@ async function loadCfgForm(){
   f('cfg-ig',d.instagram);f('cfg-pix',d.pix_key);
   f('cfg-open',d.opening_time);f('cfg-close',d.closing_time);
   f('cfg-hm-monthly',d.hotmart_monthly);f('cfg-hm-annual',d.hotmart_annual);
+  var lsEl=document.getElementById('cfg-lunch-start');if(lsEl&&d.lunch_start)lsEl.value=d.lunch_start;
+  var leEl=document.getElementById('cfg-lunch-end');if(leEl&&d.lunch_end)leEl.value=d.lunch_end;
+  var slEl=document.getElementById('cfg-slot');if(slEl&&d.slot_duration)slEl.value=String(d.slot_duration);
+
   // Show shareable link
   const linkEl=document.getElementById('cfg-share-link');
   if(linkEl)linkEl.textContent=window.location.origin+window.location.pathname+'?s='+d.slug;
@@ -2134,8 +2128,7 @@ async function deleteCliente(uid){
     }catch(e){}
   }catch(e){console.warn('Init error',e);}
 
-var PKB={pkg:null,totalSessions:0,currentSession:0,sessions:[],calM:new Date().getMonth(),calY:new Date().getFullYear(),selDate:null,selDateISO:null,selTime:null,busySlots:[]};
-function calcSessions(f,v){var fM={Semanal:4,Quinzenal:2,Mensal:1};var vM={Mensal:1,Bimestral:2,Semestral:6};return(fM[f]||1)*(vM[v]||1);}
+// PKB e calcSessions removidos - definidos em pkg_booking.js
 
 async function deleteFinalized(){var{count:cnt}=await db.from('appointments').select('id',{count:'exact',head:true}).eq('shop_id',S.shopId).in('status',['done','cancelled']);var n=cnt||0;if(n===0){toast('Nenhum agendamento finalizado.','ok');return;}var exp=confirm('Encontrado(s) '+n+' agendamento(s) finalizados. Exportar Excel antes de apagar?');if(exp)await exportAgenda();var ok=confirm('Apagar permanentemente '+n+' agendamento(s) finalizados?');if(!ok)return;var{error}=await db.from('appointments').delete().eq('shop_id',S.shopId).in('status',['done','cancelled']);if(error){toast('Erro: '+error.message,'err');return;}toast(n+' apagado(s)!','ok');loadAgenda('todos');}
 })();
