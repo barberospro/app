@@ -124,6 +124,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .sr:last-child{border-bottom:none}
 .srl{font-size:13px;color:var(--txm)}.srv{font-size:14px;font-weight:600}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--dk4);border-radius:4px}
+html,body{overscroll-behavior-y:none;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -399,7 +400,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
             <div style="background:#fff;border-radius:var(--r);width:160px;height:160px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:48px">📱</div>
             <div class="pbox" id="pix-key-disp">barbearia@pix.com</div>
             <button class="btn btn-gold" onclick="copyPix()" style="margin-bottom:10px">Copiar Chave PIX</button>
-            <button class="btn btn-grn" onclick="confirmPay('pix')">Ja Paguei — Confirmar Agendamento</button>
+            <button class="btn btn-grn" onclick="confirmPay('pix')">Confirmar Agendamento</button>
           </div>
           <!-- Card box -->
           <div id="card-box" style="display:none">
@@ -1624,6 +1625,8 @@ async function encerrarAppt(apptId, barberId){
 }
 
 async function updAppt(id,status){
+  if(S.role==="barber"){var _chk=await db.from("appointments").select("status").eq("id",id).maybeSingle();if(_chk&&_chk.data&&_chk.data.status==="finished"){toast("Apenas o proprietario pode alterar agendamentos encerrados.","err");return;}}
+
   const{error}=await db.from('appointments').update({status}).eq('id',id);
   if(error){toast('Erro: '+error.message,'err');return;}
   toast('Atualizado!','ok');closeMod('mod-appt');
