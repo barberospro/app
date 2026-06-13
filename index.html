@@ -1402,7 +1402,7 @@ function notifyAdmin(a){
 💳 *Pagamento:* ${pagamento}
 ━━━━━━━━━━━━━━━━━━━━
 _Enviado pelo BarberOS_ ✂️`;
-  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
+  var _a=document.createElement('a');_a.href='https://wa.me/'+num+'?text='+encodeURIComponent(msg);_a.target='_blank';_a.rel='noopener';document.body.appendChild(_a);_a.click();document.body.removeChild(_a);
 }
 function shareWA(){
   const a=S.lastBooking||{};
@@ -1421,12 +1421,12 @@ function shareWA(){
 💰 *Total:* ${fmt(a.service_price||0)}
 ━━━━━━━━━━━━━━━━━━
 _${shopName} • BarberOS_ 📲`;
-  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
+  var _a=document.createElement('a');_a.href='https://wa.me/'+num+'?text='+encodeURIComponent(msg);_a.target='_blank';_a.rel='noopener';document.body.appendChild(_a);_a.click();document.body.removeChild(_a);
 }
 function openWA(){
   const num=(S.settings.whatsapp||'5511999999999').replace(/\D/g,'');
   const msg=encodeURIComponent('Ola! Vim pelo app BarberOS.');
-  window.open('https://wa.me/'+num+'?text='+msg,'_blank');
+  var _a=document.createElement('a');_a.href='https://wa.me/'+num+'?text='+msg;_a.target='_blank';_a.rel='noopener';document.body.appendChild(_a);_a.click();document.body.removeChild(_a);
 }
 function openPix(){openMod('mod-admbook');}
 
