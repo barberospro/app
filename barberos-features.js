@@ -1,4 +1,4 @@
-// v1781192785901
+﻿// v1781192785901
 // BarberOS V2 Features v3.0 - Comissao, Dashboard, Acesso Barbeiro
 (function(){
 // Funcao global chamada pelo onclick dos botoes Editar barbeiro
@@ -217,6 +217,19 @@ async function overrideLoadDashForBarber(){
         encData.forEach(function(a){comHtml+='<div style="display:flex;justify-content:space-between;padding:6px;background:var(--dk3);border-radius:6px;margin-bottom:3px"><div style="font-size:12px"><b>'+a.service_name+'</b><br><span style="color:#9A9080;font-size:10px">'+new Date(a.appointment_date+"T12:00").toLocaleDateString("pt-BR")+'</span></div><div style="text-align:right"><div style="font-weight:600;color:#C9A84C;font-size:12px">'+fmt(Number(a.service_price||0)*(bPct/100))+'</div></div></div>';});
         comHtml+='<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(154,144,128,.3);display:flex;justify-content:space-between;font-size:13px"><b>Total:</b><span style="font-weight:700;color:#C9A84C">'+fmt(myComm)+'</span></div>';
       } else { comHtml+='<div style="color:#9A9080;font-size:12px;padding:10px;text-align:center">Nenhum encerrado este m\u00eas.</div>'; }
+      // === FILTRO POR PERIODO ===
+      comHtml+='<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(154,144,128,.2)">';
+      comHtml+='<div style="font-weight:700;font-size:14px;color:#C9A84C;margin-bottom:10px">\u{1F4CA} Consultar por Per\u00edodo</div>';
+      comHtml+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">';
+      comHtml+='<button class="fbtn" onclick="filterBarberDash(\'week\')">Semanal</button>';
+      comHtml+='<button class="fbtn" onclick="filterBarberDash(\'biweek\')">Quinzenal</button>';
+      comHtml+='<button class="fbtn" onclick="filterBarberDash(\'month\')">Mensal</button>';
+      comHtml+='<button class="fbtn" onclick="filterBarberDash(\'year\')">Anual</button>';
+      comHtml+='<button class="fbtn" onclick="filterBarberDash(\'custom\')">Per\u00edodo</button>';
+      comHtml+='</div>';
+      comHtml+='<div id="barber-period-custom" style="display:none;margin-bottom:10px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fg"><label class="fl">De</label><input type="date" class="fi" id="bp-from"></div><div class="fg"><label class="fl">At\u00e9</label><input type="date" class="fi" id="bp-to"></div></div><button class="btn btn-out" onclick="filterBarberDash(\'custom\')" style="margin-top:8px;font-size:12px;padding:8px">Consultar</button></div>';
+      comHtml+='<div id="barber-period-result" style="font-size:12px;color:#9A9080">Selecione um per\u00edodo acima.</div>';
+      comHtml+='</div>';
       comHtml+='</div>';
       comSec.innerHTML=comHtml;
 }catch(e){console.warn('loadDash barber error:',e);}
@@ -224,6 +237,63 @@ async function overrideLoadDashForBarber(){
   // Executar imediatamente
   window.loadDash();
 }
+
+
+// === FILTRO PERIODO DO BARBEIRO ===
+window.filterBarberDash = async function(period){
+  // Highlight active button
+  var btns=document.querySelectorAll('#barber-dash-section .fbtn');
+  btns.forEach(function(b){b.classList.remove('active');});
+  if(event&&event.target)event.target.classList.add('active');
+  // Custom period toggle
+  var cd=document.getElementById('barber-period-custom');
+  if(cd){cd.style.display=(period==='custom')?'block':'none';}
+  // Calculate date range
+  var now=new Date(),from,to=now.toISOString().split('T')[0];
+  if(period==='week')from=new Date(now-7*86400000).toISOString().split('T')[0];
+  else if(period==='biweek')from=new Date(now-14*86400000).toISOString().split('T')[0];
+  else if(period==='month')from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+  else if(period==='year')from=new Date(now.getFullYear(),0,1).toISOString().split('T')[0];
+  else if(period==='custom'){
+    from=document.getElementById('bp-from').value;
+    to=document.getElementById('bp-to').value;
+    if(!from||!to){document.getElementById('barber-period-result').innerHTML='Selecione as datas.';return;}
+  }
+  var resultEl=document.getElementById('barber-period-result');
+  if(!resultEl)return;
+  resultEl.innerHTML='<div style="text-align:center;padding:10px"><div class="spin"></div></div>';
+  try{
+    var bid=S.barberUserId||S._barberBid;
+    if(!bid){resultEl.innerHTML='Erro: barbeiro n\u00e3o identificado.';return;}
+    var r=await db.from('appointments').select('service_price,service_name,appointment_date,status')
+      .eq('barber_id',bid).gte('appointment_date',from).lte('appointment_date',to)
+      .eq('shop_id',S.shopId).in('status',['done','finished']);
+    var appts=r.data||[];
+    var r2=await db.from('barbers').select('commission_pct').eq('id',bid).maybeSingle();
+    var pct=Number((r2.data||{}).commission_pct)||0;
+    var total=appts.reduce(function(s,a){return s+Number(a.service_price||0);},0);
+    var comm=total*(pct/100);
+    var count=appts.length;
+    var h='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">'
+      +'<div style="background:var(--dk3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:#9A9080">Atendimentos</div><div style="font-size:18px;font-weight:700;color:#C9A84C">'+count+'</div></div>'
+      +'<div style="background:var(--dk3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:#9A9080">Faturado</div><div style="font-size:14px;font-weight:700;color:#fff">'+fmt(total)+'</div></div>'
+      +'<div style="background:var(--dk3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:#9A9080">Comiss\u00e3o ('+pct+'%)</div><div style="font-size:18px;font-weight:700;color:#27AE60">'+fmt(comm)+'</div></div>'
+      +'</div>';
+    if(appts.length>0){
+      var svcMap={};
+      appts.forEach(function(a){var sn=a.service_name||'Servi\u00e7o';if(!svcMap[sn])svcMap[sn]={count:0,total:0};svcMap[sn].count++;svcMap[sn].total+=Number(a.service_price||0);});
+      h+='<div style="font-size:11px;color:#9A9080;margin-bottom:4px">Detalhamento:</div>';
+      Object.keys(svcMap).forEach(function(sn){
+        var s=svcMap[sn];
+        h+='<div style="display:flex;justify-content:space-between;padding:5px 8px;background:var(--dk3);border-radius:6px;margin-bottom:3px;font-size:11px"><span>'+sn+' ('+s.count+'x)</span><span style="font-weight:600;color:#C9A84C">'+fmt(s.total*(pct/100))+'</span></div>';
+      });
+      h+='<div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(154,144,128,.2);display:flex;justify-content:space-between;font-size:12px"><b>Total comiss\u00e3o:</b><span style="font-weight:700;color:#27AE60">'+fmt(comm)+'</span></div>';
+    } else {
+      h+='<div style="color:#9A9080;font-size:11px;text-align:center">Nenhum atendimento encerrado neste per\u00edodo.</div>';
+    }
+    resultEl.innerHTML=h;
+  }catch(e){resultEl.innerHTML='Erro: '+e.message;}
+};
 
 function injectUI(){
   // Modal Barbeiro
