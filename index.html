@@ -2036,19 +2036,39 @@ function filterClientes(){
 function renderClientes(items){
   var el=document.getElementById("cli-list");
   if(!items.length){el.innerHTML="<div style='text-align:center;padding:30px;color:var(--txm)'>Nenhum cliente.</div>";return;}
-  el.innerHTML=items.map(function(c){
-    var cr=c.created_at?new Date(c.created_at).toLocaleDateString("pt-BR"):"";
-    var li=c.last_sign_in?new Date(c.last_sign_in).toLocaleDateString("pt-BR"):"Nunca";
-    var origem=c.origem||"manual";
-    var origemLabel=origem==="hotmart"?"\u{1F4B3} Hotmart":"\u{2709} Convite Manual";
-    var origemColor=origem==="hotmart"?"#27AE60":"#C9A84C";
-    return '<div style="padding:14px 20px;border-bottom:1px solid var(--dk4);display:flex;align-items:center;justify-content:space-between">'
-      +'<div style="flex:1"><div style="font-weight:600;font-size:14px">'+(c.full_name||c.email)+'</div><div style="font-size:12px;color:var(--txm)">'+(c.email||'')+'</div><div style="font-size:11px;margin-top:3px"><span style="color:'+origemColor+';font-weight:600">'+origemLabel+'</span>'+(c.product?' - '+c.product:'')+'</div><div style="font-size:10px;color:var(--txm);margin-top:2px">Criado: '+cr+' | Ultimo login: '+li+'</div></div>'
-      +'<div style="display:flex;gap:6px"><button onclick="editCliente(\''+c.id+'\',\''+c.email+'\')" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">Editar</button><button onclick="deleteCliente(\''+c.id+'\')" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">X</button></div>'
-      +'</div>';
-  }).join("");
-}
-function editCliente(uid,email){
+  // Agrupar por barbearia
+  var groups={};
+  items.forEach(function(c){
+    var shopName=(c.shop&&c.shop.name)||"Sem barbearia";
+    if(!groups[shopName])groups[shopName]={users:[],shopSlug:(c.shop&&c.shop.slug)||""};
+    groups[shopName].users.push(c);
+  });
+  var html="";
+  var sortedGroups=Object.keys(groups).sort(function(a,b){if(a==="Sem barbearia")return 1;if(b==="Sem barbearia")return -1;return a.localeCompare(b);});
+  sortedGroups.forEach(function(shopName){
+    var g=groups[shopName];
+    html+='<div style="margin-bottom:16px">';
+    html+='<div style="padding:12px 20px;background:var(--dk2);border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:10px">';
+    html+='<span style="font-size:16px">'+(shopName==="Sem barbearia"?"\u{1F464}":"\u{1F4CD}")+'</span>';
+    html+='<div><div style="font-weight:700;font-size:14px;color:var(--gold)">'+shopName+'</div>';
+    html+='<div style="font-size:11px;color:var(--txm)">'+g.users.length+' usuario'+(g.users.length>1?'s':'')+'</div></div>';
+    html+='</div>';
+    g.users.forEach(function(c){
+      var cr=c.created_at?new Date(c.created_at).toLocaleDateString("pt-BR"):"";
+      var li=c.last_sign_in?new Date(c.last_sign_in).toLocaleDateString("pt-BR"):"Nunca";
+      var origem=c.origem||"manual";
+      var origemLabel=origem==="hotmart"?"\u{1F4B3} Hotmart":"\u{2709} Convite Manual";
+      var origemColor=origem==="hotmart"?"#27AE60":"#C9A84C";
+      var role=c.is_owner?'<span style="color:#C9A84C;font-size:10px;font-weight:700;margin-left:6px">DONO</span>':c.is_barber?'<span style="color:#27AE60;font-size:10px;font-weight:700;margin-left:6px">BARBEIRO</span>':"";
+      html+='<div style="padding:12px 20px 12px 40px;border-bottom:1px solid var(--dk4);display:flex;align-items:center;justify-content:space-between">';
+      html+='<div style="flex:1"><div style="font-weight:600;font-size:13px">'+(c.full_name||c.email)+role+'</div><div style="font-size:11px;color:var(--txm)">'+(c.email||'')+'</div><div style="font-size:10px;margin-top:3px"><span style="color:'+origemColor+';font-weight:600">'+origemLabel+'</span>'+(c.product?' - '+c.product:'')+'</div><div style="font-size:10px;color:var(--txm);margin-top:2px">Criado: '+cr+' | Ultimo login: '+li+'</div></div>';
+      html+='<div style="display:flex;gap:6px"><button onclick="editCliente(\''+c.id+'\',\''+c.email+'\')" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">Editar</button><button onclick="deleteCliente(\''+c.id+'\')" style="background:rgba(192,57,43,.15);border:1px solid #E74C3C;color:#E74C3C;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer">X</button></div>';
+      html+='</div>';
+    });
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}function editCliente(uid,email){
   document.getElementById("edit-cli-email").value=email||"";
   document.getElementById("edit-cli-name").value="";
   _editUID=uid;
