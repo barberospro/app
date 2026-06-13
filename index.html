@@ -1100,14 +1100,7 @@ function renderBarberGrid(){
       <div style="font-size:14px;font-weight:600">${b.name}</div>
       <div style="font-size:11px;color:var(--gold);margin-top:3px">⭐ ${b.rating} (${b.reviews_count})</div>
       <div style="font-size:11px;color:var(--txm);margin-top:2px">${b.specialty||''}</div>
-    </div>`).join('')+`
-    <div onclick="selBarber(this,'Qualquer',null)" style="background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--r);padding:16px;cursor:pointer;text-align:center" id="bc-any">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--dk4);border:2px solid var(--dk5);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px">🎲</div>
-      <div style="font-size:14px;font-weight:600">Qualquer</div>
-      <div style="font-size:11px;color:var(--txm);margin-top:3px">Sem preferencia</div>
-      <div style="font-size:11px;color:var(--txm);margin-top:2px">Primeiro disponivel</div>
-    </div>`;
-}
+    </div>`).join('');}
 function selBarber(card,name,id){
   document.querySelectorAll('#barber-grid > div').forEach(c=>{c.style.borderColor='var(--dk4)';c.style.background='var(--dk3)';});
   card.style.borderColor='var(--gold)';card.style.background='rgba(201,168,76,.08)';
@@ -1345,7 +1338,7 @@ async function confirmPay(method){
     barber_id:isUUID(S.selectedBarberId)?S.selectedBarberId:null,
     service_id:svcId,
     service_name:svcName,
-    barber_name:S.selectedBarber||'Qualquer',
+    barber_name:S.selectedBarber||'',
     service_price:total,
     services_json:S.cart.map(c=>({id:c.id,name:c.name,price:c.price,duration_minutes:c.duration_minutes})),
     total_duration_minutes:totalDur,
@@ -1681,10 +1674,10 @@ async function openAdmBook(){
       db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name')
     ]);
     ds.innerHTML=(svcs||[]).map(s=>`<option value="${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} — ${fmt(s.price)}</option>`).join('');
-    db2.innerHTML=`<option value="|Qualquer">Qualquer disponivel</option>`+(barbers||[]).map(b=>`<option value="${b.id}|${b.name}">${b.name}</option>`).join('');
+    db2.innerHTML=(barbers||[]).map(b=>`<option value="${b.id}|${b.name}">${b.name}</option>`).join('');
   }catch(e){
     ds.innerHTML='<option value="|Servico">Erro ao carregar servicos</option>';
-    db2.innerHTML='<option value="|Qualquer">Qualquer disponivel</option>';
+    db2.innerHTML='';
   }
 }
 async function saveAdmBook(){
@@ -1703,7 +1696,7 @@ async function saveAdmBook(){
     client_name:name,client_phone:phone,
     barber_id:/^[0-9a-f-]{36}$/i.test(barbVal[0]||'')?barbVal[0]:null,
     service_id:svcVal[0]||null,
-    service_name:svcVal[1]||'',barber_name:barbVal[1]||'Qualquer',
+    service_name:svcVal[1]||'',barber_name:barbVal[1]||'',
     service_price:Number(svcVal[2])||0,
     total_duration_minutes:Number(svcVal[3])||30,
     appointment_date:date,appointment_time:time+':00',
