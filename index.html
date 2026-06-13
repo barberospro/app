@@ -2026,6 +2026,22 @@ async function loadClientes(){
     var r=await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=list");
     var d=await r.json();
     _allClientes=d.users||[];
+    // Buscar shops e barber_users para agrupar
+    try{
+      var shopsR=await db.from("shops").select("id,name,slug,owner_id");
+      var buR=await db.from("barber_users").select("user_id,shop_id");
+      var shops=(shopsR.data||[]);
+      var bus=(buR.data||[]);
+      var shopMap={};shops.forEach(function(s){shopMap[s.id]=s;});
+      _allClientes.forEach(function(c){
+        // Check if user is owner of a shop
+        var ownedShop=shops.find(function(s){return s.owner_id===c.id;});
+        if(ownedShop){c.shop={name:ownedShop.name,slug:ownedShop.slug};c.is_owner=true;return;}
+        // Check if user is a barber
+        var bu=bus.find(function(b){return b.user_id===c.id;});
+        if(bu&&shopMap[bu.shop_id]){c.shop={name:shopMap[bu.shop_id].name,slug:shopMap[bu.shop_id].slug};c.is_barber=true;return;}
+      });
+    }catch(e2){console.warn("Erro ao buscar shops:",e2);}
     document.getElementById("cli-count").textContent=_allClientes.length+" clientes";
     renderClientes(_allClientes);
   }catch(e){list.innerHTML="<div style=padding:20px;color:var(--red)>Erro ao carregar.</div>";console.error(e);}
