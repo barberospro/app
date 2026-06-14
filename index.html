@@ -2256,7 +2256,7 @@ async function loadReminders(){
   var list=document.getElementById('reminder-list');
   if(!sec||!list||!S.shopId)return;
   var now=new Date();
-  var today=now.toISOString().split('T')[0];
+  var today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
   var nowMin=now.getHours()*60+now.getMinutes();
   var limit=nowMin+120; // proximas 2 horas
   try{
@@ -2291,11 +2291,13 @@ async function markReminded(id,btn){
 
 // Auto-load reminders on dashboard
 var _reminderInterval=setInterval(function(){
-  if(window.S&&S.shopId&&document.getElementById('dash-reminders')&&S.role!=='barber'){
-    loadReminders();clearInterval(_reminderInterval);
+  if(window.S&&S.shopId&&document.getElementById('dash-reminders')){
+    if(S.role==='barber')return;
+    clearInterval(_reminderInterval);
+    setTimeout(loadReminders,500);
     setInterval(loadReminders,120000);
   }
-},2000);
+},3000);
 window.S=S;window.db=db;window.SB_URL=SB_URL;window.SB_KEY=SB_KEY;
 
 // Fallback para criar acesso barbeiro (caso features.js nao carregue)
