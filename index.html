@@ -515,7 +515,7 @@ html,body{overscroll-behavior-y:none;}
         <div class="sc"><div class="sl">Receita mes</div><div class="sv" id="st-rm">-</div></div>
       </div>
       <div style="padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between">
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Agenda de Hoje</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Próximos Agendamentos</div>
         <div style="background:var(--dk4);border-radius:50px;padding:4px 10px;font-size:11px;color:var(--txm)" id="td-lbl"></div>
       </div>
       <div id="dash-reminders" style="padding:0 20px 12px;display:none">
@@ -1481,7 +1481,9 @@ async function loadDash(){
     document.getElementById('st-month').textContent=mc;
     document.getElementById('st-rm').textContent='R$ '+mr.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
     const dl=document.getElementById('dash-list');
-    dl.innerHTML=(ta&&ta.length)?ta.map(a=>agItemHTML(a)).join(''):'<div style="text-align:center;padding:30px;color:var(--txm)">Nenhum agendamento hoje.</div>';
+    var nowH=new Date().getHours(),nowM=new Date().getMinutes(),nowTot=nowH*60+nowM;
+    var futureAppts=(ta||[]).filter(function(a){var p=(a.appointment_time||'00:00').split(':');var am=Number(p[0])*60+Number(p[1]||0);return am>=nowTot||a.status==='confirmed'||a.status==='pending';});
+    dl.innerHTML=futureAppts.length?futureAppts.map(a=>agItemHTML(a)).join(''):'<div style="text-align:center;padding:30px;color:var(--txm)">Nenhum agendamento pendente.</div>';
   }catch(e){}
 }
 
