@@ -701,6 +701,7 @@ html,body{overscroll-behavior-y:none;}
         <div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Resumo do Pacote</div>
         <div id="pkb-summary"></div>
       </div>
+      <div class="fg"><label class="fl">Barbeiro</label><select class="fi" id="pkb-barber" style="background:var(--dk3);color:var(--tx);border:1px solid var(--dk4);border-radius:var(--rs);padding:12px 14px;font-size:14px;font-family:inherit;width:100%"><option value="">A definir</option></select></div>
       <div class="fg"><label class="fl">Seu nome</label><input class="fi" id="pkb-name" placeholder="Como devo te chamar?"></div>
       <div class="fg"><label class="fl">Seu WhatsApp</label><input class="fi" id="pkb-phone" type="tel" placeholder="(11) 99999-9999"></div>
     </div>
@@ -1516,7 +1517,7 @@ async function openApptMod(id){
       <div class="sr"><span class="srl">Cliente</span><span class="srv">${a.client_name}</span></div>
       <div class="sr"><span class="srl">WhatsApp</span><span class="srv">${a.client_phone||'—'}</span></div>
       <div class="sr"><span class="srl">Servico</span><span class="srv">${a.service_name}</span></div>
-      <div class="sr"><span class="srl">Barbeiro</span><span class="srv">${a.barber_name}</span></div>
+      <div class="sr"><span class="srl">Barbeiro</span><span class="srv"><select id="appt-barber-sel" data-appt-id="${a.id}" style="background:var(--dk3);color:var(--tx);border:1px solid var(--dk4);border-radius:8px;padding:4px 8px;font-size:13px;font-family:inherit"></select> <button onclick="saveApptBarber()" style="background:var(--gold);color:#0E0E0E;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;margin-left:4px">Salvar</button></span></div>
       <div class="sr"><span class="srl">Data</span><span class="srv">${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')}</span></div>
       <div class="sr"><span class="srl">Horario</span><span class="srv">${t}</span></div>
       <div class="sr"><span class="srl">Pagamento</span><span class="srv">${a.payment_method||'—'}</span></div>
@@ -1531,6 +1532,7 @@ async function openApptMod(id){
       <button class="btn-red" onclick="updAppt('${a.id}','cancelled')">Cancelar agendamento</button>
       ${S.role!=="barber"?'<div style="display:flex;gap:8px;margin-top:8px"><button onclick="editApptModal(\x27'+a.id+'\x27)" style="flex:1;background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:10px;font-size:13px;cursor:pointer">\u270F Editar</button><button onclick="deleteAppt(\x27'+a.id+'\x27)" style="flex:1;background:rgba(192,57,43,.1);border:1px solid #E74C3C;color:#E74C3C;border-radius:50px;padding:10px;font-size:13px;cursor:pointer">\u{1F5D1} Excluir</button></div>':''}
     </div>`;
+  populateBarberSelect(a.barber_id);
 }
 async function deleteAppt(id){
   if(S.role==='barber'){toast('Apenas o proprietario pode excluir.','err');return;}
@@ -2300,6 +2302,39 @@ var _reminderInterval=setInterval(function(){
     setInterval(loadReminders,120000);
   }
 },3000);
+
+// Alterar barbeiro do agendamento
+async function populateBarberSelect(currentBarberId){
+  var sel=document.getElementById('appt-barber-sel');
+  if(!sel)return;
+  var r=await db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name');
+  var barbers=r.data||[];
+  sel.innerHTML='<option value="">A definir</option>'+barbers.map(function(b){return '<option value="'+b.id+'"'+(b.id===currentBarberId?' selected':'')+'>'+b.name+'</option>';}).join('');
+}
+async function saveApptBarber(){
+  var sel=document.getElementById('appt-barber-sel');
+  if(!sel)return;
+  var apptId=sel.dataset.apptId;
+  var barberId=sel.value;
+  var barberName=sel.options[sel.selectedIndex].text;
+  var upd={barber_name:barberName};
+  if(barberId)upd.barber_id=barberId;
+  else{upd.barber_id=null;upd.barber_name='A definir';}
+  var r=await db.from('appointments').update(upd).eq('id',apptId);
+  if(r.error){toast('Erro: '+r.error.message,'err');return;}
+  toast('Barbeiro atualizado!','ok');
+}
+
+
+// Populate barber select for package booking
+async function loadPkbBarbers(){
+  var sel=document.getElementById('pkb-barber');
+  if(!sel||!S.shopId)return;
+  var r=await db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name');
+  var barbers=r.data||[];
+  sel.innerHTML='<option value="">A definir</option>'+barbers.map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('');
+}
+
 window.S=S;window.db=db;window.SB_URL=SB_URL;window.SB_KEY=SB_KEY;
 
 // Fallback para criar acesso barbeiro (caso features.js nao carregue)
