@@ -1,6 +1,7 @@
 ﻿// v1781192785901
 // BarberOS V2 Features v3.0 - Comissao, Dashboard, Acesso Barbeiro
 (function(){
+function localDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 // Funcao global chamada pelo onclick dos botoes Editar barbeiro
 window._doEditBarber = function(id){
   var d = window._barbersData && window._barbersData[id];
@@ -121,11 +122,11 @@ window.filterDash = async function(period){
   var btn=document.getElementById("fd-"+period);if(btn)btn.classList.add("active");
   var cd=document.getElementById("dash-period-custom");
   if(period==="custom")cd.style.display="block";else cd.style.display="none";
-  var now=new Date(),from,to=now.toISOString().split("T")[0];
-  if(period==="week")from=new Date(now-7*86400000).toISOString().split("T")[0];
-  else if(period==="biweek")from=new Date(now-14*86400000).toISOString().split("T")[0];
-  else if(period==="month")from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split("T")[0];
-  else if(period==="year")from=new Date(now.getFullYear(),0,1).toISOString().split("T")[0];
+  var now=new Date(),from,to=localDate(now);
+  if(period==="week")from=localDate(new Date(now-7*86400000));
+  else if(period==="biweek")from=localDate(new Date(now-14*86400000));
+  else if(period==="month")from=localDate(new Date(now.getFullYear(),now.getMonth(),1));
+  else if(period==="year")from=localDate(new Date(now.getFullYear(),0,1));
   else if(period==="custom"){from=document.getElementById("dash-from").value;to=document.getElementById("dash-to").value;if(!from||!to){document.getElementById("dash-profit-result").innerHTML="Selecione as datas.";return;}}
   try{
     var r=await db.from("appointments").select("service_price,barber_name,barber_id,status").gte("appointment_date",from).lte("appointment_date",to).eq("shop_id",S.shopId).in("status",["done","executed","finished"]);
@@ -157,7 +158,7 @@ async function overrideLoadDashForBarber(){
 
   // Sobrescrever loadDash
   window.loadDash = async function(){
-    var td=new Date().toISOString().split('T')[0];
+    var td=localDate(new Date());
     var el=document.getElementById('td-lbl');
     if(el)el.textContent='Hoje '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
     try{
@@ -249,11 +250,11 @@ window.filterBarberDash = async function(period){
   var cd=document.getElementById('barber-period-custom');
   if(cd){cd.style.display=(period==='custom')?'block':'none';}
   // Calculate date range
-  var now=new Date(),from,to=now.toISOString().split('T')[0];
-  if(period==='week')from=new Date(now-7*86400000).toISOString().split('T')[0];
-  else if(period==='biweek')from=new Date(now-14*86400000).toISOString().split('T')[0];
-  else if(period==='month')from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
-  else if(period==='year')from=new Date(now.getFullYear(),0,1).toISOString().split('T')[0];
+  var now=new Date(),from,to=localDate(now);
+  if(period==='week')from=localDate(new Date(now-7*86400000));
+  else if(period==='biweek')from=localDate(new Date(now-14*86400000));
+  else if(period==='month')from=localDate(new Date(now.getFullYear(),now.getMonth(),1));
+  else if(period==='year')from=localDate(new Date(now.getFullYear(),0,1));
   else if(period==='custom'){
     from=document.getElementById('bp-from').value;
     to=document.getElementById('bp-to').value;
@@ -438,8 +439,8 @@ window.loadBarberDash = async function(){ return; // Desativado - overrideLoadDa
   var bName = (br&&br.data) ? br.data.name : '';
   // Buscar agendamentos encerrados deste barbeiro
   var now = new Date();
-  var monthStart = new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
-  var today = now.toISOString().split('T')[0];
+  var monthStart = localDate(new Date(now.getFullYear(),now.getMonth(),1));
+  var today = localDate(now);
   var r = await db.from('appointments').select('service_price,appointment_date,status,service_name').eq('barber_id',myBarberId).eq('shop_id',S.shopId).in('status',['finished']).gte('appointment_date',monthStart).lte('appointment_date',today);
   var appts = r.data || [];
   var totalServicos = appts.reduce(function(s,a){return s+Number(a.service_price||0);},0);
@@ -505,8 +506,8 @@ var _dashOverrideInterval = setInterval(function(){
   var _cardUpdateCount=0;var _cardInterval=setInterval(async function updateBarberCards(){return; // Desativado_cardUpdateCount++;if(_cardUpdateCount>5)clearInterval(_cardInterval);
     if(!S.shopId) return;
     var _sess2=await db.auth.getSession();if(!_sess2||!_sess2.data||!_sess2.data.session)return;var _uid2=_sess2.data.session.user.id;var _buR2=await db.from("barber_users").select("barber_id").eq("user_id",_uid2).maybeSingle();if(!_buR2||!_buR2.data)return;var _myBid=_buR2.data.barber_id;_myBid=_myBid;
-    var td = new Date().toISOString().split('T')[0];
-    var monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+    var td = localDate(new Date());
+    var monthStart = localDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
     var pctR = await db.from('barbers').select('commission_pct').eq('id', _myBid).maybeSingle();
     var pct = (pctR && pctR.data) ? Number(pctR.data.commission_pct) || 0 : 0;
     
