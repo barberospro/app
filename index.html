@@ -2146,7 +2146,29 @@ async function deleteCliente(uid){
 (async()=>{
   try{
     // 1. Detect password-reset / invite token in URL hash
-    const hash=window.location.hash;
+    const hash=window.location.hash||'';
+    // Also check URL params for PKCE flow or error tokens
+    const urlParams=new URLSearchParams(window.location.search);
+    const errorParam=urlParams.get('error');
+    const errorCode=urlParams.get('error_code');
+    if(errorParam==='access_denied'&&errorCode==='otp_expired'){
+      alert('Link expirado. Solicite um novo link de acesso.');
+      window.location.href='/';
+      return;
+    }
+    // PKCE: if there's a code param, exchange it
+    const pkceCode=urlParams.get('code');
+    if(pkceCode){
+      try{
+        const{data,error}=await db.auth.exchangeCodeForSession(pkceCode);
+        if(data&&data.session){
+          history.replaceState(null,'',window.location.pathname);
+          document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+          document.getElementById('set-password').classList.add('active');
+          return;
+        }
+      }catch(e){console.warn('PKCE exchange error:',e);}
+    }
     if(hash.includes('access_token')&&(hash.includes('type=recovery')||hash.includes('type=invite'))){
       // Parse tokens from hash
       const params=new URLSearchParams(hash.replace('#',''));
