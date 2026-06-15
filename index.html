@@ -2144,6 +2144,7 @@ async function deleteCliente(uid){
 
 // =================== INIT ===================
 (async()=>{
+  let _authRedirect=false;
   try{
     // 1. Detect password-reset / invite token in URL hash
     const hash=window.location.hash||'';
@@ -2182,11 +2183,12 @@ async function deleteCliente(uid){
           // Show set-password screen
           document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
           document.getElementById('set-password').classList.add('active');
-          return; // stop init here
+          _authRedirect=true;
         }catch(e){console.warn('Token error:',e);}
       }
     }
 
+    if(_authRedirect)return;
     // 2. Load profile from localStorage
     const n=localStorage.getItem('client_name');const p=localStorage.getItem('client_phone');
     if(n){const e=document.getElementById('prf-name');if(e)e.value=n;}
