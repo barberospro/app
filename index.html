@@ -2152,10 +2152,15 @@ async function deleteCliente(uid){
     const urlParams=new URLSearchParams(window.location.search);
     const errorParam=urlParams.get('error');
     const errorCode=urlParams.get('error_code');
-    if(errorParam==='access_denied'&&errorCode==='otp_expired'){
-      alert('Link expirado. Solicite um novo link de acesso.');
-      window.location.href='/';
-      return;
+    // Also check hash for errors
+    const hashParams=new URLSearchParams(hash.replace('#',''));
+    const hashError=hashParams.get('error');
+    const hashErrorCode=hashParams.get('error_code');
+    if((errorParam==='access_denied'&&errorCode==='otp_expired')||(hashError==='access_denied'&&hashErrorCode==='otp_expired')){
+      history.replaceState(null,'',window.location.pathname);
+      alert('Link expirado. Solicite um novo link clicando em "Esqueci minha senha".');
+      enterApp('adm-login');
+      _authRedirect=true;
     }
     // PKCE: if there's a code param, exchange it
     const pkceCode=urlParams.get('code');
