@@ -833,16 +833,15 @@ function checkSuperAdmin(){
     var el=document.getElementById('super-admin-section');if(el)el.style.display=isSA?'block':'none';
   });
 }
-function loadHotmartLinks(){
-  const s=S.shop;
-  // Atualizar textos dos botoes de plano
-  if(s.plan_monthly_text){var mt=document.getElementById('plan-btn-monthly-text');if(mt)mt.textContent=s.plan_monthly_text;}
-  if(s.plan_annual_text){var at2=document.getElementById('plan-btn-annual-text');if(at2)at2.textContent=s.plan_annual_text;}
-  // Atualizar precos exibidos
-  if(s.plan_monthly_price){var mp=document.querySelector('[id="planos"] div[style*="font-size:38px"]');/* handled by text */}
-  if(s.plan_annual_price){/* handled by text */}
-  if(s.hotmart_monthly){const e=document.getElementById('btn-hotmart-monthly');if(e)e.href=s.hotmart_monthly;}
-  if(s.hotmart_annual){const e=document.getElementById('btn-hotmart-annual');if(e)e.href=s.hotmart_annual;}
+async function loadHotmartLinks(){
+  // Sempre buscar links da barbearia admin (super admin)
+  var adminShop=null;
+  try{var r=await db.from('shops').select('hotmart_monthly,hotmart_annual,plan_monthly_text,plan_annual_text').eq('id','c5580b36-e699-4bd0-8474-960feb8cec90').maybeSingle();adminShop=r&&r.data?r.data:null;}catch(e){}
+  if(!adminShop)adminShop=S.shop||{};
+  if(adminShop.plan_monthly_text){var mt=document.getElementById('plan-btn-monthly-text');if(mt)mt.textContent=adminShop.plan_monthly_text;}
+  if(adminShop.plan_annual_text){var at2=document.getElementById('plan-btn-annual-text');if(at2)at2.textContent=adminShop.plan_annual_text;}
+  if(adminShop.hotmart_monthly){var e=document.getElementById('btn-hotmart-monthly');if(e)e.href=adminShop.hotmart_monthly;}
+  if(adminShop.hotmart_annual){var e2=document.getElementById('btn-hotmart-annual');if(e2)e2.href=adminShop.hotmart_annual;}
 }
 // Load shop by slug (client mode) or by owner (admin mode)
 async function loadShop(slugOrOwnerId, byOwner=false){
