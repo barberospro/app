@@ -2285,7 +2285,7 @@ async function loadReminders(){
     }).join('');
   }catch(e){sec.style.display='none';}
 }
-async function markReminded(id,btn){
+window.markReminded = async function(id,btn){
   await db.from('appointments').update({reminder_sent:true}).eq('id',id);
   if(btn)btn.parentElement.parentElement.remove();
   var list=document.getElementById('reminder-list');
@@ -2304,14 +2304,14 @@ var _reminderInterval=setInterval(function(){
 },3000);
 
 // Alterar barbeiro do agendamento
-async function populateBarberSelect(currentBarberId){
+window.populateBarberSelect = async function(currentBarberId){
   var sel=document.getElementById('appt-barber-sel');
   if(!sel)return;
   var r=await db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name');
   var barbers=r.data||[];
   sel.innerHTML='<option value="">A definir</option>'+barbers.map(function(b){return '<option value="'+b.id+'"'+(b.id===currentBarberId?' selected':'')+'>'+b.name+'</option>';}).join('');
 }
-async function saveApptBarber(){
+window.saveApptBarber = async function(){
   var sel=document.getElementById('appt-barber-sel');
   if(!sel)return;
   var apptId=sel.dataset.apptId;
@@ -2327,7 +2327,7 @@ async function saveApptBarber(){
 
 
 // Populate barber select for package booking
-async function loadPkbBarbers(){
+window.loadPkbBarbers = async function loadPkbBarbers(){
   var sel=document.getElementById('pkb-barber');
   if(!sel||!S.shopId)return;
   var r=await db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name');
