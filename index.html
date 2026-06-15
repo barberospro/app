@@ -1445,7 +1445,7 @@ async function loadMyAppts(){
     <div style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r);padding:16px;margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">
         <div><div style="font-weight:700;font-size:15px">${a.service_name}</div><div style="font-size:12px;color:var(--txm)">com ${a.barber_name}</div></div>
-        <span style="font-size:14px;margin-right:6px" title="${a.reminder_sent?'Lembrete enviado':'Lembrete pendente'}">${a.reminder_sent?'\u2705':'\u{1F4E9}'}</span><span class="badge ${sl[a.status]||'bp'}">${st[a.status]||'Pendente'}</span>
+        <span style="font-size:9px;padding:2px 5px;border-radius:4px;margin-right:6px;font-weight:700;${a.reminder_sent?'background:#27AE60;color:#fff':'background:rgba(201,168,76,.2);color:#C9A84C'}">${a.reminder_sent?'LEMBRADO':'PENDENTE'}</span><span class="badge ${sl[a.status]||'bp'}">${st[a.status]||'Pendente'}</span>
       </div>
       <div style="font-size:12px;color:var(--txm)">📅 ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')} as ${(a.appointment_time||'').slice(0,5)} · ${fmt(a.service_price)}</div>
     </div>`).join('');
@@ -2296,7 +2296,7 @@ async function loadReminders(){
     var appts=(r.data||[]).filter(function(a){
       var parts=(a.appointment_time||'').split(':');
       var apptMin=Number(parts[0])*60+Number(parts[1]||0);
-      return apptMin>nowMin && apptMin<=limit && !a.reminder_sent;
+      return apptMin>nowMin && apptMin<=limit;
     });
     if(appts.length===0){sec.style.display='none';return;}
     sec.style.display='block';
@@ -2307,17 +2307,20 @@ async function loadReminders(){
       if(cp&&!cp.startsWith('55'))cp='55'+cp;
       var msg=encodeURIComponent('Ola '+a.client_name+'! \u{1F44B} Lembrete: seu horario e hoje as '+a.appointment_time+' ('+a.service_name+'). Te esperamos!');
       var waLink=cp?'https://wa.me/'+cp+'?text='+msg:'';
-      var btnWa=cp?'<a href="'+waLink+'" target="_blank" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer">\u{1F4AC} Enviar</a>':'<span style="color:#E74C3C;font-size:11px">Sem telefone</span>';
-      var btnDone='<button onclick="markReminded(\''+a.id+'\',this)" style="background:var(--dk4);color:var(--txm);border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;margin-left:6px">\u2713</button>';
+      var btnWa=a.reminder_sent?'<span style="background:#27AE60;color:#fff;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700">\u2705 Enviado</span>':(cp?'<a href="'+waLink+'" target="_blank" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block;cursor:pointer">\u{1F4AC} Enviar</a>':'<span style="color:#E74C3C;font-size:11px">Sem telefone</span>');
+      var btnDone=a.reminder_sent?'':'<button onclick="markReminded(\''+a.id+'\',this)" style="background:var(--dk4);color:var(--txm);border:none;border-radius:8px;padding:6px 10px;font-size:11px;cursor:pointer;margin-left:6px">\u2713</button>';
       return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--dk3);border-radius:8px;margin-bottom:6px"><div style="flex:1"><div style="font-weight:600;font-size:13px;color:var(--tx)">'+a.client_name+'</div><div style="font-size:11px;color:var(--txm)">'+a.appointment_time+' - '+a.service_name+' ('+a.barber_name+')</div></div><div style="display:flex;align-items:center">'+btnWa+btnDone+'</div></div>';
     }).join('');
   }catch(e){sec.style.display='none';}
 }
 window.markReminded = async function(id,btn){
   await db.from('appointments').update({reminder_sent:true}).eq('id',id);
-  if(btn)btn.parentElement.parentElement.remove();
-  var list=document.getElementById('reminder-list');
-  if(list&&!list.children.length){document.getElementById('dash-reminders').style.display='none';}
+  if(btn){
+    var row=btn.parentElement.parentElement;
+    var waBtn=row.querySelector('a[href*="wa.me"]');
+    if(waBtn)waBtn.outerHTML='<span style="background:#27AE60;color:#fff;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700">Enviado</span>';
+    btn.remove();
+  }
   toast('Lembrete marcado como enviado!','ok');
 }
 
