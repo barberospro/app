@@ -2329,8 +2329,9 @@ window.saveApptBarber = async function(){
 // Populate barber select for package booking
 window.loadPkbBarbers = async function loadPkbBarbers(){
   var sel=document.getElementById('pkb-barber');
-  if(!sel||!S.shopId)return;
-  var r=await db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name');
+  var _S=window.S||S;var _db=window.db||db;
+  if(!sel||!_S.shopId)return;
+  var r=await _db.from('barbers').select('id,name').eq('shop_id',_S.shopId).eq('active',true).order('name');
   var barbers=r.data||[];
   sel.innerHTML='<option value="">A definir</option>'+barbers.map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('');
 }
