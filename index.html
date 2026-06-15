@@ -2108,10 +2108,6 @@ async function saveEditCliente(){
   if(email)body.email=email;
   try{var r=await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});var d=await r.json();if(d.ok){toast("Cliente atualizado!","ok");closeMod("mod-edit-cli");loadClientes();}else{toast("Erro ao atualizar","err");}}catch(e){toast("Erro","err");}
 }
-async function deleteCliente(uid){
-  if(!confirm("Excluir este cliente permanentemente?"))return;
-  try{var r=await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({user_id:uid})});var d=await r.json();if(d.ok){toast("Cliente excluido!","ok");loadClientes();}else{toast("Erro","err");}}catch(e){toast("Erro","err");}
-}
 
 function openEditCliente(uid){
   var c=_allClientes.find(function(x){return x.id===uid;});if(!c)return;
@@ -2137,9 +2133,35 @@ async function toggleBlock(uid,block){
 }
 async function deleteCliente(uid){
   var c=_allClientes.find(function(x){return x.id===uid;});
-  if(!confirm("Excluir permanentemente "+((c&&c.email)||uid)+"?"))return;
-  await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes?action=delete",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({uid:uid})});
-  toast("Cliente excluido!","ok");loadClientes();
+  var label=(c&&c.email)||uid;
+  var action=prompt("Digito 'EXCLUIR' para remover permanentemente "+label+"\nOu 'PAUSAR' para desativar o acesso:");
+  if(!action)return;
+  action=action.trim().toUpperCase();
+  if(action==='EXCLUIR'){
+    try{
+      // Delete shop owned by this user
+      await db.from('appointments').delete().eq('shop_id',c.shop_id||'none');
+      await db.from('barber_users').delete().eq('shop_id',c.shop_id||'none');
+      await db.from('barbers').delete().eq('shop_id',c.shop_id||'none');
+      await db.from('services').delete().eq('shop_id',c.shop_id||'none');
+      await db.from('packages').delete().eq('shop_id',c.shop_id||'none');
+      await db.from('promotions').delete().eq('shop_id',c.shop_id||'none');
+      await db.from('shops').delete().eq('owner_id',uid);
+      // Delete auth user via edge function
+      var sess=await db.auth.getSession();
+      var tk=sess.data.session?sess.data.session.access_token:'';
+      await fetch("https://seyadufuohsbpcqaguig.supabase.co/functions/v1/admin-clientes",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+tk},body:JSON.stringify({action:"delete",user_id:uid})});
+      toast("Cliente e barbearia excluidos!","ok");
+    }catch(e){toast("Erro: "+e.message,"err");}
+  } else if(action==='PAUSAR'){
+    try{
+      await db.from('shops').update({active:false}).eq('owner_id',uid);
+      toast("Acesso pausado! A barbearia foi desativada.","ok");
+    }catch(e){toast("Erro: "+e.message,"err");}
+  } else {
+    toast("Acao cancelada.","err");return;
+  }
+  loadClientes();
 }
 
 // =================== INIT ===================
