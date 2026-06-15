@@ -1499,7 +1499,7 @@ function agItemHTML(a){
     <div class="at"><div class="ath">${h}</div><div class="atm">:${m}</div></div>
     <div class="al${hasAct?' g':''}"></div>
     <div class="aif"><div class="aic">${a.client_name}${pkgLabel}</div><div class="ais">${a.service_name} · ${fmt(a.service_price)}</div><div class="aib">✂ ${a.barber_name} · ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')}</div></div>
-    <span class="badge ${sl[a.status]||'bp'}">${st[a.status]||'Pendente'}</span>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="badge ${sl[a.status]||'bp'}">${st[a.status]||'Pendente'}</span><span style="font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;${a.reminder_sent?'background:#27AE60;color:#fff':'background:rgba(201,168,76,.15);color:#C9A84C'}">${a.reminder_sent?'LEMBRADO':'PENDENTE'}</span></div>
   </div>`;
 }
 
