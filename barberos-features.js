@@ -128,31 +128,64 @@ window.filterDash = async function(period){
   else if(period==="year")from=new Date(now.getFullYear(),0,1).toISOString().split("T")[0];
   else if(period==="custom"){from=document.getElementById("dash-from").value;to=document.getElementById("dash-to").value;if(!from||!to){document.getElementById("dash-profit-result").innerHTML="Selecione as datas.";return;}}
   try{
-    var r=await db.from("appointments").select("service_price,barber_name,barber_id,status").gte("appointment_date",from).lte("appointment_date",to).eq("shop_id",S.shopId).in("status",["done","executed","finished"]);
-    var appts=r.data||[];
+    // Buscar TODOS agendamentos no periodo (nao apenas encerrados) para contagem
+    var rAll=await db.from("appointments").select("service_price,barber_name,barber_id,status,appointment_date").gte("appointment_date",from).lte("appointment_date",to).eq("shop_id",S.shopId).neq("status","cancelled");
+    var allAppts=rAll.data||[];
+    // Filtrar encerrados para calculo de receita/comissao
+    var doneAppts=allAppts.filter(function(a){return a.status==="done"||a.status==="finished";});
+    // Buscar barbeiros
     var r2=await db.from("barbers").select("id,name,commission_pct").eq("shop_id",S.shopId);
     var bm={};(r2.data||[]).forEach(function(b){bm[b.id]={name:b.name,pct:Number(b.commission_pct)||0};});
-    var total=appts.reduce(function(s,a){return s+Number(a.service_price||0);},0);
-    // Mapa por nome para fallback quando barber_id é null
-    var bmByName={};(r2.data||[]).forEach(function(b){bmByName[(b.name||'').toLowerCase()]={id:b.id,pct:Number(b.commission_pct)||0};});
+    var bmByName={};(r2.data||[]).forEach(function(b){bmByName[(b.name||"").toLowerCase()]={id:b.id,pct:Number(b.commission_pct)||0};});
+
+    // === ATUALIZAR CARDS SUPERIORES ===
+    var totalAgend=allAppts.length;
+    var totalReceita=doneAppts.reduce(function(s,a){return s+Number(a.service_price||0);},0);
+    // Cards: usar labels do periodo
+    var periodoLabels={week:"Semana",biweek:"Quinzena",month:"M\u00eas",year:"Ano",custom:"Per\u00edodo"};
+    var lbl=periodoLabels[period]||"Per\u00edodo";
+    var stToday=document.getElementById("st-today");
+    var stRtd=document.getElementById("st-rtd");
+    var stMonth=document.getElementById("st-month");
+    var stRm=document.getElementById("st-rm");
+    // Atualizar labels dos cards
+    var slLabels=document.querySelectorAll(".sg .sc .sl");
+    if(slLabels.length>=4){
+      slLabels[0].textContent="Agendamentos";
+      slLabels[1].textContent="Receita (encerrados)";
+      slLabels[2].textContent="Encerrados";
+      slLabels[3].textContent="Lucro l\u00edquido";
+    }
+    if(stToday)stToday.textContent=totalAgend;
+    if(stRtd)stRtd.textContent=fmt(totalReceita);
+    if(stMonth)stMonth.textContent=doneAppts.length;
+
+    // === CALCULAR COMISSOES ===
     var cb={};
-    appts.forEach(function(a){
+    doneAppts.forEach(function(a){
       var bid=a.barber_id;
-      // Se barber_id null, tentar localizar pelo nome
-      if(!bid && a.barber_name){var found=bmByName[(a.barber_name||'').toLowerCase()];if(found)bid=found.id;}
+      if(!bid && a.barber_name){var found=bmByName[(a.barber_name||"").toLowerCase()];if(found)bid=found.id;}
       if(!bid)bid="x";
-      if(!cb[bid])cb[bid]={name:a.barber_name||"?",total:0,comm:0,pct:0};
-      var p=Number(a.service_price||0);cb[bid].total+=p;
-      var pct=bm[bid]?bm[bid].pct:(bmByName[(a.barber_name||'').toLowerCase()]||{}).pct||0;
-      cb[bid].pct=pct;cb[bid].comm+=p*(pct/100);
+      if(!cb[bid])cb[bid]={name:bm[bid]?bm[bid].name:(a.barber_name||"?"),total:0,comm:0,pct:0,count:0};
+      var p=Number(a.service_price||0);
+      cb[bid].total+=p;
+      var pct=bm[bid]?bm[bid].pct:(bmByName[(a.barber_name||"").toLowerCase()]||{}).pct||0;
+      cb[bid].pct=pct;
+      cb[bid].comm+=p*(pct/100);
+      cb[bid].count++;
     });
     var tc=Object.values(cb).reduce(function(s,b){return s+b.comm;},0);
-    var liq=total-tc;
-    var h="<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px'><div style='background:var(--dk3);border-radius:8px;padding:12px;text-align:center'><div style='font-size:11px;color:#9A9080'>Receita</div><div style='font-size:18px;font-weight:700;color:#C9A84C'>"+fmt(total)+"</div></div><div style='background:var(--dk3);border-radius:8px;padding:12px;text-align:center'><div style='font-size:11px;color:#9A9080'>Lucro</div><div style='font-size:18px;font-weight:700;color:#27AE60'>"+fmt(liq)+"</div></div></div>";
+    var liq=totalReceita-tc;
+
+    // Atualizar card de lucro liquido
+    if(stRm)stRm.textContent=fmt(liq);
+
+    // === RENDERIZAR SECAO COMISSOES ===
+    var h="<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px'><div style='background:var(--dk3);border-radius:8px;padding:12px;text-align:center'><div style='font-size:11px;color:#9A9080'>Receita ("+lbl+")</div><div style='font-size:18px;font-weight:700;color:#C9A84C'>"+fmt(totalReceita)+"</div></div><div style='background:var(--dk3);border-radius:8px;padding:12px;text-align:center'><div style='font-size:11px;color:#9A9080'>Lucro ("+lbl+")</div><div style='font-size:18px;font-weight:700;color:#27AE60'>"+fmt(liq)+"</div></div></div>";
     h+="<div style='font-weight:600;font-size:13px;margin-bottom:8px'>Comiss\u00f5es por Barbeiro:</div>";
     var ls=Object.values(cb).sort(function(a,b){return b.comm-a.comm;});
-    if(!ls.length)h+="<div style='color:#9A9080;font-size:12px'>Nenhum atendimento no per\u00edodo.</div>";
-    else ls.forEach(function(b){h+="<div style='display:flex;justify-content:space-between;padding:8px;background:var(--dk3);border-radius:6px;margin-bottom:4px'><div><b>"+b.name+"</b> <span style='color:#9A9080;font-size:11px'>("+b.pct+"%)</span></div><div style='text-align:right'><div style='font-weight:600;color:#C9A84C'>"+fmt(b.comm)+"</div><div style='font-size:10px;color:#9A9080'>de "+fmt(b.total)+"</div></div></div>";});
+    if(!ls.length)h+="<div style='color:#9A9080;font-size:12px'>Nenhum atendimento encerrado no per\u00edodo.</div>";
+    else ls.forEach(function(b){h+="<div style='display:flex;justify-content:space-between;padding:8px;background:var(--dk3);border-radius:6px;margin-bottom:4px'><div><b>"+b.name+"</b> <span style='color:#9A9080;font-size:11px'>("+b.pct+"%) - "+b.count+" atend.</span></div><div style='text-align:right'><div style='font-weight:600;color:#C9A84C'>"+fmt(b.comm)+"</div><div style='font-size:10px;color:#9A9080'>de "+fmt(b.total)+"</div></div></div>";});
     h+="<div style='margin-top:10px;padding-top:10px;border-top:1px solid var(--dk4);display:flex;justify-content:space-between;font-size:12px'><span>Total comiss\u00f5es:</span><span style='font-weight:700;color:#E74C3C'>-"+fmt(tc)+"</span></div>";
     document.getElementById("dash-profit-result").innerHTML=h;
   }catch(e){document.getElementById("dash-profit-result").innerHTML="Erro: "+e.message;}
