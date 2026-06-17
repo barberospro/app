@@ -2268,7 +2268,7 @@ async function deleteCliente(uid){
 
 // PKB e calcSessions removidos - definidos em pkg_booking.js
 
-async function deleteFinalized(){
+window.deleteFinalized = async function(){
   var agList=document.getElementById('ag-list');
   if(!agList){toast('Lista nao encontrada.','err');return;}
   // Toggle selection mode
@@ -2316,7 +2316,7 @@ async function deleteFinalized(){
     }catch(e){toast('Erro: '+e.message,'err');}
   }
 }
-function cancelSelectMode(){
+window.cancelSelectMode = function(){
   var agList=document.getElementById('ag-list');
   if(agList){
     agList.removeAttribute('data-selecting');
