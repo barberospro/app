@@ -1949,8 +1949,12 @@ async function saveOnboarding(){
     ]);
     // Criar pacotes padrao
     await db.from('packages').insert([
-      {name:'Mensal Corte',description:'4 cortes por mes com desconto',items:['4 cortes por mes','Agendamento prioritario','Desconto especial'],price:140,original_price:160,badge:'',active:true,shop_id:shop.id},
-      {name:'Mensal Completo',description:'4 cortes + 4 barbas por mes',items:['4 cortes por mes','4 barbas por mes','Atendimento VIP','Desconto especial'],price:220,original_price:280,badge:'POPULAR',active:true,shop_id:shop.id}
+      {name:'Mensal Corte',description:'4 cortes por mes com desconto',items:['4 cortes por mes','Agendamento prioritario','Desconto especial'],price:140,original_price:160,badge:'',active:true,shop_id:shop.id,frequencia:'Semanal',validade:'Mensal'},
+      {name:'Mensal Completo',description:'4 cortes + 4 barbas por mes',items:['4 cortes por mes','4 barbas por mes','Atendimento VIP','Desconto especial'],price:220,original_price:280,badge:'POPULAR',active:true,shop_id:shop.id,frequencia:'Quinzenal',validade:'Mensal'}
+    ]);
+    // Criar promocoes padrao
+    await db.from('promotions').insert([
+      {name:'Corte Degrade',type:'Semanal',original_price:40,promo_price:35,active:true,shop_id:shop.id}
     ]);
     toast('Barbearia criada com sucesso!','ok');
     enterApp('admin');
