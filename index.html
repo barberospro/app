@@ -2222,29 +2222,29 @@ async function deleteCliente(uid){
       const refresh=params.get('refresh_token')||'';
       const tokenHash=params.get('token_hash')||'';
       const type=params.get('type')||'recovery';
+      let recovered=false;
       
       // Method 1: If we have a token_hash, use verifyOtp
       if(tokenHash){
         try{
-          const{data,error}=await db.auth.verifyOtp({token_hash:tokenHash,type:type});
-          if(!error&&data&&data.session){
-            history.replaceState(null,'',window.location.pathname+window.location.search);
-            document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-            document.getElementById('set-password').classList.add('active');
-            _authRedirect=true;
-          }else{console.warn('verifyOtp error:',error);}
+          const{data,error}=await db.auth.verifyOtp({token_hash:tokenHash,type:type==='recovery'?'recovery':'invite'});
+          if(!error&&data&&data.session){recovered=true;}
+          else{console.warn('verifyOtp error:',error);}
         }catch(e){console.warn('verifyOtp exception:',e);}
       }
       // Method 2: If we have access_token directly
-      else if(access){
+      if(!recovered&&access){
         try{
-          await db.auth.setSession({access_token:access,refresh_token:refresh});
-          history.replaceState(null,'',window.location.pathname+window.location.search);
-          document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-          document.getElementById('set-password').classList.add('active');
-          _authRedirect=true;
-        }catch(e){console.warn('Token error:',e);}
+          const{error}=await db.auth.setSession({access_token:access,refresh_token:refresh});
+          if(!error)recovered=true;
+        }catch(e){console.warn('setSession error:',e);}
       }
+      // Always show set-password screen if we detect recovery URL
+      // Even if verification failed (user can request new link from this screen)
+      history.replaceState(null,'',window.location.pathname+window.location.search);
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      document.getElementById('set-password').classList.add('active');
+      _authRedirect=true;
     }
 
     if(_authRedirect)return;
