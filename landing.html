@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BarberOS — Sistema de Gestão para Barbearias</title>
+<meta name="description" content="Agendamento online, controle financeiro, comissões automáticas e muito mais. Transforme sua barbearia com o BarberOS.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--dk:#0E0E0E;--dk2:#141414;--dk3:#1A1A1A;--dk4:#2E2E2E;--gold:#C9A84C;--gd:#B8943F;--tx:#F5F0E8;--txm:#9A9080;--grn:#27AE60;--red:#E74C3C}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);line-height:1.6;overflow-x:hidden}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(201,168,76,.08),transparent 60%)}
+.hero-logo{width:90px;height:90px;border-radius:22px;margin-bottom:24px;box-shadow:0 8px 32px rgba(201,168,76,.3)}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(42px,8vw,72px);font-weight:900;color:var(--gold);letter-spacing:-2px;margin-bottom:8px}
+.hero-sub{font-size:clamp(14px,2.5vw,18px);color:var(--txm);max-width:500px;margin-bottom:40px}
+.hero-cta{display:inline-block;background:var(--gold);color:var(--dk);padding:16px 40px;border-radius:50px;font-weight:700;font-size:16px;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.4)}
+.hero-price{margin-top:16px;font-size:13px;color:var(--txm)}
+.hero-price strong{color:var(--gold);font-size:18px}
+
+/* SECTIONS */
+.section{padding:80px 20px;max-width:1100px;margin:0 auto}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,40px);font-weight:700;text-align:center;margin-bottom:12px}
+.section-sub{text-align:center;color:var(--txm);font-size:15px;max-width:600px;margin:0 auto 48px}
+
+/* FEATURES GRID */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.feat-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:16px;padding:28px;transition:border-color .3s,transform .3s}
+.feat-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-4px)}
+.feat-icon{font-size:36px;margin-bottom:14px}
+.feat-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.feat-desc{font-size:14px;color:var(--txm);line-height:1.7}
+
+/* COMPARISON */
+.comparison{background:var(--dk2);border-radius:16px;overflow:hidden;border:1px solid var(--dk4)}
+.comp-header{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--dk3);padding:16px 20px;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.comp-header span:last-child{color:var(--gold)}
+.comp-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:14px 20px;border-top:1px solid var(--dk4);font-size:14px;align-items:center}
+.comp-row span:nth-child(2){color:var(--red)}
+.comp-row span:last-child{color:var(--grn);font-weight:600}
+
+/* PRICING */
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:700px;margin:0 auto}
+.price-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:16px;padding:32px;text-align:center;position:relative;overflow:hidden}
+.price-card.popular{border-color:var(--gold)}
+.price-badge{position:absolute;top:0;right:0;background:var(--gold);color:var(--dk);font-size:10px;font-weight:800;letter-spacing:1px;padding:4px 12px;border-radius:0 16px 0 10px}
+.price-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px}
+.price-value{font-size:42px;font-weight:900;color:var(--gold);margin-bottom:4px}
+.price-value small{font-size:16px;color:var(--txm);font-weight:400}
+.price-save{font-size:12px;color:var(--grn);font-weight:600;margin-bottom:20px}
+.price-list{text-align:left;margin-bottom:24px}
+.price-list li{list-style:none;padding:6px 0;font-size:13px;color:var(--txm);display:flex;gap:8px}
+.price-list li::before{content:'✓';color:var(--grn);font-weight:700}
+.price-btn{display:block;background:var(--gold);color:var(--dk);padding:14px;border-radius:50px;font-weight:700;font-size:15px;text-decoration:none;transition:transform .2s}
+.price-btn:hover{transform:scale(1.02)}
+
+/* TESTIMONIAL */
+.testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.test-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:16px;padding:24px}
+.test-stars{color:var(--gold);font-size:16px;margin-bottom:10px}
+.test-text{font-size:14px;color:var(--txm);font-style:italic;margin-bottom:12px}
+.test-name{font-weight:700;font-size:13px}
+
+/* CTA FINAL */
+.cta-final{text-align:center;padding:80px 20px;background:linear-gradient(180deg,var(--dk),var(--dk2))}
+.cta-final h2{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,38px);font-weight:700;margin-bottom:12px}
+.cta-final p{color:var(--txm);margin-bottom:32px;font-size:15px}
+
+/* FOOTER */
+.footer{text-align:center;padding:32px 20px;border-top:1px solid var(--dk4);font-size:12px;color:var(--txm)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .comp-header,.comp-row{grid-template-columns:1.2fr 1fr 1fr;font-size:12px}
+  .section{padding:60px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <img src="logo-icon.png" alt="BarberOS" class="hero-logo">
+  <h1>BarberOS</h1>
+  <p class="hero-sub">O sistema completo de gestão para barbearias. Agendamento online, controle financeiro e comissões automáticas — tudo na palma da mão.</p>
+  <a href="#planos" class="hero-cta">Comece agora →</a>
+  <p class="hero-price">A partir de <strong>R$ 47/mês</strong></p>
+</section>
+
+<!-- FEATURES -->
+<section class="section">
+  <h2 class="section-title">Tudo que sua barbearia precisa</h2>
+  <p class="section-sub">Pare de perder clientes por falta de organização. O BarberOS automatiza sua gestão para você focar no que importa: atender bem.</p>
+  
+  <div class="features">
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <div class="feat-title">Agendamento Online 24h</div>
+      <div class="feat-desc">Seus clientes agendam pelo celular a qualquer hora. Sem ligações, sem WhatsApp lotado. Você acorda com a agenda pronta.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💰</div>
+      <div class="feat-title">Controle Financeiro</div>
+      <div class="feat-desc">Dashboard com receita, lucro líquido e comissões. Filtre por semana, mês ou ano. Exporte tudo em Excel com um clique.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">✂️</div>
+      <div class="feat-title">Gestão de Equipe</div>
+      <div class="feat-desc">Cada barbeiro tem seu login e vê apenas seus dados. Defina comissões individuais e acompanhe a produtividade de cada um.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📦</div>
+      <div class="feat-title">Pacotes e Promoções</div>
+      <div class="feat-desc">Crie pacotes recorrentes (semanal, quinzenal, mensal) e promoções que atraem novos clientes e fidelizam os atuais.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">Relatórios em Excel</div>
+      <div class="feat-desc">Exporte sua agenda e dashboard em planilhas completas com resumo, comissões por barbeiro e detalhamento de cada atendimento.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔗</div>
+      <div class="feat-title">Link Exclusivo</div>
+      <div class="feat-desc">Sua barbearia ganha um link profissional para divulgar no Instagram, WhatsApp e cartão de visitas. Visual moderno e responsivo.</div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="section">
+  <h2 class="section-title">Antes vs Depois do BarberOS</h2>
+  <p class="section-sub">Veja como sua rotina muda com o sistema certo.</p>
+  
+  <div class="comparison">
+    <div class="comp-header"><span>Situação</span><span>Sem BarberOS</span><span>Com BarberOS</span></div>
+    <div class="comp-row"><span>Cliente quer agendar às 23h</span><span>Perde o cliente</span><span>Agenda sozinho</span></div>
+    <div class="comp-row"><span>Controle de comissões</span><span>Caderninho manual</span><span>Automático e preciso</span></div>
+    <div class="comp-row"><span>Saber horários vagos</span><span>Não sabe</span><span>Vê em tempo real</span></div>
+    <div class="comp-row"><span>Relatórios do mês</span><span>Não tem</span><span>Excel em 1 clique</span></div>
+    <div class="comp-row"><span>Fidelizar clientes</span><span>Depende de memória</span><span>Pacotes + promoções</span></div>
+    <div class="comp-row"><span>Responder "tem horário?"</span><span>O dia todo</span><span>Nunca mais</span></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <h2 class="section-title">Quem usa, recomenda</h2>
+  <p class="section-sub">Barbearias que já transformaram sua gestão.</p>
+  
+  <div class="testimonials">
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"Antes eu perdia tempo respondendo mensagem o dia todo. Agora meus clientes agendam sozinhos e eu só confirmo."</div>
+      <div class="test-name">Rafael — Barbearia Premium</div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"O controle de comissão é perfeito. Sei exatamente quanto cada barbeiro produziu e quanto sobra de lucro. Sem discussão."</div>
+      <div class="test-name">Carlos — Studio Barber</div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"Os pacotes semanais fidelizaram meus clientes. Eles pagam adiantado e voltam toda semana. Minha receita ficou previsível."</div>
+      <div class="test-name">João — Barber House</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="planos">
+  <h2 class="section-title">Escolha seu plano</h2>
+  <p class="section-sub">Sem fidelidade, sem taxa de adesão. Cancele quando quiser.</p>
+  
+  <div class="pricing">
+    <div class="price-card">
+      <div class="price-name">Plano Mensal</div>
+      <div class="price-value">R$ 47<small>/mês</small></div>
+      <div class="price-save">&nbsp;</div>
+      <ul class="price-list">
+        <li>Agendamento online ilimitado</li>
+        <li>Dashboard financeiro completo</li>
+        <li>Até 3 barbeiros com login</li>
+        <li>Pacotes e promoções</li>
+        <li>Exportação Excel</li>
+        <li>Link exclusivo da barbearia</li>
+        <li>Suporte por WhatsApp</li>
+      </ul>
+      <a href="https://pay.hotmart.com/SEU_PRODUTO_MENSAL" class="price-btn" id="btn-plan-monthly">Assinar agora →</a>
+    </div>
+    <div class="price-card popular">
+      <div class="price-badge">MELHOR VALOR</div>
+      <div class="price-name">Plano Anual</div>
+      <div class="price-value">R$ 397<small>/ano</small></div>
+      <div class="price-save">Economize R$ 167 — equivale a R$ 33/mês</div>
+      <ul class="price-list">
+        <li>Tudo do plano mensal</li>
+        <li>Agendamento online ilimitado</li>
+        <li>Dashboard financeiro completo</li>
+        <li>Até 3 barbeiros com login</li>
+        <li>Pacotes e promoções</li>
+        <li>Exportação Excel</li>
+        <li>Suporte prioritário</li>
+        <li>Acesso a novidades em primeira mão</li>
+      </ul>
+      <a href="https://pay.hotmart.com/SEU_PRODUTO_ANUAL" class="price-btn" id="btn-plan-annual">Assinar agora →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <h2>Sua barbearia merece gestão profissional</h2>
+  <p>Comece hoje e veja a diferença em uma semana. Sem complicação, sem contrato.</p>
+  <a href="#planos" class="hero-cta">Quero começar agora →</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>© 2026 BarberOS — Sistema de Gestão para Barbearias</p>
+</footer>
+
+</body>
+</html>
