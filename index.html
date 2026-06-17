@@ -2215,17 +2215,31 @@ async function deleteCliente(uid){
         }
       }catch(e){console.warn('PKCE exchange error:',e);}
     }
-    if(hash.includes('access_token')&&(hash.includes('type=recovery')||hash.includes('type=invite'))){
+    if(hash.includes('type=recovery')||hash.includes('type=invite')){
       // Parse tokens from hash
       const params=new URLSearchParams(hash.replace('#',''));
       const access=params.get('access_token');
       const refresh=params.get('refresh_token')||'';
-      if(access){
+      const tokenHash=params.get('token_hash')||'';
+      const type=params.get('type')||'recovery';
+      
+      // Method 1: If we have a token_hash, use verifyOtp
+      if(tokenHash){
+        try{
+          const{data,error}=await db.auth.verifyOtp({token_hash:tokenHash,type:type});
+          if(!error&&data&&data.session){
+            history.replaceState(null,'',window.location.pathname+window.location.search);
+            document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+            document.getElementById('set-password').classList.add('active');
+            _authRedirect=true;
+          }else{console.warn('verifyOtp error:',error);}
+        }catch(e){console.warn('verifyOtp exception:',e);}
+      }
+      // Method 2: If we have access_token directly
+      else if(access){
         try{
           await db.auth.setSession({access_token:access,refresh_token:refresh});
-          // Clean URL
           history.replaceState(null,'',window.location.pathname+window.location.search);
-          // Show set-password screen
           document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
           document.getElementById('set-password').classList.add('active');
           _authRedirect=true;
