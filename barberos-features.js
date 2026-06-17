@@ -121,11 +121,11 @@ window.filterDash = async function(period){
   var btn=document.getElementById("fd-"+period);if(btn)btn.classList.add("active");
   var cd=document.getElementById("dash-period-custom");
   if(period==="custom")cd.style.display="block";else cd.style.display="none";
-  var now=new Date(),from,to=now.toISOString().split("T")[0];
-  if(period==="week")from=new Date(now-7*86400000).toISOString().split("T")[0];
-  else if(period==="biweek")from=new Date(now-14*86400000).toISOString().split("T")[0];
-  else if(period==="month")from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split("T")[0];
-  else if(period==="year")from=new Date(now.getFullYear(),0,1).toISOString().split("T")[0];
+  var now=new Date(),from,to;
+  if(period==="week"){from=new Date(now-7*86400000).toISOString().split("T")[0];to=now.toISOString().split("T")[0];}
+  else if(period==="biweek"){from=new Date(now-14*86400000).toISOString().split("T")[0];to=now.toISOString().split("T")[0];}
+  else if(period==="month"){from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split("T")[0];to=new Date(now.getFullYear(),now.getMonth()+1,0).toISOString().split("T")[0];}
+  else if(period==="year"){from=new Date(now.getFullYear(),0,1).toISOString().split("T")[0];to=new Date(now.getFullYear(),11,31).toISOString().split("T")[0];}
   else if(period==="custom"){from=document.getElementById("dash-from").value;to=document.getElementById("dash-to").value;if(!from||!to){document.getElementById("dash-profit-result").innerHTML="Selecione as datas.";return;}}
   try{
     // Buscar TODOS agendamentos no periodo (nao apenas encerrados) para contagem
