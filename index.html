@@ -2010,15 +2010,15 @@ async function inviteClient(){
   try{
     const res=await fetch('https://seyadufuohsbpcqaguig.supabase.co/functions/v1/hotmart-webhook',{
       method:'POST',
-      headers:{'Content-Type':'application/json','hottok':'wrvhDFedIx1NKWq9VAgqEHY7bpRrGO96d119cd-2281-4911-9275-e98843b69677'},
+      headers:{'Content-Type':'application/json','x-hotmart-hottok':'wrvhDFedIx1NKWq9VAgqEHY7bpRrGO96d119cd-2281-4911-9275-e98843b69677'},
       body:JSON.stringify({event:'PURCHASE_APPROVED',data:{buyer:{email,name},product:{name:'BarberOS (Convite Manual)'}}})
     });
     const data=await res.json();
-    if(data.ok){
+    if(data.success||data.ok){
       ok.style.display='block';
       document.getElementById('inv-name').value='';
       document.getElementById('inv-email').value='';
-    } else if(data.msg==='user already exists'){
+    } else if(data.msg==='user already exists'||data.message&&data.message.includes('already')){
       err.textContent='Este e-mail já possui acesso ao BarberOS.';err.style.display='block';
     } else {
       err.textContent='Erro ao enviar convite: '+(data.error||'tente novamente');err.style.display='block';
