@@ -645,6 +645,12 @@ html,body{overscroll-behavior-y:none;}
 
       </div></div>
       <div class="divider"></div>
+      <div class="divider"></div>
+      <div style="padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🚫 Bloquear Horários</div>
+        <button onclick="openBlockMod()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">+ Bloquear</button>
+      </div>
+      <div id="blocked-list" style="padding:0 20px 16px"><div style="color:var(--txm);font-size:13px">Carregando...</div></div>
       <div style="padding:20px 20px 12px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🔗 Link da sua barbearia</div>
       <div style="padding:0 20px 20px">
         <div style="background:var(--dk3);border:1px solid var(--gold);border-radius:var(--r);padding:16px">
@@ -715,6 +721,19 @@ html,body{overscroll-behavior-y:none;}
 </div>
 
 <!-- MODALS -->
+<div class="mov" id="mod-block">
+  <div class="msh"><div class="mhd"></div><div class="mt">Bloquear Horário</div>
+    <div class="fg"><label class="fl">Data</label><input class="fi" type="date" id="blk-date"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fg"><label class="fl">De</label><input class="fi" type="time" id="blk-start"></div>
+      <div class="fg"><label class="fl">Até</label><input class="fi" type="time" id="blk-end"></div>
+    </div>
+    <div class="fg"><label class="fl">Motivo (opcional)</label><input class="fi" id="blk-reason" placeholder="Ex: Almoço, Reunião..."></div>
+    <button class="btn btn-gold" onclick="saveBlock()" style="margin-bottom:10px">Bloquear</button>
+    <button class="btn btn-out" onclick="closeMod('mod-block')">Cancelar</button>
+  </div>
+</div>
+
 <div class="mov" id="mod-edit-cli">
   <div class="msh">
     <div class="mhd"></div>
@@ -1206,6 +1225,8 @@ async function loadBusy(){
     if(S.selectedBarberId)q=q.eq('barber_id',S.selectedBarberId);
     const{data}=await q;
     S.busySlots=(data||[]).map(a=>({time:a.appointment_time.slice(0,5),dur:Number(a.total_duration_minutes)||30}));
+    // Check blocked slots
+    try{var blkR2=await db.from('blocked_slots').select('start_time,end_time').eq('shop_id',S.shopId).eq('block_date',S.selDateISO);(blkR2.data||[]).forEach(function(b){var bS=b.start_time.slice(0,5),bE=b.end_time.slice(0,5);var toM=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var sm=toM(bS),em=toM(bE);for(var m=sm;m<em;m+=5){S.busySlots.push({time:String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),dur:5});}});}catch(e){}
   }catch(e){S.busySlots=[];}
   renderTimes();
 }
@@ -2285,6 +2306,45 @@ async function deleteCliente(uid){
   }catch(e){console.warn('Init error',e);}
 
 // PKB e calcSessions removidos - definidos em pkg_booking.js
+
+// === BLOCKED SLOTS ===
+window.openBlockMod = function(){
+  document.getElementById('blk-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('blk-start').value='';
+  document.getElementById('blk-end').value='';
+  document.getElementById('blk-reason').value='';
+  openMod('mod-block');
+};
+window.saveBlock = async function(){
+  var d=document.getElementById('blk-date').value;
+  var s=document.getElementById('blk-start').value;
+  var e=document.getElementById('blk-end').value;
+  if(!d||!s||!e){toast('Preencha data e horários.','err');return;}
+  if(s>=e){toast('Horário final deve ser maior que inicial.','err');return;}
+  var reason=document.getElementById('blk-reason').value.trim();
+  var{error}=await db.from('blocked_slots').insert({shop_id:S.shopId,block_date:d,start_time:s,end_time:e,reason:reason});
+  if(error){toast('Erro: '+error.message,'err');return;}
+  toast('Horário bloqueado!','ok');
+  closeMod('mod-block');
+  loadBlockedSlots();
+};
+window.loadBlockedSlots = async function(){
+  var el=document.getElementById('blocked-list');
+  if(!el||!S.shopId)return;
+  var today=new Date().toISOString().split('T')[0];
+  var{data,error}=await db.from('blocked_slots').select('*').eq('shop_id',S.shopId).gte('block_date',today).order('block_date').order('start_time');
+  if(error||!data||!data.length){el.innerHTML='<div style="color:var(--txm);font-size:13px;padding:8px 0">Nenhum horário bloqueado.</div>';return;}
+  el.innerHTML=data.map(function(b){
+    var dt=new Date(b.block_date+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--dk2);border:1px solid var(--dk4);border-radius:8px;margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">'+dt+' — '+b.start_time.slice(0,5)+' às '+b.end_time.slice(0,5)+'</div>'+(b.reason?'<div style="font-size:11px;color:var(--txm)">'+b.reason+'</div>':'')+'</div><button onclick="removeBlock(\''+b.id+'\') " style="background:rgba(231,76,60,.15);color:var(--red);border:1px solid var(--red);border-radius:50px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600">Remover</button></div>';
+  }).join('');
+};
+window.removeBlock = async function(id){
+  if(!confirm('Remover este bloqueio?'))return;
+  await db.from('blocked_slots').delete().eq('id',id);
+  toast('Bloqueio removido.','ok');
+  loadBlockedSlots();
+};
 
 window.deleteFinalized = async function(){
   var agList=document.getElementById('ag-list');
