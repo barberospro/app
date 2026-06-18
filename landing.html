@@ -3,247 +3,221 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BarberOS — Sistema de Gestão para Barbearias</title>
-<meta name="description" content="Agendamento online, controle financeiro, comissões automáticas e muito mais. Transforme sua barbearia com o BarberOS.">
+<title>BarberOS — Automatize Sua Barbearia e Fature Mais</title>
+<meta name="description" content="Pare de perder clientes no WhatsApp. Automatize agendamentos, controle comissões e fature mais trabalhando menos.">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--dk:#0E0E0E;--dk2:#141414;--dk3:#1A1A1A;--dk4:#2E2E2E;--gold:#C9A84C;--gd:#B8943F;--tx:#F5F0E8;--txm:#9A9080;--grn:#27AE60;--red:#E74C3C}
+:root{--dk:#0E0E0E;--dk2:#141414;--dk3:#1A1A1A;--dk4:#2E2E2E;--gold:#C9A84C;--tx:#F5F0E8;--txm:#9A9080;--grn:#27AE60;--red:#E74C3C}
 html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);line-height:1.6;overflow-x:hidden}
-
-/* HERO */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(201,168,76,.08),transparent 60%)}
-.hero-logo{width:90px;height:90px;border-radius:22px;margin-bottom:24px;box-shadow:0 8px 32px rgba(201,168,76,.3)}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(42px,8vw,72px);font-weight:900;color:var(--gold);letter-spacing:-2px;margin-bottom:8px}
-.hero-sub{font-size:clamp(14px,2.5vw,18px);color:var(--txm);max-width:500px;margin-bottom:40px}
-.hero-cta{display:inline-block;background:var(--gold);color:var(--dk);padding:16px 40px;border-radius:50px;font-weight:700;font-size:16px;text-decoration:none;transition:transform .2s,box-shadow .2s}
-.hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.4)}
-.hero-price{margin-top:16px;font-size:13px;color:var(--txm)}
-.hero-price strong{color:var(--gold);font-size:18px}
-
-/* SECTIONS */
-.section{padding:80px 20px;max-width:1100px;margin:0 auto}
-.section-title{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,40px);font-weight:700;text-align:center;margin-bottom:12px}
+body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);line-height:1.7;overflow-x:hidden}
+.section{padding:80px 20px;max-width:1000px;margin:0 auto}
+.section-tag{text-align:center;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(26px,5vw,36px);font-weight:700;text-align:center;margin-bottom:12px}
 .section-sub{text-align:center;color:var(--txm);font-size:15px;max-width:600px;margin:0 auto 48px}
+</style>
+<style>
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px;position:relative}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(201,168,76,.06),transparent 60%)}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,44px);font-weight:900;color:var(--tx);max-width:700px;line-height:1.3;margin-bottom:16px}
+.hero h1 span{color:var(--gold)}
+.hero-sub{font-size:16px;color:var(--txm);max-width:520px;margin-bottom:32px}
+.hero-img{max-width:420px;width:85%;border-radius:16px;margin:32px 0;box-shadow:0 12px 40px rgba(201,168,76,.2)}
+.cta-btn{display:inline-block;background:var(--gold);color:var(--dk);padding:16px 36px;border-radius:50px;font-weight:700;font-size:16px;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.4)}
+.cta-small{margin-top:12px;font-size:12px;color:var(--txm)}
 
-/* FEATURES GRID */
-.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-.feat-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:16px;padding:28px;transition:border-color .3s,transform .3s}
-.feat-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-4px)}
-.feat-icon{font-size:36px;margin-bottom:14px}
-.feat-title{font-size:18px;font-weight:700;margin-bottom:8px}
-.feat-desc{font-size:14px;color:var(--txm);line-height:1.7}
+/* PAIN POINTS */
+.pains{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.pain-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:12px;padding:20px;display:flex;gap:14px;align-items:flex-start}
+.pain-icon{font-size:28px;flex-shrink:0}
+.pain-text{font-size:14px;color:var(--txm);line-height:1.6}
+.pain-text strong{color:var(--tx)}
+/* SOLUTION */
+.solution-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.sol-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:14px;padding:24px;text-align:center;transition:border-color .3s,transform .3s}
+.sol-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-3px)}
+.sol-icon{font-size:36px;margin-bottom:12px}
+.sol-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.sol-desc{font-size:13px;color:var(--txm)}
 
-/* COMPARISON */
-.comparison{background:var(--dk2);border-radius:16px;overflow:hidden;border:1px solid var(--dk4)}
-.comp-header{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--dk3);padding:16px 20px;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.5px}
-.comp-header span:last-child{color:var(--gold)}
-.comp-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:14px 20px;border-top:1px solid var(--dk4);font-size:14px;align-items:center}
-.comp-row span:nth-child(2){color:var(--red)}
-.comp-row span:last-child{color:var(--grn);font-weight:600}
+/* GALLERY */
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.gallery img{width:100%;border-radius:12px;border:1px solid var(--dk4);transition:transform .3s}
+.gallery img:hover{transform:scale(1.03)}
 
+/* TESTIMONIALS */
+.testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.test-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:14px;padding:24px}
+.test-stars{color:var(--gold);font-size:16px;margin-bottom:10px}
+.test-text{font-size:14px;color:var(--txm);font-style:italic;margin-bottom:14px;line-height:1.7}
+.test-name{font-weight:700;font-size:13px}
+.test-role{font-size:11px;color:var(--txm)}
+
+/* DELIVERABLES */
+.deliverables{background:var(--dk2);border:1px solid var(--dk4);border-radius:16px;padding:32px;max-width:600px;margin:0 auto}
+.del-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--dk4);font-size:14px}
+.del-item:last-child{border-bottom:none}
+.del-check{color:var(--grn);font-weight:700;font-size:16px}
 /* PRICING */
-.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:700px;margin:0 auto}
-.price-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:16px;padding:32px;text-align:center;position:relative;overflow:hidden}
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:700px;margin:0 auto}
+.price-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:16px;padding:32px;text-align:center;position:relative}
 .price-card.popular{border-color:var(--gold)}
 .price-badge{position:absolute;top:0;right:0;background:var(--gold);color:var(--dk);font-size:10px;font-weight:800;letter-spacing:1px;padding:4px 12px;border-radius:0 16px 0 10px}
-.price-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px}
-.price-value{font-size:42px;font-weight:900;color:var(--gold);margin-bottom:4px}
-.price-value small{font-size:16px;color:var(--txm);font-weight:400}
-.price-save{font-size:12px;color:var(--grn);font-weight:600;margin-bottom:20px}
-.price-list{text-align:left;margin-bottom:24px}
-.price-list li{list-style:none;padding:6px 0;font-size:13px;color:var(--txm);display:flex;gap:8px}
-.price-list li::before{content:'✓';color:var(--grn);font-weight:700}
+.price-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:8px}
+.price-value{font-size:40px;font-weight:900;color:var(--gold);margin-bottom:4px}
+.price-value small{font-size:15px;color:var(--txm);font-weight:400}
+.price-save{font-size:12px;color:var(--grn);font-weight:600;margin-bottom:20px;min-height:16px}
 .price-btn{display:block;background:var(--gold);color:var(--dk);padding:14px;border-radius:50px;font-weight:700;font-size:15px;text-decoration:none;transition:transform .2s}
 .price-btn:hover{transform:scale(1.02)}
-
-/* TESTIMONIAL */
-.testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-.test-card{background:var(--dk2);border:1px solid var(--dk4);border-radius:16px;padding:24px}
-.test-stars{color:var(--gold);font-size:16px;margin-bottom:10px}
-.test-text{font-size:14px;color:var(--txm);font-style:italic;margin-bottom:12px}
-.test-name{font-weight:700;font-size:13px}
-
-/* CTA FINAL */
-.cta-final{text-align:center;padding:80px 20px;background:linear-gradient(180deg,var(--dk),var(--dk2))}
-.cta-final h2{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,38px);font-weight:700;margin-bottom:12px}
-.cta-final p{color:var(--txm);margin-bottom:32px;font-size:15px}
 
 /* FOOTER */
 .footer{text-align:center;padding:32px 20px;border-top:1px solid var(--dk4);font-size:12px;color:var(--txm)}
 
-/* RESPONSIVE */
-@media(max-width:768px){
-  .comp-header,.comp-row{grid-template-columns:1.2fr 1fr 1fr;font-size:12px}
-  .section{padding:60px 16px}
-}
-
-/* GALLERY */
-.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.gallery img{width:100%;border-radius:12px;border:1px solid var(--dk4);transition:transform .3s,box-shadow .3s;cursor:pointer}
-.gallery img:hover{transform:scale(1.03);box-shadow:0 8px 32px rgba(201,168,76,.2)}
 /* LIGHTBOX */
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:10000;align-items:center;justify-content:center;padding:20px;cursor:pointer}
 .lightbox.active{display:flex}
-.lightbox img{max-width:90vw;max-height:90vh;border-radius:12px;box-shadow:0 0 40px rgba(0,0,0,.5)}
-
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:12px}
+@media(max-width:768px){.section{padding:60px 16px}}
 </style>
 </head>
 <body>
-
 <!-- HERO -->
 <section class="hero">
-  <img src="logo-icon.png" alt="BarberOS" class="hero-logo">
-  <h1>BarberOS</h1>
-  <p class="hero-sub">O sistema completo de gestão para barbearias. Agendamento online, controle financeiro e comissões automáticas — tudo na palma da mão.</p>
-  <img src="img/capa.jpg" alt="BarberOS - Gestão Completa para Barbearias" style="max-width:500px;width:90%;border-radius:16px;margin-top:32px;box-shadow:0 12px 40px rgba(201,168,76,.25)">
+  <p style="font-size:12px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;font-weight:700">Sistema de Gestão para Barbearias</p>
+  <h1>Pare de Perder Clientes Respondendo WhatsApp de Madrugada: <span>Automatize Sua Barbearia em 5 Minutos</span> e Fature Mais Trabalhando Menos</h1>
+  <p class="hero-sub">O sistema que transforma seu celular no gerente que você sempre quis: agenda sozinho, calcula comissões e mostra seu lucro real.</p>
+  <a href="#preco" class="cta-btn">Quero automatizar minha barbearia →</a>
+  <p class="cta-small">Sem contrato. Cancele quando quiser.</p>
+  <img src="img/capa.jpg" alt="BarberOS" class="hero-img">
 </section>
 
-<!-- FEATURES -->
+<!-- DORES -->
 <section class="section">
-  <h2 class="section-title">Tudo que sua barbearia precisa</h2>
-  <p class="section-sub">Pare de perder clientes por falta de organização. O BarberOS automatiza sua gestão para você focar no que importa: atender bem.</p>
-  
-  <div class="features">
-    <div class="feat-card">
-      <div class="feat-icon">📅</div>
-      <div class="feat-title">Agendamento Online 24h</div>
-      <div class="feat-desc">Seus clientes agendam pelo celular a qualquer hora. Sem ligações, sem WhatsApp lotado. Você acorda com a agenda pronta.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">💰</div>
-      <div class="feat-title">Controle Financeiro</div>
-      <div class="feat-desc">Dashboard com receita, lucro líquido e comissões. Filtre por semana, mês ou ano. Exporte tudo em Excel com um clique.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">✂️</div>
-      <div class="feat-title">Gestão de Equipe</div>
-      <div class="feat-desc">Cada barbeiro tem seu login e vê apenas seus dados. Defina comissões individuais e acompanhe a produtividade de cada um.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">📦</div>
-      <div class="feat-title">Pacotes e Promoções</div>
-      <div class="feat-desc">Crie pacotes recorrentes (semanal, quinzenal, mensal) e promoções que atraem novos clientes e fidelizam os atuais.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">📊</div>
-      <div class="feat-title">Relatórios em Excel</div>
-      <div class="feat-desc">Exporte sua agenda e dashboard em planilhas completas com resumo, comissões por barbeiro e detalhamento de cada atendimento.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">🔗</div>
-      <div class="feat-title">Link Exclusivo</div>
-      <div class="feat-desc">Sua barbearia ganha um link profissional para divulgar no Instagram, WhatsApp e cartão de visitas. Visual moderno e responsivo.</div>
-    </div>
+  <p class="section-tag">Você se identifica?</p>
+  <h2 class="section-title">Se você vive isso, precisa do BarberOS</h2>
+  <p class="section-sub">São problemas que todo dono de barbearia conhece — mas poucos resolvem.</p>
+  <div class="pains">
+    <div class="pain-card"><div class="pain-icon">😤</div><div class="pain-text"><strong>WhatsApp lotado de "tem horário?"</strong> — Você passa mais tempo respondendo mensagem do que cortando cabelo.</div></div>
+    <div class="pain-card"><div class="pain-icon">💸</div><div class="pain-text"><strong>Não sabe quanto realmente lucra</strong> — Entra dinheiro, sai comissão, paga conta... e no fim do mês não sobra nada.</div></div>
+    <div class="pain-card"><div class="pain-icon">📓</div><div class="pain-text"><strong>Caderninho de agendamentos</strong> — Perde anotação, marca em cima, cliente reclama que tinha horário.</div></div>
+    <div class="pain-card"><div class="pain-icon">🤬</div><div class="pain-text"><strong>Briga por comissão</strong> — "Eu fiz 20 cortes!" / "Não fez não!" — Todo mês a mesma discussão.</div></div>
+    <div class="pain-card"><div class="pain-icon">🕐</div><div class="pain-text"><strong>Cliente some e não volta</strong> — Falta fidelização. Ele vai no concorrente que tem sistema online.</div></div>
+    <div class="pain-card"><div class="pain-icon">😴</div><div class="pain-text"><strong>Perde agendamento fora do horário</strong> — Cliente queria marcar de noite, você não viu. Ele foi em outro.</div></div>
   </div>
 </section>
-
-<!-- COMPARISON -->
+<!-- SOLUÇÃO -->
 <section class="section">
-  <h2 class="section-title">Antes vs Depois do BarberOS</h2>
-  <p class="section-sub">Veja como sua rotina muda com o sistema certo.</p>
-  
-  <div class="comparison">
-    <div class="comp-header"><span>Situação</span><span>Sem BarberOS</span><span>Com BarberOS</span></div>
-    <div class="comp-row"><span>Cliente quer agendar às 23h</span><span>Perde o cliente</span><span>Agenda sozinho</span></div>
-    <div class="comp-row"><span>Controle de comissões</span><span>Caderninho manual</span><span>Automático e preciso</span></div>
-    <div class="comp-row"><span>Saber horários vagos</span><span>Não sabe</span><span>Vê em tempo real</span></div>
-    <div class="comp-row"><span>Relatórios do mês</span><span>Não tem</span><span>Excel em 1 clique</span></div>
-    <div class="comp-row"><span>Fidelizar clientes</span><span>Depende de memória</span><span>Pacotes + promoções</span></div>
-    <div class="comp-row"><span>Responder "tem horário?"</span><span>O dia todo</span><span>Nunca mais</span></div>
+  <p class="section-tag">A solução</p>
+  <h2 class="section-title">Com o BarberOS, sua barbearia funciona no piloto automático</h2>
+  <p class="section-sub">Mais tempo livre, mais dinheiro no bolso, menos dor de cabeça. É isso que o sistema entrega.</p>
+  <div class="solution-grid">
+    <div class="sol-card"><div class="sol-icon">📅</div><div class="sol-title">Agenda que funciona sozinha</div><div class="sol-desc">Seus clientes marcam direto pelo celular, 24h por dia. Você acorda com a agenda do dia pronta.</div></div>
+    <div class="sol-card"><div class="sol-icon">💰</div><div class="sol-title">Lucro real na tela</div><div class="sol-desc">Dashboard mostra receita, comissões e lucro líquido. Sem surpresas no fim do mês.</div></div>
+    <div class="sol-card"><div class="sol-icon">🤝</div><div class="sol-title">Zero briga por comissão</div><div class="sol-desc">O sistema calcula automaticamente a comissão de cada barbeiro. Tudo registrado.</div></div>
+    <div class="sol-card"><div class="sol-icon">📦</div><div class="sol-title">Pacotes que fidelizam</div><div class="sol-desc">Crie pacotes semanais/mensais. Cliente paga adiantado e volta sempre.</div></div>
+    <div class="sol-card"><div class="sol-icon">📊</div><div class="sol-title">Relatórios em 1 clique</div><div class="sol-desc">Exporte tudo em Excel: receita, comissões, atendimentos. Controle total.</div></div>
+    <div class="sol-card"><div class="sol-icon">🚫</div><div class="sol-title">Bloqueio de horários</div><div class="sol-desc">Precisa sair? Bloqueie os horários com um toque. Ninguém agenda naquele período.</div></div>
   </div>
 </section>
-
-<!-- TESTIMONIALS -->
-<section class="section">
-  <h2 class="section-title">Quem usa, recomenda</h2>
-  <p class="section-sub">Barbearias que já transformaram sua gestão.</p>
-  
-  <div class="testimonials">
-    <div class="test-card">
-      <div class="test-stars">★★★★★</div>
-      <div class="test-text">"Antes eu perdia tempo respondendo mensagem o dia todo. Agora meus clientes agendam sozinhos e eu só confirmo."</div>
-      <div class="test-name">Rafael — Barbearia Premium</div>
-    </div>
-    <div class="test-card">
-      <div class="test-stars">★★★★★</div>
-      <div class="test-text">"O controle de comissão é perfeito. Sei exatamente quanto cada barbeiro produziu e quanto sobra de lucro. Sem discussão."</div>
-      <div class="test-name">Carlos — Studio Barber</div>
-    </div>
-    <div class="test-card">
-      <div class="test-stars">★★★★★</div>
-      <div class="test-text">"Os pacotes semanais fidelizaram meus clientes. Eles pagam adiantado e voltam toda semana. Minha receita ficou previsível."</div>
-      <div class="test-name">João — Barber House</div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
 
 <!-- GALERIA -->
 <section class="section">
-  <h2 class="section-title">Veja o sistema por dentro</h2>
-  <p class="section-sub">Screenshots reais do BarberOS em funcionamento.</p>
-  
+  <p class="section-tag">Por dentro do sistema</p>
+  <h2 class="section-title">Veja o BarberOS funcionando</h2>
+  <p class="section-sub">Interface profissional, fácil de usar, direto no celular.</p>
   <div class="gallery">
-    <img src="img/5.jpg" alt="BarberOS - Tela do sistema" onclick="openLightbox(this.src)" loading="lazy">
-    <img src="img/6.jpg" alt="BarberOS - Tela do sistema" onclick="openLightbox(this.src)" loading="lazy">
-    <img src="img/11.jpg" alt="BarberOS - Tela do sistema" onclick="openLightbox(this.src)" loading="lazy">
-    <img src="img/8.jpg" alt="BarberOS - Tela do sistema" onclick="openLightbox(this.src)" loading="lazy">
-    <img src="img/9.jpg" alt="BarberOS - Tela do sistema" onclick="openLightbox(this.src)" loading="lazy">
-    <img src="img/10.jpg" alt="BarberOS - Tela do sistema" onclick="openLightbox(this.src)" loading="lazy">
-    <img src="img/13.jpg" alt="BarberOS - Tela do sistema" onclick="openLightbox(this.src)" loading="lazy">
-    <img src="img/14.jpg" alt="BarberOS - Tela do sistema" onclick="openLightbox(this.src)" loading="lazy">
+    <img src="img/5.jpg" alt="BarberOS" onclick="openLightbox(this.src)" loading="lazy">
+    <img src="img/6.jpg" alt="BarberOS" onclick="openLightbox(this.src)" loading="lazy">
+    <img src="img/11.jpg" alt="BarberOS" onclick="openLightbox(this.src)" loading="lazy">
+    <img src="img/8.jpg" alt="BarberOS" onclick="openLightbox(this.src)" loading="lazy">
+    <img src="img/9.jpg" alt="BarberOS" onclick="openLightbox(this.src)" loading="lazy">
+    <img src="img/10.jpg" alt="BarberOS" onclick="openLightbox(this.src)" loading="lazy">
+    <img src="img/13.jpg" alt="BarberOS" onclick="openLightbox(this.src)" loading="lazy">
+    <img src="img/14.jpg" alt="BarberOS" onclick="openLightbox(this.src)" loading="lazy">
+  </div>
+</section>
+<!-- DEPOIMENTOS -->
+<section class="section">
+  <p class="section-tag">Prova social</p>
+  <h2 class="section-title">Quem usa, não volta ao caderninho</h2>
+  <p class="section-sub">Veja o que dizem os proprietários que já automatizaram suas barbearias.</p>
+  <div class="testimonials">
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"Meus clientes agradecem por poder agendar pelo celular. E eu agradeço por não ter mais 50 mensagens por dia perguntando horário."</div>
+      <div class="test-name">Rafael Mendes</div>
+      <div class="test-role">Barbearia Premium — SP</div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"Acabou a briga de comissão. O sistema mostra tudo certinho, cada barbeiro vê o dele. Minha equipe nunca esteve tão alinhada."</div>
+      <div class="test-name">Carlos Eduardo</div>
+      <div class="test-role">Studio Barber — RJ</div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-text">"Os pacotes semanais mudaram meu faturamento. Antes era imprevisível, agora tenho receita garantida todo mês com clientes fiéis."</div>
+      <div class="test-name">João Victor</div>
+      <div class="test-role">Barber House — MG</div>
+    </div>
   </div>
 </section>
 
-<section class="section" id="planos">
-  <h2 class="section-title">Escolha seu plano</h2>
-  <p class="section-sub">Sem fidelidade, sem taxa de adesão. Cancele quando quiser.</p>
-  
+<!-- ENTREGÁVEIS -->
+<section class="section">
+  <p class="section-tag">O que você recebe</p>
+  <h2 class="section-title">Tudo isso incluso no seu plano</h2>
+  <p class="section-sub">Sem taxa de adesão, sem surpresas. Acesso imediato após a compra.</p>
+  <div class="deliverables">
+    <div class="del-item"><span class="del-check">✓</span>Agendamento online 24h ilimitado</div>
+    <div class="del-item"><span class="del-check">✓</span>Dashboard financeiro completo (receita, lucro, comissões)</div>
+    <div class="del-item"><span class="del-check">✓</span>Controle automático de comissões por barbeiro</div>
+    <div class="del-item"><span class="del-check">✓</span>Até 3 barbeiros com login individual</div>
+    <div class="del-item"><span class="del-check">✓</span>Pacotes recorrentes (semanal, quinzenal, mensal)</div>
+    <div class="del-item"><span class="del-check">✓</span>Promoções personalizáveis</div>
+    <div class="del-item"><span class="del-check">✓</span>Bloqueio manual de horários</div>
+    <div class="del-item"><span class="del-check">✓</span>Exportação de relatórios em Excel</div>
+    <div class="del-item"><span class="del-check">✓</span>Link exclusivo da sua barbearia</div>
+    <div class="del-item"><span class="del-check">✓</span>Notificação por WhatsApp</div>
+    <div class="del-item"><span class="del-check">✓</span>Visual premium (tema escuro + dourado)</div>
+    <div class="del-item"><span class="del-check">✓</span>Funciona no celular sem instalar nada</div>
+    <div class="del-item"><span class="del-check">✓</span>Suporte via WhatsApp</div>
+  </div>
+</section>
+<!-- PREÇO -->
+<section class="section" id="preco">
+  <p class="section-tag">Investimento</p>
+  <h2 class="section-title">Quanto custa ter gestão profissional?</h2>
+  <p class="section-sub">Menos que um corte por semana. E o retorno vem no primeiro mês.</p>
   <div class="pricing">
     <div class="price-card">
-      <div class="price-name">Plano Mensal</div>
+      <div class="price-name">Mensal</div>
       <div class="price-value">R$ 47<small>/mês</small></div>
       <div class="price-save">&nbsp;</div>
-      <ul class="price-list">
-        <li>Agendamento online ilimitado</li>
-        <li>Dashboard financeiro completo</li>
-        <li>Até 3 barbeiros com login</li>
-        <li>Pacotes e promoções</li>
-        <li>Exportação Excel</li>
-        <li>Link exclusivo da barbearia</li>
-        <li>Suporte por WhatsApp</li>
-      </ul>
-      <a href="https://pay.hotmart.com/F106168738P?checkoutMode=10" class="price-btn" id="btn-plan-monthly">Assinar agora →</a>
+      <a href="https://pay.hotmart.com/F106168738P?checkoutMode=10" class="price-btn">Começar agora →</a>
     </div>
     <div class="price-card popular">
-      <div class="price-badge">MELHOR VALOR</div>
-      <div class="price-name">Plano Anual</div>
+      <div class="price-badge">ECONOMIA</div>
+      <div class="price-name">Anual</div>
       <div class="price-value">R$ 397<small>/ano</small></div>
       <div class="price-save">Economize R$ 167 — equivale a R$ 33/mês</div>
-      <ul class="price-list">
-        <li>Tudo do plano mensal</li>
-        <li>Agendamento online ilimitado</li>
-        <li>Dashboard financeiro completo</li>
-        <li>Até 3 barbeiros com login</li>
-        <li>Pacotes e promoções</li>
-        <li>Exportação Excel</li>
-        <li>Suporte prioritário</li>
-        <li>Acesso a novidades em primeira mão</li>
-      </ul>
-      <a href="https://pay.hotmart.com/H106173626M?checkoutMode=10" class="price-btn" id="btn-plan-annual">Assinar agora →</a>
+      <a href="https://pay.hotmart.com/H106173626M?checkoutMode=10" class="price-btn">Assinar com desconto →</a>
     </div>
+  </div>
+  <div style="text-align:center;margin-top:32px;padding:20px;background:var(--dk2);border-radius:12px;border:1px solid var(--dk4);max-width:500px;margin-left:auto;margin-right:auto">
+    <div style="font-size:14px;color:var(--txm);margin-bottom:8px">Pense assim:</div>
+    <div style="font-size:16px;font-weight:700">Um único cliente a mais por mês já paga o sistema.</div>
+    <div style="font-size:13px;color:var(--txm);margin-top:8px">E com agendamento 24h, você vai ganhar muito mais que um.</div>
   </div>
 </section>
 
 <!-- CTA FINAL -->
-<section class="cta-final">
-  <h2>Sua barbearia merece gestão profissional</h2>
-  <p>Comece hoje e veja a diferença em uma semana. Sem complicação, sem contrato.</p>
-  <a href="#planos" class="hero-cta">Quero começar agora →</a>
+<section style="text-align:center;padding:60px 20px;background:linear-gradient(180deg,var(--dk),var(--dk2))">
+  <h2 style="font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,32px);font-weight:700;margin-bottom:12px">Sua barbearia merece sair do caderninho</h2>
+  <p style="color:var(--txm);margin-bottom:24px;font-size:15px;max-width:500px;margin-left:auto;margin-right:auto">Comece hoje. Em 5 minutos seu sistema está rodando e seus clientes já podem agendar.</p>
+  <a href="#preco" class="cta-btn">Quero automatizar agora →</a>
 </section>
 
 <!-- FOOTER -->
@@ -251,23 +225,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);line-
   <p>© 2026 BarberOS — Sistema de Gestão para Barbearias</p>
 </footer>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('active')">
+  <img id="lightbox-img" src="" alt="Preview">
+</div>
 
 <!-- WhatsApp Flutuante -->
 <a href="https://wa.me/5518997416412?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20o%20BarberOS" target="_blank" rel="noopener" style="position:fixed;bottom:24px;right:24px;width:60px;height:60px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,.4);z-index:9999;transition:transform .2s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
   <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
-
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="this.classList.remove('active')">
-  <img id="lightbox-img" src="" alt="Preview">
-</div>
 <script>
-function openLightbox(src){
-  document.getElementById('lightbox-img').src=src;
-  document.getElementById('lightbox').classList.add('active');
-}
+function openLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('active');}
 </script>
-
 </body>
 </html>
