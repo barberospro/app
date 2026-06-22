@@ -2294,14 +2294,35 @@ async function deleteCliente(uid){
       }catch(e){ console.warn('Erro ao carregar barbearia padrão:',e); }
     }
 
-    // 4. Checar sessão existente
+    // 4. Checar sessão existente — manter logado ao recarregar
     try{
       const{data:{session}}=await db.auth.getSession();
-      if(session&&window.location.hash==='#admin'){
-        await loadShop(session.user.id,true);
-        enterApp('admin');
+      if(session){
+        const uid=session.user.id;
+        // Verificar se é owner
+        const{data:shopData}=await db.from('shops').select('*').eq('owner_id',uid).maybeSingle();
+        if(shopData){
+          S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;
+          applyShop(shopData);
+          S.role='owner';
+          enterApp('admin');
+          if(typeof updateLoggedName==='function')updateLoggedName(session.user.email);
+        } else {
+          // Verificar se é barbeiro
+          const{data:buData}=await db.from('barber_users').select('barber_id,shop_id').eq('user_id',uid).maybeSingle();
+          if(buData){
+            const{data:bShop}=await db.from('shops').select('*').eq('id',buData.shop_id).maybeSingle();
+            if(bShop){
+              S.shop=bShop;S.shopId=bShop.id;S.shopSlug=bShop.slug;
+              S.role='barber';S.barberUserId=buData.barber_id;
+              applyShop(bShop);
+              enterApp('admin');
+              if(typeof updateLoggedName==='function')updateLoggedName(session.user.email);
+            }
+          }
+        }
       }
-    }catch(e){}
+    }catch(e){console.warn('Session restore error:',e);}
   }catch(e){console.warn('Init error',e);}
 
 // PKB e calcSessions removidos - definidos em pkg_booking.js
