@@ -1,0 +1,17 @@
+{
+  "name": "BarberOS",
+  "short_name": "BarberOS",
+  "description": "Sistema de agendamento para barbearias",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0E0E0E",
+  "theme_color": "#C9A84C",
+  "icons": [
+    {
+      "src": "logo-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
