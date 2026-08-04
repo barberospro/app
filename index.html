@@ -1712,13 +1712,29 @@ async function openAdmBook(){
   db2.innerHTML='<option>Carregando...</option>';
   document.getElementById('ab-date').value=new Date().toISOString().split('T')[0];
 
-  // Always load fresh from DB with real UUIDs
+  // Load services + packages + barbers
   try{
-    const[{data:svcs},{data:barbers}]=await Promise.all([
+    const[{data:svcs},{data:pkgs},{data:barbers}]=await Promise.all([
       db.from('services').select('id,name,price,duration_minutes').eq('shop_id',S.shopId).eq('active',true).order('name'),
+      db.from('packages').select('id,name,price,items,frequencia').eq('shop_id',S.shopId).eq('active',true).order('price'),
       db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name')
     ]);
-    ds.innerHTML=(svcs||[]).map(s=>`<option value="${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} — ${fmt(s.price)}</option>`).join('');
+    var opts='';
+    if(svcs&&svcs.length){
+      opts+='<optgroup label="Serviços">';
+      opts+=(svcs).map(s=>`<option value="${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} — ${fmt(s.price)}</option>`).join('');
+      opts+='</optgroup>';
+    }
+    if(pkgs&&pkgs.length){
+      opts+='<optgroup label="Pacotes">';
+      opts+=(pkgs).map(p=>{
+        var totalItems=(p.items||[]).length;
+        var dur=totalItems*30;
+        return `<option value="${p.id}|📦 ${p.name}|${p.price}|${dur}">📦 ${p.name} — ${fmt(p.price)} (${totalItems} itens${p.frequencia?' · '+p.frequencia:''})</option>`;
+      }).join('');
+      opts+='</optgroup>';
+    }
+    ds.innerHTML=opts||'<option>Nenhum serviço cadastrado</option>';
     db2.innerHTML=(barbers||[]).map(b=>`<option value="${b.id}|${b.name}">${b.name}</option>`).join('');
   }catch(e){
     ds.innerHTML='<option value="|Servico">Erro ao carregar servicos</option>';
