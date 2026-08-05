@@ -797,11 +797,20 @@ html,body{overscroll-behavior-y:none;}
   <div class="msh"><div class="mhd"></div><div class="mt">Novo Agendamento</div>
     <div class="fg"><label class="fl">Nome do cliente</label><input class="fi" id="ab-name"></div>
     <div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="ab-phone" type="tel" placeholder="(11) 99999-9999"></div>
-    <div class="fg"><label class="fl">Servico</label><select class="fi" id="ab-svc"></select></div>
+    <div class="fg"><label class="fl">Servico</label><select class="fi" id="ab-svc" onchange="admBookSvcChange()"></select></div>
     <div class="fg"><label class="fl">Barbeiro</label><select class="fi" id="ab-barb"></select></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="fg"><label class="fl">Data</label><input class="fi" type="date" id="ab-date"></div>
-      <div class="fg"><label class="fl">Horario</label><input class="fi" type="time" id="ab-time"></div>
+    <!-- Sessão única (serviço normal) -->
+    <div id="ab-single-session">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fg"><label class="fl">Data</label><input class="fi" type="date" id="ab-date"></div>
+        <div class="fg"><label class="fl">Horario</label><input class="fi" type="time" id="ab-time"></div>
+      </div>
+    </div>
+    <!-- Múltiplas sessões (pacote) -->
+    <div id="ab-pkg-sessions" style="display:none">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:8px">📦 Sessões do Pacote</div>
+      <div id="ab-pkg-list-sessions"></div>
+      <button type="button" class="btn btn-out" onclick="abAddSession()" style="font-size:12px;padding:8px;margin-bottom:10px">+ Adicionar sessão</button>
     </div>
     <div class="fg"><label class="fl">Status</label><select class="fi" id="ab-status"><option value="confirmed">Confirmado</option><option value="pending">Pendente</option></select></div>
     <div class="fg"><label class="fl">Pagamento</label><select class="fi" id="ab-pay"><option value="local">Pagar no local</option><option value="pix">PIX</option><option value="credito">Cartao</option></select></div>
@@ -1711,61 +1720,144 @@ async function openAdmBook(){
   ds.innerHTML='<option>Carregando...</option>';
   db2.innerHTML='<option>Carregando...</option>';
   document.getElementById('ab-date').value=new Date().toISOString().split('T')[0];
+  // Reset package sessions
+  document.getElementById('ab-single-session').style.display='block';
+  document.getElementById('ab-pkg-sessions').style.display='none';
+  document.getElementById('ab-pkg-list-sessions').innerHTML='';
+  window._abPkgData=null;
 
   // Load services + packages + barbers
   try{
     const[{data:svcs},{data:pkgs},{data:barbers}]=await Promise.all([
       db.from('services').select('id,name,price,duration_minutes').eq('shop_id',S.shopId).eq('active',true).order('name'),
-      db.from('packages').select('id,name,price,items,frequencia').eq('shop_id',S.shopId).eq('active',true).order('price'),
+      db.from('packages').select('id,name,price,items,frequencia,sessions').eq('shop_id',S.shopId).eq('active',true).order('price'),
       db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name')
     ]);
+    window._abPkgMap={};
     var opts='';
     if(svcs&&svcs.length){
       opts+='<optgroup label="Serviços">';
-      opts+=(svcs).map(s=>`<option value="${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} — ${fmt(s.price)}</option>`).join('');
+      opts+=(svcs).map(s=>`<option value="svc|${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} — ${fmt(s.price)}</option>`).join('');
       opts+='</optgroup>';
     }
     if(pkgs&&pkgs.length){
-      opts+='<optgroup label="Pacotes">';
+      opts+='<optgroup label="📦 Pacotes">';
       opts+=(pkgs).map(p=>{
+        window._abPkgMap[p.id]=p;
         var totalItems=(p.items||[]).length;
-        var dur=totalItems*30;
-        return `<option value="${p.id}|📦 ${p.name}|${p.price}|${dur}">📦 ${p.name} — ${fmt(p.price)} (${totalItems} itens${p.frequencia?' · '+p.frequencia:''})</option>`;
+        var numSessions=p.sessions||totalItems||4;
+        return `<option value="pkg|${p.id}|${p.name}|${p.price}|${numSessions}">📦 ${p.name} — ${fmt(p.price)} (${numSessions} sessões${p.frequencia?' · '+p.frequencia:''})</option>`;
       }).join('');
       opts+='</optgroup>';
     }
     ds.innerHTML=opts||'<option>Nenhum serviço cadastrado</option>';
     db2.innerHTML=(barbers||[]).map(b=>`<option value="${b.id}|${b.name}">${b.name}</option>`).join('');
+    admBookSvcChange();
   }catch(e){
-    ds.innerHTML='<option value="|Servico">Erro ao carregar servicos</option>';
+    ds.innerHTML='<option value="svc||Servico|0|30">Erro ao carregar</option>';
     db2.innerHTML='';
   }
 }
+window.admBookSvcChange=function(){
+  var val=(document.getElementById('ab-svc').value||'').split('|');
+  var type=val[0];
+  if(type==='pkg'){
+    document.getElementById('ab-single-session').style.display='none';
+    document.getElementById('ab-pkg-sessions').style.display='block';
+    var numSessions=Number(val[4])||4;
+    var listEl=document.getElementById('ab-pkg-list-sessions');
+    listEl.innerHTML='';
+    for(var i=0;i<numSessions;i++) abAddSession();
+  }else{
+    document.getElementById('ab-single-session').style.display='block';
+    document.getElementById('ab-pkg-sessions').style.display='none';
+  }
+};
+window.abAddSession=function(){
+  var listEl=document.getElementById('ab-pkg-list-sessions');
+  var idx=listEl.children.length+1;
+  var div=document.createElement('div');
+  div.style.cssText='display:grid;grid-template-columns:auto 1fr 1fr 30px;gap:8px;align-items:center;margin-bottom:8px';
+  div.innerHTML='<span style="font-size:11px;color:var(--gold);font-weight:700">'+idx+'</span><input type="date" class="fi ab-pkg-date" style="font-size:12px;padding:10px"><input type="time" class="fi ab-pkg-time" style="font-size:12px;padding:10px"><span onclick="this.parentElement.remove();abReindex()" style="color:var(--red);cursor:pointer;font-size:16px;text-align:center">✕</span>';
+  listEl.appendChild(div);
+};
+window.abReindex=function(){
+  var items=document.querySelectorAll('#ab-pkg-list-sessions > div');
+  items.forEach(function(el,i){el.querySelector('span').textContent=i+1;});
+};
 async function saveAdmBook(){
   const name=document.getElementById('ab-name').value.trim();
   const phone=document.getElementById('ab-phone').value.trim();
   const svcVal=document.getElementById('ab-svc').value.split('|');
   const barbVal=document.getElementById('ab-barb').value.split('|');
-  const date=document.getElementById('ab-date').value;
-  const time=document.getElementById('ab-time').value;
   const status=document.getElementById('ab-status').value;
   const pay=document.getElementById('ab-pay').value;
-  if(!name||!date||!time){toast('Preencha todos os campos.','err');return;}
+  const type=svcVal[0]; // 'svc' or 'pkg'
+
+  if(!name){toast('Preencha o nome.','err');return;}
+
   const btn=document.getElementById('btn-ab');btn.disabled=true;btn.textContent='Salvando...';
-  const{error}=await db.from('appointments').insert({
-    shop_id:S.shopId,
-    client_name:name,client_phone:phone,
-    barber_id:/^[0-9a-f-]{36}$/i.test(barbVal[0]||'')?barbVal[0]:null,
-    service_id:svcVal[0]||null,
-    service_name:svcVal[1]||'',barber_name:barbVal[1]||'',
-    service_price:Number(svcVal[2])||0,
-    total_duration_minutes:Number(svcVal[3])||30,
-    appointment_date:date,appointment_time:time+':00',
-    status,payment_method:pay,payment_status:'pending'
-  });
-  btn.disabled=false;btn.textContent='Confirmar Agendamento';
-  if(error){toast('Erro: '+error.message,'err');return;}
-  toast('Agendamento criado!','ok');closeMod('mod-admbook');loadAgenda('hoje');showA('agenda');
+
+  if(type==='pkg'){
+    // === PACOTE: múltiplas sessões ===
+    var dates=document.querySelectorAll('#ab-pkg-list-sessions .ab-pkg-date');
+    var times=document.querySelectorAll('#ab-pkg-list-sessions .ab-pkg-time');
+    var sessions=[];
+    dates.forEach(function(d,i){
+      var dt=d.value;var tm=times[i]?times[i].value:'';
+      if(dt&&tm)sessions.push({date:dt,time:tm});
+    });
+    if(sessions.length===0){toast('Adicione pelo menos 1 sessão com data e horário.','err');btn.disabled=false;btn.textContent='Confirmar Agendamento';return;}
+    var pkgName=svcVal[2]||'Pacote';
+    var pkgPrice=Number(svcVal[3])||0;
+    var pgid='pkg-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
+    var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var ref='PKT-';for(var ri=0;ri<6;ri++)ref+=chars[Math.floor(Math.random()*chars.length)];
+    var tot=sessions.length;
+    var appts=sessions.map(function(s,i){
+      return{
+        shop_id:S.shopId,
+        client_name:name,client_phone:phone,
+        service_name:pkgName,
+        service_price:Math.round((pkgPrice/tot)*100)/100,
+        barber_name:barbVal[1]||'A definir',
+        barber_id:/^[0-9a-f-]{36}$/i.test(barbVal[0]||'')?barbVal[0]:null,
+        appointment_date:s.date,
+        appointment_time:s.time+':00',
+        total_duration_minutes:30,
+        status:status,
+        payment_method:pay,
+        payment_status:'pending',
+        package_group_id:pgid,
+        package_ref:ref,
+        package_session_num:i+1,
+        package_total_sessions:tot
+      };
+    });
+    const{error}=await db.from('appointments').insert(appts);
+    btn.disabled=false;btn.textContent='Confirmar Agendamento';
+    if(error){toast('Erro: '+error.message,'err');return;}
+    toast('Pacote agendado! ('+tot+' sessões)','ok');
+  }else{
+    // === SERVIÇO NORMAL: sessão única ===
+    const date=document.getElementById('ab-date').value;
+    const time=document.getElementById('ab-time').value;
+    if(!date||!time){toast('Preencha data e horário.','err');btn.disabled=false;btn.textContent='Confirmar Agendamento';return;}
+    const{error}=await db.from('appointments').insert({
+      shop_id:S.shopId,
+      client_name:name,client_phone:phone,
+      barber_id:/^[0-9a-f-]{36}$/i.test(barbVal[0]||'')?barbVal[0]:null,
+      service_id:svcVal[1]||null,
+      service_name:svcVal[2]||'',barber_name:barbVal[1]||'',
+      service_price:Number(svcVal[3])||0,
+      total_duration_minutes:Number(svcVal[4])||30,
+      appointment_date:date,appointment_time:time+':00',
+      status,payment_method:pay,payment_status:'pending'
+    });
+    btn.disabled=false;btn.textContent='Confirmar Agendamento';
+    if(error){toast('Erro: '+error.message,'err');return;}
+    toast('Agendamento criado!','ok');
+  }
+  closeMod('mod-admbook');loadAgenda('hoje');showA('agenda');
 }
 
 // =================== ADMIN SERVICES CRUD ===================
