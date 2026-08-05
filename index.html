@@ -1730,7 +1730,7 @@ async function openAdmBook(){
   try{
     const[{data:svcs},{data:pkgs},{data:barbers}]=await Promise.all([
       db.from('services').select('id,name,price,duration_minutes').eq('shop_id',S.shopId).eq('active',true).order('name'),
-      db.from('packages').select('id,name,price,items,frequencia,sessions').eq('shop_id',S.shopId).eq('active',true).order('price'),
+      db.from('packages').select('id,name,price,items,frequencia').eq('shop_id',S.shopId).eq('active',true).order('price'),
       db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name')
     ]);
     window._abPkgMap={};
@@ -1745,7 +1745,7 @@ async function openAdmBook(){
       opts+=(pkgs).map(p=>{
         window._abPkgMap[p.id]=p;
         var totalItems=(p.items||[]).length;
-        var numSessions=p.sessions||totalItems||4;
+        var numSessions=totalItems||4;
         return `<option value="pkg|${p.id}|${p.name}|${p.price}|${numSessions}">📦 ${p.name} — ${fmt(p.price)} (${numSessions} sessões${p.frequencia?' · '+p.frequencia:''})</option>`;
       }).join('');
       opts+='</optgroup>';
