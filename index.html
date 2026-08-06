@@ -1035,17 +1035,23 @@ function applySettings(data){
 async function loadSvcs(){
   const g=document.getElementById('svc-grid');
   if(g)g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:30px"><div class="spin"></div></div>';
-  if(!S.shopId){useFallbackSvcs();return;}
+  if(!S.shopId){
+    // Aguardar shopId estar disponível (retry até 3 segundos)
+    var retries=0;
+    while(!S.shopId&&retries<6){await new Promise(r=>setTimeout(r,500));retries++;}
+    if(!S.shopId){useFallbackSvcs();return;}
+  }
   try{
     const{data,error}=await db.from('services').select('*').eq('active',true).eq('shop_id',S.shopId).order('name');
     if(error){console.error('loadSvcs error:',error);useFallbackSvcs();return;}
     if(data&&data.length){S.svcs=data;renderSvcGrid();}
-    else useFallbackSvcs();
+    else{S.svcs=[];renderSvcGrid();}
   }catch(e){console.error('loadSvcs exception:',e);useFallbackSvcs();}
 }
 function useFallbackSvcs(){
+  // Só usa fallback se não tem shopId (modo demo sem barbearia)
+  if(S.shopId){S.svcs=[];renderSvcGrid();return;}
   if(S.svcs.length){renderSvcGrid();return;}
-  // IDs prefixados com 'tmp-' para o carrinho funcionar — NÃO são UUIDs válidos
   S.svcs=[
     {id:'tmp-1',name:'Corte Degradê',price:45,duration_minutes:40,category:'Cortes'},
     {id:'tmp-2',name:'Barba Completa',price:35,duration_minutes:30,category:'Barba'},
@@ -1105,7 +1111,8 @@ function renderCart(){
 
 function renderSvcMenu(){
   const c=document.getElementById('svc-menu');if(!c)return;
-  if(!S.svcs.length){c.innerHTML='<div style="text-align:center;padding:40px"><div class="spin"></div></div>';loadSvcs().then(renderSvcMenu);return;}
+  if(!S.svcs.length&&S.shopId){c.innerHTML='<div style="text-align:center;padding:40px"><div class="spin"></div></div>';loadSvcs().then(renderSvcMenu);return;}
+  if(!S.svcs.length){c.innerHTML='<div style="padding:20px;color:var(--txm)">Nenhum servico cadastrado.</div>';return;}
   const cats=[...new Set(S.svcs.map(s=>s.category))];
   c.innerHTML=cats.map(cat=>`
     <div>
