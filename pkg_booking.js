@@ -1,3 +1,4 @@
+// v5-lunch-fix
 function _pkgClick(el){var pid=el.dataset.pid;var p=window._pkgMap&&window._pkgMap[pid];if(!p){alert('Pacote nao encontrado');return;}openPkgBooking(p);}
 var PKB={pkg:null,totalSessions:0,currentSession:0,sessions:[],calM:new Date().getMonth(),calY:new Date().getFullYear(),selDate:null,selDateISO:null,selTime:null,busySlots:[]};
 function calcSessions(f,v){var fM={'Semanal':4,'Quinzenal':2,'Mensal':1};var vM={'Mensal':1,'Bimestral':2,'Semestral':6};return(fM[f]||1)*(vM[v]||1);}
