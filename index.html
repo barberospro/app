@@ -1289,7 +1289,6 @@ async function loadBusy(){
         }
       });
     }
-    }
     // Check blocked slots
     try{var blkR2=await db.from('blocked_slots').select('start_time,end_time').eq('shop_id',S.shopId).eq('block_date',S.selDateISO);(blkR2.data||[]).forEach(function(b){var bS=b.start_time.slice(0,5),bE=b.end_time.slice(0,5);var toM=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var sm=toM(bS),em=toM(bE);for(var m=sm;m<em;m+=5){S.busySlots.push({time:String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),dur:5});}});}catch(e){}
   }catch(e){S.busySlots=[];}
