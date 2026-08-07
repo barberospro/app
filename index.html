@@ -504,6 +504,7 @@ html,body{overscroll-behavior-y:none;}
   <div class="hdr">
     <div class="logo">⚙ BarberOS</div>
     <div style="display:flex;align-items:center;gap:10px">
+      <select id="sa-shop-selector" class="sa-only" style="display:none;background:var(--dk3);border:1px solid var(--gold);color:var(--gold);border-radius:50px;padding:5px 12px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;max-width:160px;cursor:pointer" onchange="saSwitch(this.value)"></select>
       <span id="logged-user-name" style="font-size:12px;color:var(--gold);font-weight:600"></span>
       <button onclick="doLogout()" style="background:transparent;border:1px solid var(--dk5);color:var(--txm);border-radius:50px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Sair</button>
     </div>
@@ -869,12 +870,43 @@ function checkSuperAdmin(){
   const SUPER_ADMIN='covalsqui.arrabal1@gmail.com';
   db.auth.getSession().then(({data:{session}})=>{
     const isSA=session&&session.user.email===SUPER_ADMIN;
+    S.isSuperAdmin=isSA;
     // Esconder/mostrar elementos exclusivos do super admin
     document.querySelectorAll('.sa-only').forEach(function(el){el.style.display=isSA?'block':'none';});
     var tab=document.getElementById('an-clientes');if(tab)tab.style.display=isSA?'flex':'none';
     var el=document.getElementById('super-admin-section');if(el)el.style.display=isSA?'block':'none';
+    // Carregar seletor de barbearias
+    if(isSA) loadSAShopSelector();
   });
 }
+async function loadSAShopSelector(){
+  var sel=document.getElementById('sa-shop-selector');if(!sel)return;
+  try{
+    var{data}=await db.from('shops').select('id,name,slug').eq('active',true).order('name');
+    if(!data||!data.length){sel.innerHTML='<option>Nenhuma barbearia</option>';return;}
+    sel.innerHTML=data.map(function(s){
+      var selected=s.id===S.shopId?' selected':'';
+      return '<option value="'+s.id+'"'+selected+'>'+s.name+'</option>';
+    }).join('');
+    sel.style.display='block';
+  }catch(e){console.warn('loadSAShopSelector error:',e);}
+}
+window.saSwitch=async function(shopId){
+  if(!shopId||!S.isSuperAdmin)return;
+  try{
+    var{data}=await db.from('shops').select('*').eq('id',shopId).single();
+    if(!data)return;
+    S.shop=data;S.shopId=data.id;S.shopSlug=data.slug;
+    applyShop(data);
+    toast('Gerenciando: '+data.name,'ok');
+    // Recarregar dados do admin
+    if(typeof loadDash==='function')loadDash();
+    if(typeof loadAgenda==='function')loadAgenda('hoje');
+    if(typeof loadAdmSvcs==='function')loadAdmSvcs();
+    if(typeof loadAdmPkgs==='function')loadAdmPkgs();
+    if(typeof loadReminders==='function')loadReminders();
+  }catch(e){toast('Erro ao trocar barbearia','err');}
+};
 async function loadHotmartLinks(){
   // Sempre buscar links da barbearia admin (super admin)
   var adminShop=null;
