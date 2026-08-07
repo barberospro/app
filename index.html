@@ -1173,6 +1173,8 @@ async function loadBarbers(){
   }catch(e){console.error('loadBarbers exception:',e);useFallbackBarbers();}
 }
 function useFallbackBarbers(){
+  // Só usa fallback se não tem shopId (modo demo sem barbearia)
+  if(S.shopId){S.barbers=[];renderBarberGrid();return;}
   if(S.barbers.length){renderBarberGrid();return;}
   S.barbers=[
     {id:'tmp-b1',name:'Marcos',specialty:'Degradê & Barba',rating:4.9,reviews_count:142,avatar_emoji:'👤'},
@@ -1183,6 +1185,7 @@ function useFallbackBarbers(){
 }
 function renderBarberGrid(){
   const g=document.getElementById('barber-grid');if(!g)return;
+  if(!S.barbers.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:30px;color:var(--txm)">Nenhum barbeiro cadastrado.</div>';return;}
   g.innerHTML=S.barbers.map(b=>`
     <div onclick="selBarber(this,'${b.name}','${b.id}')" style="background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--r);padding:16px;cursor:pointer;text-align:center;transition:all .2s" id="bc-${b.id}">
       <div style="width:64px;height:64px;border-radius:50%;background:var(--dk4);border:2px solid var(--dk5);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;transition:border-color .2s">${b.avatar_emoji||'👤'}</div>
