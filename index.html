@@ -786,6 +786,7 @@ html,body{overscroll-behavior-y:none;}
       <div class="fg"><label class="fl">Preco (R$)</label><input class="fi" id="pm-price" type="text" inputmode="decimal" placeholder="0"></div>
       <div class="fg"><label class="fl">Preco original</label><input class="fi" id="pm-orig" type="text" inputmode="decimal" placeholder="0"></div>
     </div>
+    <div class="fg"><label class="fl">Duração por sessão (minutos)</label><input class="fi" id="pm-dur" type="number" inputmode="numeric" placeholder="30" value="30"></div>
     <div class="fg"><label class="fl">Itens incluidos (um por linha)</label><textarea class="fi" id="pm-items" rows="3" style="resize:none" placeholder="Ex: 4 cortes por mes"></textarea></div>
     <div class="fg"><label class="fl">Badge</label><select class="fi" id="pm-badge"><option value="">Sem badge</option><option value="POPULAR">POPULAR</option><option value="OFERTA">OFERTA</option><option value="NOVO">NOVO</option></select></div>
     <input type="hidden" id="pm-id">
@@ -1772,7 +1773,7 @@ async function openAdmBook(){
   try{
     const[{data:svcs},{data:pkgs},{data:barbers}]=await Promise.all([
       db.from('services').select('id,name,price,duration_minutes').eq('shop_id',S.shopId).eq('active',true).order('name'),
-      db.from('packages').select('id,name,price,items,frequencia').eq('shop_id',S.shopId).eq('active',true).order('price'),
+      db.from('packages').select('id,name,price,items,frequencia,duration_minutes').eq('shop_id',S.shopId).eq('active',true).order('price'),
       db.from('barbers').select('id,name').eq('shop_id',S.shopId).eq('active',true).order('name')
     ]);
     window._abPkgMap={};
@@ -1788,7 +1789,8 @@ async function openAdmBook(){
         window._abPkgMap[p.id]=p;
         var totalItems=(p.items||[]).length;
         var numSessions=totalItems||4;
-        return `<option value="pkg|${p.id}|${p.name}|${p.price}|${numSessions}">📦 ${p.name} — ${fmt(p.price)} (${numSessions} sessões${p.frequencia?' · '+p.frequencia:''})</option>`;
+        var pkgDur=Number(p.duration_minutes)||30;
+        return `<option value="pkg|${p.id}|${p.name}|${p.price}|${numSessions}|${pkgDur}">📦 ${p.name} — ${fmt(p.price)} (${numSessions} sessões · ${pkgDur}min${p.frequencia?' · '+p.frequencia:''})</option>`;
       }).join('');
       opts+='</optgroup>';
     }
@@ -1852,6 +1854,7 @@ async function saveAdmBook(){
     if(sessions.length===0){toast('Adicione pelo menos 1 sessão com data e horário.','err');btn.disabled=false;btn.textContent='Confirmar Agendamento';return;}
     var pkgName=svcVal[2]||'Pacote';
     var pkgPrice=Number(svcVal[3])||0;
+    var pkgDur=Number(svcVal[5])||30;
     var pgid='pkg-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
     var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';var ref='PKT-';for(var ri=0;ri<6;ri++)ref+=chars[Math.floor(Math.random()*chars.length)];
     var tot=sessions.length;
@@ -1865,7 +1868,7 @@ async function saveAdmBook(){
         barber_id:/^[0-9a-f-]{36}$/i.test(barbVal[0]||'')?barbVal[0]:null,
         appointment_date:s.date,
         appointment_time:s.time+':00',
-        total_duration_minutes:30,
+        total_duration_minutes:pkgDur,
         status:status,
         payment_method:pay,
         payment_status:'pending',
@@ -1975,11 +1978,13 @@ function openPkgMod(id){
       document.getElementById('pm-valid').value=p.validade||'';
       document.getElementById('pm-price').value=p.price;
       document.getElementById('pm-orig').value=p.original_price||'';
+      document.getElementById('pm-dur').value=p.duration_minutes||30;
       document.getElementById('pm-items').value=(p.items||[]).join('\n');
       document.getElementById('pm-badge').value=p.badge||'';
     });
   }else{
     ['pm-name','pm-desc','pm-price','pm-orig','pm-items'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['pm-freq','pm-valid','pm-badge'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});
+    document.getElementById('pm-dur').value=30;
   }
   openMod('mod-pkg');
 }
@@ -2076,11 +2081,12 @@ async function savePkg(){
   const items=document.getElementById('pm-items').value.split('\n').map(s=>s.trim()).filter(Boolean);
   const desc=document.getElementById('pm-desc').value.trim();
   const badge=document.getElementById('pm-badge').value.trim();
+  const dur=Number(document.getElementById('pm-dur').value)||30;
   const eid=document.getElementById('pm-id').value;
   if(!name||isNaN(price)||price<=0){toast('Preencha nome e preço.','err');return;}
   const freq=document.getElementById('pm-freq').value;
   const valid=document.getElementById('pm-valid').value;
-  const payload={name,price,original_price:orig?parseFloat(orig.replace(/[^0-9.,]/g,'').replace(',','.')):null,items,description:desc,badge:badge||null,frequencia:freq||null,validade:valid||null,active:true,shop_id:S.shopId};
+  const payload={name,price,original_price:orig?parseFloat(orig.replace(/[^0-9.,]/g,'').replace(',','.')):null,items,description:desc,badge:badge||null,frequencia:freq||null,validade:valid||null,duration_minutes:dur,active:true,shop_id:S.shopId};
   let error;
   if(eid){({error}=await db.from('packages').update(payload).eq('id',eid));}
   else{({error}=await db.from('packages').insert(payload));}
