@@ -2560,6 +2560,11 @@ async function deleteCliente(uid){
         }
       }
     }catch(e){console.warn('Session restore error:',e);}
+
+    // 5. Se tem slug na URL e não entrou no admin, ir direto para modo cliente
+    if(S.shopId && !document.getElementById('admin-app').classList.contains('active')){
+      enterApp('client');
+    }
   }catch(e){console.warn('Init error',e);}
 
 // PKB e calcSessions removidos - definidos em pkg_booking.js
