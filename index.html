@@ -1025,6 +1025,11 @@ async function doLogin(){
       } else { enterApp('onboarding'); }
     } else {
       S.role='owner';
+      // Atualizar URL com slug para evitar problemas de cache/reload
+      if(S.shopSlug && !window.location.search.includes('s=')){
+        var newUrl=window.location.pathname+'?s='+S.shopSlug;
+        history.replaceState(null,'',newUrl);
+      }
       enterApp('admin');
       if(typeof updateLoggedName==='function')updateLoggedName(email);
     }
@@ -2559,6 +2564,9 @@ async function deleteCliente(uid){
           S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;
           applyShop(shopData);
           S.role='owner';
+          if(S.shopSlug && !window.location.search.includes('s=')){
+            history.replaceState(null,'',window.location.pathname+'?s='+S.shopSlug);
+          }
           enterApp('admin');
           if(typeof updateLoggedName==='function')updateLoggedName(session.user.email);
         } else {
