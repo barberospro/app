@@ -140,7 +140,7 @@ html,body{overscroll-behavior-y:none;}
 <div id="toast"></div>
 
 <!-- SPLASH -->
-<div id="splash" class="screen active" style="display:none">
+<div id="splash" class="screen active">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px">
     <img src="logo-icon.png" alt="BarberOS" style="width:80px;height:80px;border-radius:20px;margin-bottom:20px;object-fit:cover">
     <div style="font-family:'Playfair Display',serif;font-size:52px;font-weight:900;color:var(--gold);letter-spacing:-1px">BarberOS</div>
@@ -149,11 +149,6 @@ html,body{overscroll-behavior-y:none;}
     <button class="btn btn-out" onclick="enterApp('adm-login')" style="max-width:320px">Area do Proprietario</button>
     <div id="sp-addr" style="display:none"></div>
   </div>
-</div>
-
-<!-- LOADING SCREEN -->
-<div id="app-loading" style="position:fixed;inset:0;background:var(--dk);display:flex;align-items:center;justify-content:center;z-index:9999">
-  <div style="text-align:center"><div class="spin" style="width:32px;height:32px;border-width:3px"></div><div style="color:var(--txm);font-size:12px;margin-top:12px">Carregando...</div></div>
 </div>
 
 <!-- ADMIN LOGIN -->
@@ -862,10 +857,6 @@ function icLabel(cat){const m={'Cortes':'CO','Barba':'BA','Combos':'CB','Tratame
 // =================== NAV ===================
 function enterApp(mode){
   window.scrollTo(0,0);
-  // Remover loading screen se ainda existir
-  var _ld=document.getElementById('app-loading');if(_ld)_ld.remove();
-  // Garantir splash visível se for para ele
-  if(mode==='splash'){var sp=document.getElementById('splash');if(sp)sp.style.display='flex';}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const idMap={client:'client-app',admin:'admin-app','adm-login':'adm-login',planos:'planos',splash:'splash',onboarding:'onboarding','set-password':'set-password'};
   const target=document.getElementById(idMap[mode]||mode);
@@ -2596,19 +2587,10 @@ async function deleteCliente(uid){
 
     // 5. Decidir qual tela mostrar
     var isAdmin=document.getElementById('admin-app').classList.contains('active');
-    if(!isAdmin){
-      if(S.shopId && S.shopSlug){
-        // Tem barbearia carregada via slug — ir direto para agendamento
-        enterApp('client');
-      } else {
-        // Sem barbearia — mostrar splash
-        document.getElementById('splash').style.display='flex';
-        document.getElementById('splash').classList.add('active');
-      }
+    if(!isAdmin && S.shopId){
+      enterApp('client');
     }
-    // Remover tela de loading
-    var loadingEl=document.getElementById('app-loading');
-    if(loadingEl)loadingEl.remove();
+    // Se não entrou em nenhuma tela, fica no splash (já é o padrão)
   }catch(e){console.warn('Init error',e);}
 
 // PKB e calcSessions removidos - definidos em pkg_booking.js
