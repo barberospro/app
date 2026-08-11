@@ -1,6 +1,5 @@
 // v1781192785901
 function todayLocal(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}function dateLocalISO(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');}
-function todayLocal(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}function dateLocalISO(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');}
 // BarberOS V2 Features v3.0 - Comissao, Dashboard, Acesso Barbeiro
 (function(){
 // Funcao global chamada pelo onclick dos botoes Editar barbeiro
@@ -60,7 +59,7 @@ async function enhanceBarbList(){
       sub.textContent = (b.specialty||"") + " \u2022 Comiss\u00e3o: " + (b.commission_pct||0) + "%";
     }
     
-    // Adicionar botão com onclick attribute (string HTML - mais robusto)
+    // Adicionar botï¿½o com onclick attribute (string HTML - mais robusto)
     if(!item.querySelector(".btn-edit-barber")){
       var wrapper = item.querySelector('[style*="display:flex"][style*="gap"]') || item;
       var btn = document.createElement("button");
@@ -99,7 +98,7 @@ window.editBarber = function(id,name,spec,comm){
     document.getElementById("brb-comm-val").textContent=comm||0;
     document.getElementById("brb-edit-id").value=id;
     document.getElementById("mod-barber-title").textContent="Editar Barbeiro";
-    // Seção de senha simples
+    // Seï¿½ï¿½o de senha simples
     var accSec=document.getElementById("brb-access-section");
     if(!accSec){
       var md=document.querySelector("#mod-barber .msh");
@@ -197,7 +196,7 @@ window.filterDash = async function(period){
 
 async function overrideLoadDashForBarber(){
   // Buscar barber_id real da sessao
-  // Usar S.barberUserId que já foi definido no doLogin
+  // Usar S.barberUserId que jï¿½ foi definido no doLogin
   var myBid=window.S&&window.S.barberUserId;
   if(!myBid)return;
 
@@ -241,7 +240,7 @@ async function overrideLoadDashForBarber(){
         }
       }
     
-      // Injetar seção "Minhas Comissões"
+      // Injetar seï¿½ï¿½o "Minhas Comissï¿½es"
       var brNameR=await db.from('barbers').select('name,commission_pct').eq('id',myBid).maybeSingle();
       var bName=(brNameR&&brNameR.data)?brNameR.data.name:'';
       var bPct=(brNameR&&brNameR.data)?Number(brNameR.data.commission_pct)||0:0;
@@ -356,7 +355,7 @@ function injectUI(){
   }
   // Dashboard filters
   var dl=document.getElementById("dash-list");
-  // Esconder seção de lucros do proprietário se for barbeiro
+  // Esconder seï¿½ï¿½o de lucros do proprietï¿½rio se for barbeiro
   if(window.S&&S.role==='barber'){
     var profitSec=document.getElementById('dash-profit-section');
     if(profitSec)profitSec.style.display='none';
@@ -423,7 +422,7 @@ function init(){
   injectUI();
   startObserving();
   // Override loadDash para barbeiro - filtrar apenas seus agendamentos
-  // Override será aplicado via interval abaixo
+  // Override serï¿½ aplicado via interval abaixo
   // Re-render barber list after a delay
   setTimeout(function(){
     if(S.shopId) enhanceBarbList();
@@ -478,7 +477,7 @@ window.loadBarberDash = async function(){ return; // Desativado - overrideLoadDa
   if(!buR||!buR.data) return;
   var myBarberId = buR.data.barber_id;
   myBarberId = myBarberId; // Atualizar
-  // Buscar comissão do barbeiro
+  // Buscar comissï¿½o do barbeiro
   var br = await db.from('barbers').select('name,commission_pct').eq('id',myBarberId).maybeSingle();
   var pct = (br&&br.data) ? Number(br.data.commission_pct)||0 : 0;
   var bName = (br&&br.data) ? br.data.name : '';
@@ -578,7 +577,7 @@ var _dashOverrideInterval = setInterval(function(){
     if(stMonth) stMonth.textContent = monthCount;
     if(stRm) stRm.textContent = fmt(monthRevenue);
     
-    // Mudar labels para indicar que é comissão
+    // Mudar labels para indicar que ï¿½ comissï¿½o
     var labels = document.querySelectorAll('.sl');
     labels.forEach(function(l){
       if(l.textContent === 'Receita hoje') l.textContent = 'Comissao hoje';
@@ -598,15 +597,15 @@ var _roleWatcher = setInterval(async function(){
     var sess=await db.auth.getSession();
     if(!sess||!sess.data||!sess.data.session)return;
     var uid=sess.data.session.user.id;
-    // Verificar se este user é owner da shop
+    // Verificar se este user ï¿½ owner da shop
     var ownerCheck=await db.from('shops').select('id').eq('owner_id',uid).maybeSingle();
     if(ownerCheck&&ownerCheck.data){
-      // É owner - NAO aplicar override
+      // ï¿½ owner - NAO aplicar override
       S.role='owner';
       clearInterval(_roleWatcher);
       return;
     }
-    // Verificar se é barbeiro
+    // Verificar se ï¿½ barbeiro
     var barberCheck=await db.from('barber_users').select('barber_id').eq('user_id',uid).maybeSingle();
     if(barberCheck&&barberCheck.data){
       S.role='barber';
@@ -622,7 +621,7 @@ var _roleWatcher = setInterval(async function(){
 
 
 
-// Periodic check - só enhance se necessário
+// Periodic check - sï¿½ enhance se necessï¿½rio
 setInterval(function(){
   var el = document.getElementById("barb-cfg");
   if(el && el.children.length > 0 && el.querySelector(".ci:not([data-enhanced])")){

@@ -2184,7 +2184,7 @@ async function setDefaultShop(){
   toast('? Esta barbearia agora � a padr�o do link principal!','ok');
 }
 function autoSlug(inp){
-  const slug=inp.value.toLowerCase().normalize('NFD').replace(/[`-?]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const slug=inp.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const el=document.getElementById('ob-slug');if(el)el.value=slug;
   const prev=document.getElementById('slug-preview');if(prev)prev.textContent='app.barberos.click?s='+slug;
 }
