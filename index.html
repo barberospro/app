@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -36,7 +36,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .fl{font-size:11px;font-weight:700;color:var(--txm);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;display:block}
 .fi{width:100%;background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--rs);padding:13px 14px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
 .fi:focus{border-color:var(--gold)}
-/* SERVICE ICON BADGES � no emoji, 100% reliable */
+/* SERVICE ICON BADGES — no emoji, 100% reliable */
 .sic{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:#fff;letter-spacing:0}
 .sic-C{background:linear-gradient(135deg,#8B6914,#C9A84C)}
 .sic-B{background:linear-gradient(135deg,#1a4a6b,#2980b9)}
@@ -154,59 +154,59 @@ html,body{overscroll-behavior-y:none;}
 <!-- ADMIN LOGIN -->
 <div id="adm-login" class="screen">
   <div class="lbox">
-    <div class="llogo">? BarberOS</div>
+    <div class="llogo">✂ BarberOS</div>
     <div class="lsub">Painel Admin</div>
     <div class="errbox" id="lerr"></div>
     <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="lemail" placeholder="seu@email.com" autocomplete="email"></div>
-    <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="lpwd" placeholder="��������" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="lpwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="btn btn-gold" id="btnlogin" onclick="doLogin()">Entrar</button>
     <button class="btn btn-out" onclick="enterApp('splash')">Voltar</button>
     <p style="text-align:center;font-size:11px;color:var(--txm);margin-top:16px">
       <span style="color:var(--gold);cursor:pointer" onclick="doForgot()">Esqueci minha senha</span>
     </p>
     <p style="text-align:center;font-size:11px;color:var(--txm);margin-top:10px">
-      Nao tem conta? <span style="color:var(--gold);cursor:pointer" onclick="enterApp('planos')">Ver planos ?</span>
+      Nao tem conta? <span style="color:var(--gold);cursor:pointer" onclick="enterApp('planos')">Ver planos →</span>
     </p>
   </div>
 </div>
 
 <!-- PLANOS / HOTMART -->
-<!-- CRIAR SENHA � primeiro acesso via link do email -->
+<!-- CRIAR SENHA — primeiro acesso via link do email -->
 <div id="set-password" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px 24px">
     <div style="width:100%;max-width:380px">
-      <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold);text-align:center">? BarberOS</div>
+      <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold);text-align:center">✂ BarberOS</div>
       <div style="font-size:11px;color:var(--txm);text-align:center;letter-spacing:3px;text-transform:uppercase;margin:4px 0 32px">Primeiro Acesso</div>
       <div style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:var(--r);padding:14px;margin-bottom:24px;font-size:13px;color:var(--gold);line-height:1.6;text-align:center">
-        ?? Bem-vindo ao BarberOS!<br>Crie sua senha para continuar.
+        🎉 Bem-vindo ao BarberOS!<br>Crie sua senha para continuar.
       </div>
       <div class="errbox" id="sp-err"></div>
-      <div class="fg"><label class="fl">Nova senha</label><input class="fi" type="password" id="sp-pwd" placeholder="M�nimo 8 caracteres"></div>
+      <div class="fg"><label class="fl">Nova senha</label><input class="fi" type="password" id="sp-pwd" placeholder="Mínimo 8 caracteres"></div>
       <div class="fg"><label class="fl">Confirmar senha</label><input class="fi" type="password" id="sp-pwd2" placeholder="Repita a senha" onkeydown="if(event.key==='Enter')setNewPassword()"></div>
-      <button class="btn btn-gold" id="btn-sp" onclick="setNewPassword()">Criar senha e entrar ?</button>
+      <button class="btn btn-gold" id="btn-sp" onclick="setNewPassword()">Criar senha e entrar →</button>
     </div>
   </div>
 </div>
 
-<!-- ONBOARDING � tela de configura��o inicial para novos assinantes -->
+<!-- ONBOARDING — tela de configuração inicial para novos assinantes -->
 <div id="onboarding" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;padding:40px 24px;overflow-y:auto;flex:1;max-width:480px;margin:0 auto;width:100%">
-    <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);text-align:center;margin-bottom:4px">? BarberOS</div>
+    <div style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);text-align:center;margin-bottom:4px">✂ BarberOS</div>
     <div style="font-size:13px;color:var(--txm);text-align:center;margin-bottom:32px">Vamos configurar sua barbearia!</div>
     <div style="width:100%">
       <div style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:var(--r);padding:14px;margin-bottom:24px;font-size:13px;color:var(--gold);line-height:1.6">
-        ?? Bem-vindo ao BarberOS! Preencha os dados abaixo para criar sua �rea exclusiva. Isso leva menos de 2 minutos.
+        👋 Bem-vindo ao BarberOS! Preencha os dados abaixo para criar sua área exclusiva. Isso leva menos de 2 minutos.
       </div>
-      <div class="fg"><label class="fl">Nome da sua barbearia *</label><input class="fi" id="ob-name" placeholder="Ex: Barbearia do Jo�o" oninput="autoSlug(this)"></div>
+      <div class="fg"><label class="fl">Nome da sua barbearia *</label><input class="fi" id="ob-name" placeholder="Ex: Barbearia do João" oninput="autoSlug(this)"></div>
       <div class="fg">
-        <label class="fl">Identificador �nico (link) *</label>
+        <label class="fl">Identificador único (link) *</label>
         <input class="fi" id="ob-slug" placeholder="ex: barbearia-joao" style="font-family:monospace">
-        <div style="font-size:11px;color:var(--txm);margin-top:6px">Seu link ser�: <span id="slug-preview" style="color:var(--gold)">app.barberos.click?s=...</span></div>
+        <div style="font-size:11px;color:var(--txm);margin-top:6px">Seu link será: <span id="slug-preview" style="color:var(--gold)">app.barberos.click?s=...</span></div>
       </div>
-      <div class="fg"><label class="fl">Endere�o</label><input class="fi" id="ob-addr" placeholder="Rua, n�mero � Bairro, Cidade"></div>
-      <div class="fg"><label class="fl">WhatsApp (com c�digo do pa�s)</label><input class="fi" id="ob-wa" placeholder="5511999999999" type="tel"></div>
+      <div class="fg"><label class="fl">Endereço</label><input class="fi" id="ob-addr" placeholder="Rua, número — Bairro, Cidade"></div>
+      <div class="fg"><label class="fl">WhatsApp (com código do país)</label><input class="fi" id="ob-wa" placeholder="5511999999999" type="tel"></div>
       <div class="fg"><label class="fl">Chave PIX</label><input class="fi" id="ob-pix" placeholder="CPF, CNPJ, email ou celular"></div>
-      <button class="btn btn-gold" id="btn-ob" onclick="saveOnboarding()">Criar minha barbearia ?</button>
+      <button class="btn btn-gold" id="btn-ob" onclick="saveOnboarding()">Criar minha barbearia →</button>
       <button class="btn btn-out" onclick="doLogout()">Sair</button>
     </div>
   </div>
@@ -214,7 +214,7 @@ html,body{overscroll-behavior-y:none;}
 
 <div id="planos" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;padding:40px 24px;overflow-y:auto;flex:1">
-    <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold);text-align:center">? BarberOS</div>
+    <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--gold);text-align:center">✂ BarberOS</div>
     <div style="font-size:13px;color:var(--txm);text-align:center;margin:8px 0 32px;line-height:1.6">Sistema completo de agendamento para sua barbearia.<br>Escolha o plano ideal:</div>
 
     <!-- PLANO MENSAL -->
@@ -223,11 +223,11 @@ html,body{overscroll-behavior-y:none;}
       <div style="font-size:13px;color:var(--txm);margin-bottom:16px">Renovacao automatica todo mes</div>
       <div style="font-size:38px;font-weight:900;color:var(--gold);margin-bottom:4px">R$ 47<small style="font-size:14px;color:var(--txm)">/mes</small></div>
       <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">?</span>Agendamento online para clientes</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">?</span>Painel admin completo</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">?</span>Gestao de barbeiros e servicos</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">?</span>Notificacao WhatsApp automatica</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">?</span>Relatorios financeiros</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Agendamento online para clientes</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Painel admin completo</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Gestao de barbeiros e servicos</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Notificacao WhatsApp automatica</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Relatorios financeiros</div>
       </div>
       <a id="btn-hotmart-monthly" href="https://pay.hotmart.com/SEU_PRODUTO_MENSAL" target="_blank" style="display:block;background:var(--gold);color:var(--dk);border-radius:50px;padding:15px;text-align:center;font-weight:700;font-size:15px;text-decoration:none;margin-top:8px" id="plan-btn-monthly-text">Assinar por R$ 47/mes</a>
     </div>
@@ -238,30 +238,30 @@ html,body{overscroll-behavior-y:none;}
       <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:4px">Plano Anual</div>
       <div style="font-size:13px;color:var(--txm);margin-bottom:16px">Pague uma vez, use o ano todo</div>
       <div style="font-size:38px;font-weight:900;color:var(--gold);margin-bottom:4px">R$ 397<small style="font-size:14px;color:var(--txm)">/ano</small></div>
-      <div style="font-size:12px;color:var(--grn);margin-bottom:16px;font-weight:600">Economize R$ 167 � equivale a R$ 33/mes</div>
+      <div style="font-size:12px;color:var(--grn);margin-bottom:16px;font-weight:600">Economize R$ 167 — equivale a R$ 33/mes</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">?</span>Tudo do plano mensal</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">?</span>Suporte prioritario</div>
-        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">?</span>Acesso a novidades em primeira mao</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Tudo do plano mensal</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Suporte prioritario</div>
+        <div style="font-size:13px;color:var(--txm);display:flex;gap:8px"><span style="color:var(--grn);font-weight:700">✓</span>Acesso a novidades em primeira mao</div>
       </div>
       <a id="btn-hotmart-annual" href="https://pay.hotmart.com/SEU_PRODUTO_ANUAL" target="_blank" style="display:block;background:var(--gold);color:var(--dk);border-radius:50px;padding:15px;text-align:center;font-weight:700;font-size:15px;text-decoration:none;margin-top:8px" id="plan-btn-annual-text">Assinar por R$ 397/ano</a>
     </div>
 
     <div style="font-size:11px;color:var(--txm);text-align:center;line-height:1.7;margin-bottom:20px">
       Apos o pagamento na Hotmart voce recebera um e-mail com suas credenciais de acesso.<br>
-      <span style="color:var(--gold);cursor:pointer" onclick="enterApp('adm-login')">Ja sou assinante � Fazer login ?</span>
+      <span style="color:var(--gold);cursor:pointer" onclick="enterApp('adm-login')">Ja sou assinante — Fazer login →</span>
     </div>
-    <button class="btn btn-out" onclick="enterApp('splash')" style="max-width:380px;width:100%">? Voltar</button>
+    <button class="btn btn-out" onclick="enterApp('splash')" style="max-width:380px;width:100%">← Voltar</button>
   </div>
 </div>
 
 <!-- CLIENT APP -->
 <div id="client-app" class="screen">
   <div class="hdr">
-    <div class="logo">? BarberOS</div>
+    <div class="logo">✂ BarberOS</div>
     <div style="display:flex;gap:10px">
-      <div onclick="showC('meus')" style="background:var(--dk3);border:1px solid var(--dk5);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer">??</div>
-      <div onclick="showC('perfil')" style="background:var(--dk3);border:1px solid var(--dk5);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer">??</div>
+      <div onclick="showC('meus')" style="background:var(--dk3);border:1px solid var(--dk5);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer">📋</div>
+      <div onclick="showC('perfil')" style="background:var(--dk3);border:1px solid var(--dk5);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer">👤</div>
     </div>
   </div>
   <div class="content" id="cc">
@@ -269,7 +269,7 @@ html,body{overscroll-behavior-y:none;}
     <!-- HOME -->
     <div id="sc-home" class="csec">
       <div style="background:linear-gradient(160deg,var(--dk2),var(--dk));padding:28px 20px 24px;position:relative;overflow:hidden">
-        <div style="position:absolute;right:-10px;top:10px;font-size:100px;opacity:.04">?</div>
+        <div style="position:absolute;right:-10px;top:10px;font-size:100px;opacity:.04">✂</div>
         <div style="font-size:13px;color:var(--txm)">Bem-vindo a</div>
         <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:700" id="h-name">BarberOS</div>
         <div id="h-hours" style="display:inline-flex;align-items:center;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:5px 12px;border-radius:50px;font-size:12px;margin-top:12px">Aberto agora</div>
@@ -278,14 +278,14 @@ html,body{overscroll-behavior-y:none;}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px 4px">
         <div onclick="showC('agendar')" style="background:linear-gradient(135deg,var(--gd),var(--gold));border-radius:var(--r);padding:18px;cursor:pointer;grid-column:span 2;display:flex;align-items:center;justify-content:space-between">
           <div><div style="color:var(--dk);font-size:17px;font-weight:700">Agendar Horario</div><div style="color:rgba(0,0,0,.6);font-size:12px">Rapido e facil</div></div>
-          <div style="font-size:32px">??</div>
+          <div style="font-size:32px">📅</div>
         </div>
         <div onclick="showC('servicos')" style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r);padding:18px;cursor:pointer">
           <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--gd),var(--gold));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--dk);margin-bottom:8px">CO</div>
           <div style="font-size:14px;font-weight:600">Servicos</div><div style="font-size:11px;color:var(--txm)">Ver precos</div>
         </div>
         <div onclick="showC('pacotes')" style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--r);padding:18px;cursor:pointer">
-          <div style="font-size:26px;margin-bottom:8px">??</div>
+          <div style="font-size:26px;margin-bottom:8px">🎁</div>
           <div style="font-size:14px;font-weight:600">Pacotes</div><div style="font-size:11px;color:var(--txm)">Economize mais</div>
         </div>
       </div>
@@ -294,29 +294,29 @@ html,body{overscroll-behavior-y:none;}
       <div class="divider"></div>
       <div class="sec-title">Nos encontre</div>
       <div style="display:flex;gap:10px;padding:0 20px 16px">
-        <div onclick="openWA()" style="flex:1;background:var(--dk3);border:1px solid #25D366;border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;font-size:20px;color:#25D366">??<div style="font-size:11px;margin-top:4px;font-weight:500">WhatsApp</div></div>
-        <div id="btn-ig" style="flex:1;background:var(--dk3);border:1px solid #E1306C;border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;font-size:20px;color:#E1306C">??<div style="font-size:11px;margin-top:4px;font-weight:500">Instagram</div></div>
+        <div onclick="openWA()" style="flex:1;background:var(--dk3);border:1px solid #25D366;border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;font-size:20px;color:#25D366">💬<div style="font-size:11px;margin-top:4px;font-weight:500">WhatsApp</div></div>
+        <div id="btn-ig" style="flex:1;background:var(--dk3);border:1px solid #E1306C;border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;font-size:20px;color:#E1306C">📸<div style="font-size:11px;margin-top:4px;font-weight:500">Instagram</div></div>
       </div>
       <div style="padding:0 20px 20px;text-align:center">
         <div style="font-size:12px;color:var(--txm)" id="h-addr"></div>
         <div style="font-size:12px;color:var(--txm);margin-top:4px" id="h-sched"></div>
       </div>
 
-      <!-- BANNER SAAS � vis�vel quando n�o h� ?s= na URL (modo demo) -->
+      <!-- BANNER SAAS — visível quando não há ?s= na URL (modo demo) -->
       <div id="saas-banner" style="display:none;margin:0 20px 24px">
         <div style="background:linear-gradient(135deg,#1a1a1a,#242424);border:1px solid rgba(201,168,76,.4);border-radius:var(--r);padding:20px;text-align:center;position:relative;overflow:hidden">
           <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(201,168,76,.08),transparent 70%);pointer-events:none"></div>
-          <div style="font-size:22px;margin-bottom:8px">?</div>
+          <div style="font-size:22px;margin-bottom:8px">✂</div>
           <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px">Gostou? Tenha o seu!</div>
           <div style="font-size:12px;color:var(--txm);line-height:1.6;margin-bottom:16px">
-            Este � o <strong style="color:var(--tx)">BarberOS</strong> � sistema completo de agendamento para barbearias.<br>
-            Crie sua vers�o personalizada por apenas <strong style="color:var(--gold)">R$ 47/m�s</strong>.
+            Este é o <strong style="color:var(--tx)">BarberOS</strong> — sistema completo de agendamento para barbearias.<br>
+            Crie sua versão personalizada por apenas <strong style="color:var(--gold)">R$ 47/mês</strong>.
           </div>
           <button onclick="enterApp('planos')" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:12px 28px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;width:100%;margin-bottom:10px">
-            Ver planos e pre�os ?
+            Ver planos e preços →
           </button>
           <button onclick="enterApp('adm-login')" style="background:transparent;color:var(--txm);border:1px solid var(--dk4);border-radius:50px;padding:10px 28px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;width:100%">
-            J� sou assinante � Entrar
+            Já sou assinante — Entrar
           </button>
         </div>
       </div>
@@ -325,7 +325,7 @@ html,body{overscroll-behavior-y:none;}
     <!-- AGENDAR -->
     <div id="sc-agendar" class="csec" style="display:none">
       <div style="padding:20px 20px 0;display:flex;align-items:center;gap:12px">
-        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">?</div>
+        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">←</div>
         <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Novo Agendamento</div>
       </div>
       <!-- STEP 1: services -->
@@ -352,7 +352,7 @@ html,body{overscroll-behavior-y:none;}
           </div>
         </div>
         <div style="padding:20px">
-          <button class="btn btn-gold" id="btn-bk1" onclick="goStep(2)" disabled>Proximo ?</button>
+          <button class="btn btn-gold" id="btn-bk1" onclick="goStep(2)" disabled>Proximo →</button>
         </div>
       </div>
       <!-- STEP 2: barber -->
@@ -365,8 +365,8 @@ html,body{overscroll-behavior-y:none;}
           </div>
         </div>
         <div style="padding:20px">
-          <button class="btn btn-gold" id="btn-bk2" onclick="goStep(3)" disabled>Proximo ?</button>
-          <button class="btn btn-out" onclick="goStep(1)">? Voltar</button>
+          <button class="btn btn-gold" id="btn-bk2" onclick="goStep(3)" disabled>Proximo →</button>
+          <button class="btn btn-out" onclick="goStep(1)">← Voltar</button>
         </div>
       </div>
       <!-- STEP 3: date/time -->
@@ -384,8 +384,8 @@ html,body{overscroll-behavior-y:none;}
           <div class="tg" id="tg"></div>
         </div>
         <div style="padding:20px">
-          <button class="btn btn-gold" id="btn-bk3" onclick="goStep(4)" disabled>Proximo ?</button>
-          <button class="btn btn-out" onclick="goStep(2)">? Voltar</button>
+          <button class="btn btn-gold" id="btn-bk3" onclick="goStep(4)" disabled>Proximo →</button>
+          <button class="btn btn-out" onclick="goStep(2)">← Voltar</button>
         </div>
       </div>
       <!-- STEP 4: payment -->
@@ -398,14 +398,14 @@ html,body{overscroll-behavior-y:none;}
           <div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="bk-phone" type="tel" placeholder="(11) 99999-9999"></div>
           <div style="font-weight:600;font-size:14px;margin-bottom:10px">Forma de Pagamento</div>
           <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-            <div class="pay-opt" data-m="pix" onclick="selPay(this,'pix')"><div id="popt-pix" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--rs);cursor:pointer"><span style="font-size:22px">??</span><div><div style="font-weight:600">PIX</div><div style="font-size:11px;color:var(--txm)">Pagamento instantaneo</div></div></div></div>
+            <div class="pay-opt" data-m="pix" onclick="selPay(this,'pix')"><div id="popt-pix" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--rs);cursor:pointer"><span style="font-size:22px">💲</span><div><div style="font-weight:600">PIX</div><div style="font-size:11px;color:var(--txm)">Pagamento instantaneo</div></div></div></div>
             
-            <div class="pay-opt" data-m="local" onclick="selPay(this,'local')"><div id="popt-local" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--rs);cursor:pointer"><span style="font-size:22px">??</span><div><div style="font-weight:600">Pagar no Local</div><div style="font-size:11px;color:var(--txm)">Dinheiro ou cartao</div></div></div></div>
+            <div class="pay-opt" data-m="local" onclick="selPay(this,'local')"><div id="popt-local" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--rs);cursor:pointer"><span style="font-size:22px">💵</span><div><div style="font-weight:600">Pagar no Local</div><div style="font-size:11px;color:var(--txm)">Dinheiro ou cartao</div></div></div></div>
           </div>
           <!-- PIX box -->
           <div id="pix-box" style="display:none">
             <div style="font-weight:600;font-size:14px;margin-bottom:10px">Pague via PIX</div>
-            <div style="background:#fff;border-radius:var(--r);width:160px;height:160px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:48px">??</div>
+            <div style="background:#fff;border-radius:var(--r);width:160px;height:160px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:48px">📱</div>
             <div class="pbox" id="pix-key-disp">barbearia@pix.com</div>
             <button class="btn btn-gold" onclick="copyPix()" style="margin-bottom:10px">Copiar Chave PIX</button>
             <button class="btn btn-grn" onclick="confirmPay('pix')">Confirmar Agendamento</button>
@@ -428,13 +428,13 @@ html,body{overscroll-behavior-y:none;}
           </div>
         </div>
         <div style="padding:0 20px 20px">
-          <button class="btn btn-out" onclick="goStep(3)">? Voltar</button>
+          <button class="btn btn-out" onclick="goStep(3)">← Voltar</button>
         </div>
       </div>
       <!-- SUCCESS -->
       <div id="bk-ok" style="display:none">
         <div class="succ">
-          <div class="succ-ic">?</div>
+          <div class="succ-ic">✅</div>
           <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700">Agendado!</div>
           <div style="font-size:14px;color:var(--txm);line-height:1.6">Horario confirmado! O proprietario foi notificado pelo WhatsApp.</div>
           <div class="card" style="width:100%;text-align:left" id="ok-detail"></div>
@@ -447,17 +447,17 @@ html,body{overscroll-behavior-y:none;}
     <!-- SERVICOS -->
     <div id="sc-servicos" class="csec" style="display:none">
       <div style="padding:20px 20px 12px;display:flex;align-items:center;gap:12px">
-        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">?</div>
+        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">←</div>
         <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Servicos & Precos</div>
       </div>
       <div id="svc-menu"><div style="text-align:center;padding:40px"><div class="spin"></div></div></div>
-      <div style="padding:20px"><button class="btn btn-gold" onclick="showC('agendar')">Agendar agora ??</button></div>
+      <div style="padding:20px"><button class="btn btn-gold" onclick="showC('agendar')">Agendar agora 📅</button></div>
     </div>
 
     <!-- PACOTES -->
     <div id="sc-pacotes" class="csec" style="display:none">
       <div style="padding:20px 20px 12px;display:flex;align-items:center;gap:12px">
-        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">?</div>
+        <div onclick="showC('home')" style="font-size:22px;cursor:pointer;color:var(--txm)">←</div>
         <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Pacotes & Planos</div>
       </div>
       <div id="pkg-list"><div style="text-align:center;padding:40px"><div class="spin"></div></div></div>
@@ -476,7 +476,7 @@ html,body{overscroll-behavior-y:none;}
     <!-- PERFIL -->
     <div id="sc-perfil" class="csec" style="display:none">
       <div style="padding:28px 20px 20px;text-align:center;background:var(--dk2);border-bottom:1px solid var(--dk4)">
-        <div style="width:72px;height:72px;border-radius:50%;background:var(--dk4);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px">??</div>
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--dk4);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 12px">👤</div>
         <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Meu Perfil</div>
       </div>
       <div style="padding:20px">
@@ -489,20 +489,20 @@ html,body{overscroll-behavior-y:none;}
     </div>
 
   </div>
-  <button onclick="showC('agendar')" style="position:fixed;bottom:90px;right:20px;background:var(--gold);color:var(--dk);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(201,168,76,.4);cursor:pointer;z-index:150;border:none">??</button>
+  <button onclick="showC('agendar')" style="position:fixed;bottom:90px;right:20px;background:var(--gold);color:var(--dk);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(201,168,76,.4);cursor:pointer;z-index:150;border:none">📅</button>
   <div class="bnav">
-    <button class="ni active" id="cn-home" onclick="showC('home')"><div class="ni-ic">??</div>Inicio</button>
+    <button class="ni active" id="cn-home" onclick="showC('home')"><div class="ni-ic">🏠</div>Inicio</button>
     
     
-    <button class="ni" id="cn-meus" onclick="showC('meus')"><div class="ni-ic">??</div>Meus</button>
-    <button class="ni" id="cn-perfil" onclick="showC('perfil')"><div class="ni-ic">??</div>Perfil</button>
+    <button class="ni" id="cn-meus" onclick="showC('meus')"><div class="ni-ic">📋</div>Meus</button>
+    <button class="ni" id="cn-perfil" onclick="showC('perfil')"><div class="ni-ic">👤</div>Perfil</button>
   </div>
 </div>
 
 <!-- ADMIN APP -->
 <div id="admin-app" class="screen">
   <div class="hdr">
-    <div class="logo">? BarberOS</div>
+    <div class="logo">⚙ BarberOS</div>
     <div style="display:flex;align-items:center;gap:10px">
       <select id="sa-shop-selector" class="sa-only" style="display:none;background:var(--dk3);border:1px solid var(--gold);color:var(--gold);border-radius:50px;padding:5px 12px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;max-width:160px;cursor:pointer" onchange="saSwitch(this.value)"></select>
       <span id="logged-user-name" style="font-size:12px;color:var(--gold);font-weight:600"></span>
@@ -515,7 +515,7 @@ html,body{overscroll-behavior-y:none;}
     <div id="as-dash">
       <div style="padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between">
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700">Dashboard</div>
-        <button onclick="refreshDashFull()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">?? Atualizar</button><button onclick="exportDash()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">? Excel</button>
+        <button onclick="refreshDashFull()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">🔄 Atualizar</button><button onclick="exportDash()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">⬇ Excel</button>
       </div>
       <div class="sg">
         <div class="sc"><div class="sl">Hoje</div><div class="sv" id="st-today">-</div></div>
@@ -524,18 +524,18 @@ html,body{overscroll-behavior-y:none;}
         <div class="sc"><div class="sl">Receita mes</div><div class="sv" id="st-rm">-</div></div>
       </div>
       <div style="padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between">
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Pr�ximos Agendamentos</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">Próximos Agendamentos</div>
         <div style="background:var(--dk4);border-radius:50px;padding:4px 10px;font-size:11px;color:var(--txm)" id="td-lbl"></div>
       </div>
       <div id="dash-reminders" style="padding:0 20px 12px;display:none">
       <div style="background:var(--dk2);border-radius:12px;padding:16px">
-        <div style="font-weight:700;font-size:15px;color:#C9A84C;margin-bottom:12px">?? Lembretes para enviar</div>
+        <div style="font-weight:700;font-size:15px;color:#C9A84C;margin-bottom:12px">🔔 Lembretes para enviar</div>
         <div id="reminder-24h" style="margin-bottom:14px;display:none">
-          <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">?? Amanh� (24h antes)</div>
+          <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">📅 Amanhã (24h antes)</div>
           <div id="reminder-24h-list"></div>
         </div>
         <div id="reminder-2h">
-          <div style="font-size:12px;color:var(--txm);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">? Pr�ximas 2 horas</div>
+          <div style="font-size:12px;color:var(--txm);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">⏰ Próximas 2 horas</div>
           <div id="reminder-list"></div>
         </div>
       </div>
@@ -547,7 +547,7 @@ html,body{overscroll-behavior-y:none;}
     <div id="as-agenda" style="display:none">
       <div style="padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between">
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700">Agenda</div>
-        <div style="display:flex;gap:8px"><button onclick="loadAgenda()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">?? Atualizar</button><button onclick="exportAgenda()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">? Excel</button><button onclick="deleteFinalized()" style="background:rgba(192,57,43,.1);color:var(--red);border:1px solid var(--red);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">?? Limpar</button><button onclick="openAdmBook()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">+ Novo</button></div>
+        <div style="display:flex;gap:8px"><button onclick="loadAgenda()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--txm);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">🔄 Atualizar</button><button onclick="exportAgenda()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">⬇ Excel</button><button onclick="deleteFinalized()" style="background:rgba(192,57,43,.1);color:var(--red);border:1px solid var(--red);border-radius:50px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">🗑 Limpar</button><button onclick="openAdmBook()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">+ Novo</button></div>
       </div>
       <div class="tabs" id="ag-tabs">
         <div class="tab active" onclick="swAgTab('hoje',this)">Hoje</div>
@@ -599,15 +599,15 @@ html,body{overscroll-behavior-y:none;}
         <div class="fg"><label class="fl">Instagram</label><input class="fi" id="cfg-ig" placeholder="@usuario"></div>
         <div class="fg"><label class="fl">Chave PIX</label><input class="fi" id="cfg-pix"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="fg"><label class="fl">Abre �s</label><input class="fi" type="time" id="cfg-open"></div>
-          <div class="fg"><label class="fl">Fecha �s</label><input class="fi" type="time" id="cfg-close"></div>
+          <div class="fg"><label class="fl">Abre às</label><input class="fi" type="time" id="cfg-open"></div>
+          <div class="fg"><label class="fl">Fecha às</label><input class="fi" type="time" id="cfg-close"></div>
         </div>
-        <div style="font-size:12px;font-weight:700;color:var(--txm);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px">?? Hor�rio de Almo�o (opcional)</div>
+        <div style="font-size:12px;font-weight:700;color:var(--txm);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px">🍽 Horário de Almoço (opcional)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="fg"><label class="fl">In�cio do almo�o</label><input class="fi" type="time" id="cfg-lunch-start" placeholder="12:00"></div>
-          <div class="fg"><label class="fl">Fim do almo�o</label><input class="fi" type="time" id="cfg-lunch-end" placeholder="13:00"></div>
+          <div class="fg"><label class="fl">Início do almoço</label><input class="fi" type="time" id="cfg-lunch-start" placeholder="12:00"></div>
+          <div class="fg"><label class="fl">Fim do almoço</label><input class="fi" type="time" id="cfg-lunch-end" placeholder="13:00"></div>
         </div>
-        <div class="fg"><label class="fl">Intervalo entre hor�rios (minutos)</label>
+        <div class="fg"><label class="fl">Intervalo entre horários (minutos)</label>
           <select class="fi" id="cfg-slot">
             <option value="15">15 minutos</option>
             <option value="20">20 minutos</option>
@@ -619,7 +619,7 @@ html,body{overscroll-behavior-y:none;}
         <button class="btn btn-gold" onclick="saveSettings()" style="width:100%;margin-top:16px;padding:14px">Salvar configuracoes</button>
         <div id="super-admin-section" style="display:none"><div style="height:8px;background:var(--dk);margin:8px -20px"></div>
 <div class="sa-only" style="display:none">
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">Hotmart � Links de Assinatura</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">Hotmart — Links de Assinatura</div>
         <div class="fg"><label class="fl">Link Plano Mensal (Hotmart)</label><input class="fi" id="cfg-hm-monthly" placeholder="https://pay.hotmart.com/..."></div>
         <div class="fg"><label class="fl">Link Plano Anual (Hotmart)</label><input class="fi" id="cfg-hm-annual" placeholder="https://pay.hotmart.com/..."></div>
         <div style="height:8px;background:var(--dk);margin:8px -20px"></div>
@@ -634,27 +634,27 @@ html,body{overscroll-behavior-y:none;}
         </div>
         <div style="background:var(--dk3);border:1px solid var(--dk4);border-radius:var(--rs);padding:12px;margin-bottom:14px;font-size:12px;color:var(--txm);line-height:1.7">
           <strong style="color:var(--gold)">Webhook Hotmart:</strong><br>
-          Configure na Hotmart em: Ferramentas ? Webhooks<br>
+          Configure na Hotmart em: Ferramentas → Webhooks<br>
           URL: <span style="color:var(--gold);word-break:break-all">https://seyadufuohsbpcqaguig.supabase.co/functions/v1/hotmart-webhook</span><br>
           Eventos: PURCHASE_COMPLETE, SUBSCRIPTION_CANCELLATION
         </div>
         <div class="fg" style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:var(--rs);padding:14px;margin-bottom:8px">
-          <label class="fl" style="color:var(--gold)">?? Barbearia padr�o do link principal</label>
+          <label class="fl" style="color:var(--gold)">🏠 Barbearia padrão do link principal</label>
           <div style="display:flex;align-items:center;justify-content:space-between">
-            <div style="font-size:13px;color:var(--txm)">Esta barbearia abre quando algu�m acessa<br><strong style="color:var(--gold)">app.barberos.click</strong> sem o ?s=</div>
-            <button onclick="setDefaultShop()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;margin-left:10px">Definir como padr�o</button>
+            <div style="font-size:13px;color:var(--txm)">Esta barbearia abre quando alguém acessa<br><strong style="color:var(--gold)">app.barberos.click</strong> sem o ?s=</div>
+            <button onclick="setDefaultShop()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;margin-left:10px">Definir como padrão</button>
           </div>
         </div>
         <div style="height:8px;background:var(--dk);margin:8px -20px"></div>
 </div>
 
-        <div class="sa-only" style="display:none"><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">?? Convidar Cliente</div>
+        <div class="sa-only" style="display:none"><div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:16px 0 12px">👤 Convidar Cliente</div>
         <div class="card" style="margin-bottom:14px">
-          <div class="fg"><label class="fl">Nome do cliente</label><input class="fi" id="inv-name" placeholder="Ex: Jo�o Silva"></div>
+          <div class="fg"><label class="fl">Nome do cliente</label><input class="fi" id="inv-name" placeholder="Ex: João Silva"></div>
           <div class="fg"><label class="fl">E-mail do cliente</label><input class="fi" type="email" id="inv-email" placeholder="cliente@email.com"></div>
           <div class="errbox" id="inv-err" style="display:none"></div>
-          <div id="inv-ok" style="display:none;background:rgba(39,174,96,.15);border:1px solid var(--grn);border-radius:var(--rs);padding:12px;font-size:13px;color:var(--grn);margin-bottom:12px">? Convite enviado com sucesso!</div>
-          <button class="btn btn-gold" id="inv-btn" onclick="inviteClient()">Enviar convite ?</button>
+          <div id="inv-ok" style="display:none;background:rgba(39,174,96,.15);border:1px solid var(--grn);border-radius:var(--rs);padding:12px;font-size:13px;color:var(--grn);margin-bottom:12px">✓ Convite enviado com sucesso!</div>
+          <button class="btn btn-gold" id="inv-btn" onclick="inviteClient()">Enviar convite →</button>
         </div>
         </div>
 
@@ -662,31 +662,31 @@ html,body{overscroll-behavior-y:none;}
       <div class="divider"></div>
       <div class="divider"></div>
       <div style="padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between">
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">?? Bloquear Hor�rios</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🚫 Bloquear Horários</div>
         <button onclick="openBlockMod()" style="background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">+ Bloquear</button>
       </div>
       <div id="blocked-list" style="padding:0 20px 16px"><div style="color:var(--txm);font-size:13px">Carregando...</div></div>
-      <div style="padding:20px 20px 12px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700">?? Link da sua barbearia</div>
+      <div style="padding:20px 20px 12px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700">🔗 Link da sua barbearia</div>
       <div style="padding:0 20px 20px">
         <div style="background:var(--dk3);border:1px solid var(--gold);border-radius:var(--r);padding:16px">
           <div style="font-size:12px;color:var(--txm);margin-bottom:8px">Compartilhe este link com seus clientes:</div>
           <div id="cfg-share-link" style="font-size:13px;color:var(--gold);word-break:break-all;font-weight:600;cursor:pointer" onclick="copyShareLink()">Carregando...</div>
-          <button onclick="copyShareLink()" style="margin-top:12px;background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%">?? Copiar link</button>
+          <button onclick="copyShareLink()" style="margin-top:12px;background:var(--gold);color:var(--dk);border:none;border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%">📋 Copiar link</button>
         </div>
       </div>
       <div class="divider" style="margin-top:16px"></div>
-      <div style="padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between"><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Barbeiros</div><button onclick="loadBarbCfg()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">?? Atualizar</button></div>
+      <div style="padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between"><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700">Barbeiros</div><button onclick="loadBarbCfg()" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">🔄 Atualizar</button></div>
       <div id="barb-cfg"></div>
       <div style="padding:16px 20px"><button class="btn btn-out" onclick="addBarber()">+ Adicionar barbeiro</button></div>
     </div>
 
   </div>
   <div class="bnav">
-    <button class="ni active" id="an-dash" onclick="showA('dash')"><div class="ni-ic">??</div>Dashboard</button>
-    <button class="ni" id="an-agenda" onclick="showA('agenda')"><div class="ni-ic">??</div>Agenda</button>
-    <button class="ni" id="an-servicos" onclick="showA('servicos')"><div class="ni-ic">?</div>Servicos</button>
-    <button class="ni" id="an-config" onclick="showA('config')"><div class="ni-ic">??</div>Config</button>
-    <button class="ni" id="an-clientes" onclick="showA('clientes')" style="display:none"><div class="ni-ic">??</div>Clientes</button>
+    <button class="ni active" id="an-dash" onclick="showA('dash')"><div class="ni-ic">📊</div>Dashboard</button>
+    <button class="ni" id="an-agenda" onclick="showA('agenda')"><div class="ni-ic">📅</div>Agenda</button>
+    <button class="ni" id="an-servicos" onclick="showA('servicos')"><div class="ni-ic">✂</div>Servicos</button>
+    <button class="ni" id="an-config" onclick="showA('config')"><div class="ni-ic">⚙️</div>Config</button>
+    <button class="ni" id="an-clientes" onclick="showA('clientes')" style="display:none"><div class="ni-ic">👥</div>Clientes</button>
   </div>
 </div>
 
@@ -704,7 +704,7 @@ html,body{overscroll-behavior-y:none;}
     </div>
     <!-- Indicador de sessoes -->
     <div id="pkb-dots" style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap"></div>
-    <!-- Calend�rio -->
+    <!-- Calendário -->
     <div id="pkb-cal-area">
       <div style="background:var(--dk2);border:2px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:20px"><div style="font-weight:700;font-size:15px;color:var(--gold);margin-bottom:10px">Escolha o Barbeiro</div><select class="fi" id="pkb-barber" style="background:var(--dk3);color:var(--tx);border:1px solid var(--dk4);border-radius:10px;padding:14px 16px;font-size:16px;font-family:inherit;width:100%;font-weight:600"><option value="">A definir</option></select></div>
       <div style="font-weight:600;font-size:14px;margin-bottom:12px">Escolha a data</div>
@@ -714,7 +714,7 @@ html,body{overscroll-behavior-y:none;}
         <div onclick="pkbChMon(1)" style="background:var(--dk3);border:1px solid var(--dk4);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--txm)">&#8250;</div>
       </div>
       <div class="cal-grid" id="pkb-cal-grid"></div>
-      <div style="font-weight:600;font-size:14px;margin:14px 0 10px">Hor�rio</div>
+      <div style="font-weight:600;font-size:14px;margin:14px 0 10px">Horário</div>
       <div class="tg" id="pkb-tg"></div>
     </div>
     <!-- Tela final: nome + whatsapp -->
@@ -728,8 +728,8 @@ html,body{overscroll-behavior-y:none;}
     </div>
     <!-- Botoes -->
     <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
-      <button class="btn btn-gold" id="pkb-btn-next" onclick="pkbNext()" disabled>Pr�xima sess�o ?</button>
-      <button class="btn btn-out" id="pkb-btn-back" onclick="pkbBack()">? Voltar</button>
+      <button class="btn btn-gold" id="pkb-btn-next" onclick="pkbNext()" disabled>Próxima sessão →</button>
+      <button class="btn btn-out" id="pkb-btn-back" onclick="pkbBack()">← Voltar</button>
       <button class="btn btn-out" onclick="closeMod('mod-pkg-book')">Cancelar</button>
     </div>
   </div>
@@ -737,10 +737,10 @@ html,body{overscroll-behavior-y:none;}
 
 <!-- MODALS -->
 <div class="mov" id="mod-block">
-  <div class="msh"><div class="mhd"></div><div class="mt">Bloquear Hor�rios</div>
+  <div class="msh"><div class="mhd"></div><div class="mt">Bloquear Horários</div>
     <div class="fg"><label class="fl">Data</label><input class="fi" type="date" id="blk-date" onchange="renderBlockSlots()"></div>
-    <div class="fg"><label class="fl">Motivo (opcional)</label><input class="fi" id="blk-reason" placeholder="Ex: Almo�o, Reuni�o..."></div>
-    <div style="font-size:12px;color:var(--txm);margin-bottom:8px">Toque nos hor�rios que deseja bloquear:</div>
+    <div class="fg"><label class="fl">Motivo (opcional)</label><input class="fi" id="blk-reason" placeholder="Ex: Almoço, Reunião..."></div>
+    <div style="font-size:12px;color:var(--txm);margin-bottom:8px">Toque nos horários que deseja bloquear:</div>
     <div id="blk-slots" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:300px;overflow-y:auto;padding:4px 0"></div>
     <div id="blk-count" style="font-size:12px;color:var(--gold);font-weight:600;margin:10px 0;text-align:center"></div>
     <button class="btn btn-gold" onclick="saveBlock()" style="margin-bottom:10px">Bloquear selecionados</button>
@@ -787,7 +787,7 @@ html,body{overscroll-behavior-y:none;}
       <div class="fg"><label class="fl">Preco (R$)</label><input class="fi" id="pm-price" type="text" inputmode="decimal" placeholder="0"></div>
       <div class="fg"><label class="fl">Preco original</label><input class="fi" id="pm-orig" type="text" inputmode="decimal" placeholder="0"></div>
     </div>
-    <div class="fg"><label class="fl">Dura��o por sess�o (minutos)</label><input class="fi" id="pm-dur" type="number" inputmode="numeric" placeholder="30" value="30"></div>
+    <div class="fg"><label class="fl">Duração por sessão (minutos)</label><input class="fi" id="pm-dur" type="number" inputmode="numeric" placeholder="30" value="30"></div>
     <div class="fg"><label class="fl">Itens incluidos (um por linha)</label><textarea class="fi" id="pm-items" rows="3" style="resize:none" placeholder="Ex: 4 cortes por mes"></textarea></div>
     <div class="fg"><label class="fl">Badge</label><select class="fi" id="pm-badge"><option value="">Sem badge</option><option value="POPULAR">POPULAR</option><option value="OFERTA">OFERTA</option><option value="NOVO">NOVO</option></select></div>
     <input type="hidden" id="pm-id">
@@ -801,18 +801,18 @@ html,body{overscroll-behavior-y:none;}
     <div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="ab-phone" type="tel" placeholder="(11) 99999-9999"></div>
     <div class="fg"><label class="fl">Servico</label><select class="fi" id="ab-svc" onchange="admBookSvcChange()"></select></div>
     <div class="fg"><label class="fl">Barbeiro</label><select class="fi" id="ab-barb"></select></div>
-    <!-- Sess�o �nica (servi�o normal) -->
+    <!-- Sessão única (serviço normal) -->
     <div id="ab-single-session">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="fg"><label class="fl">Data</label><input class="fi" type="date" id="ab-date"></div>
         <div class="fg"><label class="fl">Horario</label><input class="fi" type="time" id="ab-time"></div>
       </div>
     </div>
-    <!-- M�ltiplas sess�es (pacote) -->
+    <!-- Múltiplas sessões (pacote) -->
     <div id="ab-pkg-sessions" style="display:none">
-      <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:8px">?? Sess�es do Pacote</div>
+      <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:8px">📦 Sessões do Pacote</div>
       <div id="ab-pkg-list-sessions"></div>
-      <button type="button" class="btn btn-out" onclick="abAddSession()" style="font-size:12px;padding:8px;margin-bottom:10px">+ Adicionar sess�o</button>
+      <button type="button" class="btn btn-out" onclick="abAddSession()" style="font-size:12px;padding:8px;margin-bottom:10px">+ Adicionar sessão</button>
     </div>
     <div class="fg"><label class="fl">Status</label><select class="fi" id="ab-status"><option value="confirmed">Confirmado</option><option value="pending">Pendente</option></select></div>
     <div class="fg"><label class="fl">Pagamento</label><select class="fi" id="ab-pay"><option value="local">Pagar no local</option><option value="pix">PIX</option><option value="credito">Cartao</option></select></div>
@@ -823,10 +823,11 @@ html,body{overscroll-behavior-y:none;}
 
 
 <script>
+// =================== UTILIDADES DE DATA LOCAL ===================
+function todayLocal(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dateLocalISO(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');}
 // =================== SUPABASE ===================
 const SB_URL='https://seyadufuohsbpcqaguig.supabase.co';
-// Helper: data local no formato YYYY-MM-DD (evita problema de timezone com toISOString)
-function todayLocal(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNleWFkdWZ1b2hzYnBjcWFndWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNjIyMzQsImV4cCI6MjA5NjYzODIzNH0.3bfjUZH7BmgOFskATkSUPcelX0ccgiwpUMVi5cvQkhA';
 let db;
 try{db=supabase.createClient(SB_URL,SB_KEY);}catch(e){console.warn('SB init fail',e);db={from:()=>({select:()=>({data:[],error:null}),insert:()=>({error:{message:'offline'}}),update:()=>({error:{message:'offline'}}),upsert:()=>({error:{message:'offline'}}),eq:()=>({data:[],error:null,single:()=>({data:null,error:null})}),neq:()=>({data:[],error:null}),gte:()=>({data:[],error:null}),lte:()=>({data:[],error:null}),order:()=>({data:[],error:null}),single:()=>({data:null,error:null})}),auth:{signInWithPassword:async()=>({error:{message:'Sem conexao'}}),signUp:async()=>({error:{message:'Sem conexao'}}),signOut:async()=>{},getSession:async()=>({data:{session:null}}),onAuthStateChange:()=>{}}};}
@@ -935,22 +936,22 @@ function applyShop(d){
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   set('sp-name',d.name); set('h-name',d.name);
   const sa=document.getElementById('sp-addr');if(sa)sa.innerHTML=d.name+(d.address?'<br>'+d.address:'');
-  if(d.address){set('h-addr','?? '+d.address);}
+  if(d.address){set('h-addr','📍 '+d.address);}
   const o=(d.opening_time||'09:00').slice(0,5), c=(d.closing_time||'20:00').slice(0,5);
-  set('h-sched','?? '+o+' �s '+c); set('h-hours','Aberto � Fecha �s '+c);
+  set('h-sched','🕐 '+o+' às '+c); set('h-hours','Aberto · Fecha às '+c);
   const pk=document.getElementById('pix-key-disp');if(pk&&d.pix_key)pk.textContent=d.pix_key;
-  document.title='BarberOS � '+d.name;
+  document.title='BarberOS – '+d.name;
   if(d.instagram){const ib=document.getElementById('btn-ig');if(ib)ib.onclick=()=>window.open('https://instagram.com/'+d.instagram.replace('@',''),'_blank');}
   // Set shop URL hint for sharing
   S.settings=d; // backward compat
 }
-// Verifica se � modo demo: sem ?s= na URL
+// Verifica se é modo demo: sem ?s= na URL
 function isDemoMode(){return!new URLSearchParams(window.location.search).get('s');}
 function showC(sec){
   window.scrollTo(0,0);
   document.querySelectorAll('.csec').forEach(s=>s.style.display='none');
   const t=document.getElementById('sc-'+sec);if(t)t.style.display='block';
-  // Mostra banner SaaS apenas quando n�o h� ?s= na URL
+  // Mostra banner SaaS apenas quando não há ?s= na URL
   if(sec==='home'){const b=document.getElementById('saas-banner');if(b)b.style.display=isDemoMode()?'block':'none';}
   document.querySelectorAll('#client-app .ni').forEach(n=>n.classList.remove('active'));
   const m={home:'cn-home',agendar:'cn-agendar',servicos:'cn-servicos',meus:'cn-meus',perfil:'cn-perfil'};
@@ -986,7 +987,7 @@ async function doLogin(){
   if(!email||!pwd){err.textContent='Preencha email e senha.';err.style.display='block';return;}
   btn.innerHTML='<span class="spin"></span> Entrando...';btn.disabled=true;
   try{
-    // Direct REST API call � 100% reliable, independent of JS client state
+    // Direct REST API call — 100% reliable, independent of JS client state
     const resp=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SB_KEY},
@@ -1051,7 +1052,7 @@ async function doLogout(){await db.auth.signOut();window.location.reload();}
 
 // =================== SETTINGS (legacy compat) ===================
 async function loadSettings(){
-  // Settings v�m do shop � j� carregado no init
+  // Settings vêm do shop — já carregado no init
   // Nada a fazer aqui, mantido por compatibilidade
 }
 function applySettings(data){
@@ -1061,11 +1062,11 @@ function applySettings(data){
   setTxt('sp-name',n);
   const sa=document.getElementById('sp-addr');if(sa)sa.innerHTML=n+(a?'<br>'+a:'');
   setTxt('h-name',n);
-  if(a){setTxt('h-addr','?? '+a);}
+  if(a){setTxt('h-addr','📍 '+a);}
   const open=(data.opening_time||'09:00').slice(0,5);
   const close=(data.closing_time||'20:00').slice(0,5);
-  setTxt('h-sched','?? '+open+' as '+close);
-  setTxt('h-hours','Aberto � Fecha as '+close);
+  setTxt('h-sched','🕐 '+open+' as '+close);
+  setTxt('h-hours','Aberto · Fecha as '+close);
   const pk=document.getElementById('pix-key-disp');if(pk&&data.pix_key)pk.textContent=data.pix_key;
   if(data.instagram){const ib=document.getElementById('btn-ig');if(ib)ib.onclick=()=>window.open('https://instagram.com/'+data.instagram.replace('@',''),'_blank');}
 }
@@ -1075,7 +1076,7 @@ async function loadSvcs(){
   const g=document.getElementById('svc-grid');
   if(g)g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:30px"><div class="spin"></div></div>';
   if(!S.shopId){
-    // Aguardar shopId estar dispon�vel (retry at� 3 segundos)
+    // Aguardar shopId estar disponível (retry até 3 segundos)
     var retries=0;
     while(!S.shopId&&retries<6){await new Promise(r=>setTimeout(r,500));retries++;}
     if(!S.shopId){useFallbackSvcs();return;}
@@ -1088,15 +1089,15 @@ async function loadSvcs(){
   }catch(e){console.error('loadSvcs exception:',e);useFallbackSvcs();}
 }
 function useFallbackSvcs(){
-  // S� usa fallback se n�o tem shopId (modo demo sem barbearia)
+  // Só usa fallback se não tem shopId (modo demo sem barbearia)
   if(S.shopId){S.svcs=[];renderSvcGrid();return;}
   if(S.svcs.length){renderSvcGrid();return;}
   S.svcs=[
-    {id:'tmp-1',name:'Corte Degrad�',price:45,duration_minutes:40,category:'Cortes'},
+    {id:'tmp-1',name:'Corte Degradê',price:45,duration_minutes:40,category:'Cortes'},
     {id:'tmp-2',name:'Barba Completa',price:35,duration_minutes:30,category:'Barba'},
     {id:'tmp-3',name:'Corte + Barba',price:70,duration_minutes:60,category:'Combos'},
     {id:'tmp-4',name:'Pezinho',price:20,duration_minutes:15,category:'Cortes'},
-    {id:'tmp-5',name:'Hidrata��o',price:30,duration_minutes:30,category:'Tratamentos'},
+    {id:'tmp-5',name:'Hidratação',price:30,duration_minutes:30,category:'Tratamentos'},
     {id:'tmp-6',name:'Sobrancelha',price:15,duration_minutes:15,category:'Tratamentos'},
   ];
   renderSvcGrid();
@@ -1114,13 +1115,13 @@ function renderSvcGrid(){
       <div style="font-size:14px;font-weight:600;color:var(--tx)">${s.name}</div>
       <div style="font-size:16px;font-weight:700;color:var(--gold);margin-top:4px">${fmt(s.price)}</div>
       <div style="font-size:11px;color:var(--txm);margin-top:2px">${s.duration_minutes} min</div>
-      ${inCart?'<div style="font-size:11px;color:var(--gold);font-weight:700;margin-top:6px">? Adicionado</div>':''}
+      ${inCart?'<div style="font-size:11px;color:var(--gold);font-weight:700;margin-top:6px">✓ Adicionado</div>':''}
     </div>`;
   }).join('');
 }
 
 function toggleCart(idx){
-  // idx � o �ndice do array S.svcs
+  // idx é o índice do array S.svcs
   const svc=S.svcs[idx];if(!svc)return;
   const svcWithIdx={...svc,_idx:idx};
   const cartIdx=S.cart.findIndex(c=>c._idx===idx);
@@ -1141,7 +1142,7 @@ function renderCart(){
       <span style="font-size:13px">${s.name}</span>
       <div style="display:flex;align-items:center;gap:8px">
         <span style="color:var(--gold);font-weight:700;font-size:13px">${fmt(s.price)}</span>
-        <button class="cart-rm" onclick="toggleCart(${s._idx});event.stopPropagation()">?</button>
+        <button class="cart-rm" onclick="toggleCart(${s._idx});event.stopPropagation()">✕</button>
       </div>
     </div>`).join('');
   const t=S.cart.reduce((s,c)=>s+Number(c.price),0);
@@ -1179,13 +1180,13 @@ async function loadBarbers(){
   }catch(e){console.error('loadBarbers exception:',e);useFallbackBarbers();}
 }
 function useFallbackBarbers(){
-  // S� usa fallback se n�o tem shopId (modo demo sem barbearia)
+  // Só usa fallback se não tem shopId (modo demo sem barbearia)
   if(S.shopId){S.barbers=[];renderBarberGrid();return;}
   if(S.barbers.length){renderBarberGrid();return;}
   S.barbers=[
-    {id:'tmp-b1',name:'Marcos',specialty:'Degrad� & Barba',rating:4.9,reviews_count:142,avatar_emoji:'??'},
-    {id:'tmp-b2',name:'Rafael',specialty:'Cl�ssico & Social',rating:4.8,reviews_count:89,avatar_emoji:'??'},
-    {id:'tmp-b3',name:'Jo�o',specialty:'Navalhado & Barba',rating:4.7,reviews_count:56,avatar_emoji:'??'},
+    {id:'tmp-b1',name:'Marcos',specialty:'Degradê & Barba',rating:4.9,reviews_count:142,avatar_emoji:'👤'},
+    {id:'tmp-b2',name:'Rafael',specialty:'Clássico & Social',rating:4.8,reviews_count:89,avatar_emoji:'👤'},
+    {id:'tmp-b3',name:'João',specialty:'Navalhado & Barba',rating:4.7,reviews_count:56,avatar_emoji:'👤'},
   ];
   renderBarberGrid();
 }
@@ -1194,16 +1195,16 @@ function renderBarberGrid(){
   if(!S.barbers.length){g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:30px;color:var(--txm)">Nenhum barbeiro cadastrado.</div>';return;}
   g.innerHTML=S.barbers.map(b=>`
     <div onclick="selBarber(this,'${b.name}','${b.id}')" style="background:var(--dk3);border:1.5px solid var(--dk4);border-radius:var(--r);padding:16px;cursor:pointer;text-align:center;transition:all .2s" id="bc-${b.id}">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--dk4);border:2px solid var(--dk5);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;transition:border-color .2s">${b.avatar_emoji||'??'}</div>
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--dk4);border:2px solid var(--dk5);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;transition:border-color .2s">${b.avatar_emoji||'👤'}</div>
       <div style="font-size:14px;font-weight:600">${b.name}</div>
-      <div style="font-size:11px;color:var(--gold);margin-top:3px">? ${b.rating} (${b.reviews_count})</div>
+      <div style="font-size:11px;color:var(--gold);margin-top:3px">⭐ ${b.rating} (${b.reviews_count})</div>
       <div style="font-size:11px;color:var(--txm);margin-top:2px">${b.specialty||''}</div>
     </div>`).join('');}
 function selBarber(card,name,id){
   document.querySelectorAll('#barber-grid > div').forEach(c=>{c.style.borderColor='var(--dk4)';c.style.background='var(--dk3)';});
   card.style.borderColor='var(--gold)';card.style.background='rgba(201,168,76,.08)';
   S.selectedBarber=name;
-  // S� salva o id se for UUID v�lido
+  // Só salva o id se for UUID válido
   const isUUID=v=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v||'');
   S.selectedBarberId=isUUID(id)?id:null;
   const btn=document.getElementById('btn-bk2');if(btn){btn.disabled=false;btn.style.opacity='1';}
@@ -1219,7 +1220,7 @@ async function loadPromos(){
     if(!data||!data.length){c.innerHTML='<div style="padding:0 20px 12px;color:var(--txm);font-size:13px">Sem promocoes no momento.</div>';return;}
     c.innerHTML=data.map(p=>`
       <div class="promo-card" onclick="showC('agendar')">
-        <div style="font-size:32px">${p.emoji||'??'}</div>
+        <div style="font-size:32px">${p.emoji||'🔥'}</div>
         <div>
           <div style="font-size:15px;font-weight:600">${p.name}</div>
           <div style="font-size:12px;color:var(--txm);margin-top:2px">${p.description||''}</div>
@@ -1242,7 +1243,7 @@ async function loadPkgs(){
       <div class="pkg${p.badge?'  best':''}" onclick="_pkgClick(this)" data-pid="${p.id}">
         <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:10px">${p.name}</div>
         <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
-          ${(p.items||[]).map(i=>`<div style="font-size:12px;color:var(--txm);display:flex;gap:6px;align-items:center"><span style="color:var(--grn);font-weight:700">?</span>${i}</div>`).join('')}
+          ${(p.items||[]).map(i=>`<div style="font-size:12px;color:var(--txm);display:flex;gap:6px;align-items:center"><span style="color:var(--grn);font-weight:700">✓</span>${i}</div>`).join('')}
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--dk4)">
           <div>
@@ -1301,11 +1302,11 @@ async function loadBusy(){
       var filtered=(data||[]).filter(function(a){ return a.barber_id===S.selectedBarberId || !a.barber_id; });
       S.busySlots=filtered.map(a=>({time:a.appointment_time.slice(0,5),dur:Number(a.total_duration_minutes)||30}));
     }else{
-      // Sem barbeiro selecionado: um slot � "busy" se TODOS os barbeiros est�o ocupados nesse hor�rio
+      // Sem barbeiro selecionado: um slot é "busy" se TODOS os barbeiros estão ocupados nesse horário
       var barbR=await db.from('barbers').select('id').eq('shop_id',S.shopId).eq('active',true);
       var barberIds=(barbR.data||[]).map(function(b){return b.id;});
       var numBarbers=barberIds.length||1;
-      // Agrupar por slot de 5min e ver quantos barbeiros est�o ocupados
+      // Agrupar por slot de 5min e ver quantos barbeiros estão ocupados
       var slotMap={};
       (data||[]).forEach(function(a){
         var t=a.appointment_time.slice(0,5);
@@ -1371,10 +1372,10 @@ function renderTimes(){
     }else{merged.push({start:o.start,end:o.end,lunch:o.lunch||false});}
   });
 
-  // Gerar slots: ocupados (hor�rios reais dos agendamentos) + livres (din�micos a cada slotMin)
+  // Gerar slots: ocupados (horários reais dos agendamentos) + livres (dinâmicos a cada slotMin)
   var allSlots=[];
   
-  // Adicionar slots ocupados (hor�rios dos agendamentos reais)
+  // Adicionar slots ocupados (horários dos agendamentos reais)
   merged.forEach(function(block){
     if(!block.lunch){
       allSlots.push({time:toStr(block.start),busy:true,lunch:false});
@@ -1385,7 +1386,7 @@ function renderTimes(){
   var cursor=openM;
   for(var mi=0;mi<=merged.length;mi++){
     var blockStart=(mi<merged.length)?merged[mi].start:closeM;
-    // Gerar slots livres entre cursor e o pr�ximo bloco
+    // Gerar slots livres entre cursor e o próximo bloco
     while(cursor+totalDur<=blockStart&&cursor+totalDur<=closeM){
       allSlots.push({time:toStr(cursor),busy:false,lunch:false});
       cursor+=slotMin;
@@ -1399,25 +1400,25 @@ function renderTimes(){
     }
   }
   
-  // Ordenar por hor�rio
+  // Ordenar por horário
   allSlots.sort(function(a,b){
     var toM=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};
     return toM(a.time)-toM(b.time);
   });
 
   if(!allSlots.length){
-    g.innerHTML='<div style="grid-column:span 4;color:var(--txm);font-size:13px;padding:10px">Sem hor�rios dispon�veis.</div>';
+    g.innerHTML='<div style="grid-column:span 4;color:var(--txm);font-size:13px;padding:10px">Sem horários disponíveis.</div>';
     return;
   }
 
-  // Agrupa por per�odo (manh� / tarde) se houver almo�o
+  // Agrupa por período (manhã / tarde) se houver almoço
   let html='';
   if(lsM&&leM){
     const manha=allSlots.filter(s=>toMin(s.time)<lsM);
     const tarde=allSlots.filter(s=>toMin(s.time)>=leM);
-    if(manha.length){html+=`<div style="grid-column:span 4;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">? Manh�</div>`+manha.map(s=>slotBtn(s,totalDur)).join('');}
-    html+=`<div style="grid-column:span 4;font-size:11px;color:var(--txm);padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:var(--dk4)"></div>?? Almo�o ${lunchStart}�${lunchEnd}<div style="flex:1;height:1px;background:var(--dk4)"></div></div>`;
-    if(tarde.length){html+=`<div style="grid-column:span 4;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">?? Tarde</div>`+tarde.map(s=>slotBtn(s,totalDur)).join('');}
+    if(manha.length){html+=`<div style="grid-column:span 4;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>`+manha.map(s=>slotBtn(s,totalDur)).join('');}
+    html+=`<div style="grid-column:span 4;font-size:11px;color:var(--txm);padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:var(--dk4)"></div>🍽 Almoço ${lunchStart}–${lunchEnd}<div style="flex:1;height:1px;background:var(--dk4)"></div></div>`;
+    if(tarde.length){html+=`<div style="grid-column:span 4;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>`+tarde.map(s=>slotBtn(s,totalDur)).join('');}
   } else {
     html=allSlots.map(s=>slotBtn(s,totalDur)).join('');
   }
@@ -1428,7 +1429,7 @@ function slotBtn(s,dur){
   const busy=s.busy||s.lunch;
   const lunchCls=s.lunch?' lunch':'';
   if(busy){
-    return`<div class="ts busy${lunchCls}" title="${s.lunch?'Hor�rio de almo�o':'Hor�rio ocupado'}">${s.time}${s.lunch?' ??':''}</div>`;
+    return`<div class="ts busy${lunchCls}" title="${s.lunch?'Horário de almoço':'Horário ocupado'}">${s.time}${s.lunch?' 🍽':''}</div>`;
   }
   return`<div class="ts${sel?' sel':''}" onclick="selTime(this,'${s.time}')">${s.time}</div>`;
 }
@@ -1462,7 +1463,7 @@ function goStepUI(step){
   [1,2,3,4].forEach(i=>{
     const d=document.getElementById('sd'+i);if(!d)return;
     d.classList.remove('active','done');
-    if(i<step){d.classList.add('done');d.textContent='?';}
+    if(i<step){d.classList.add('done');d.textContent='✓';}
     else if(i===step){d.classList.add('active');d.textContent=i;}
     else d.textContent=i;
     if(i<4){const l=document.getElementById('sl'+i);if(l)l.classList.toggle('done',i<step);}
@@ -1474,9 +1475,9 @@ function renderSummary(){
   const dur=S.cart.reduce((s,c)=>s+Number(c.duration_minutes),0);
   el.innerHTML=`
     <div class="sr"><span class="srl">Servicos</span><span class="srv">${S.cart.map(c=>c.name).join(', ')}</span></div>
-    <div class="sr"><span class="srl">Barbeiro</span><span class="srv">${S.selectedBarber||'�'}</span></div>
-    <div class="sr"><span class="srl">Data</span><span class="srv">${S.selDate||'�'}</span></div>
-    <div class="sr"><span class="srl">Horario</span><span class="srv">${S.selTime||'�'}</span></div>
+    <div class="sr"><span class="srl">Barbeiro</span><span class="srv">${S.selectedBarber||'—'}</span></div>
+    <div class="sr"><span class="srl">Data</span><span class="srv">${S.selDate||'—'}</span></div>
+    <div class="sr"><span class="srl">Horario</span><span class="srv">${S.selTime||'—'}</span></div>
     <div class="sr"><span class="srl">Duracao</span><span class="srv">${dur} min</span></div>
     <div class="sr"><span class="srl">Total</span><span class="srv" style="color:var(--gold);font-size:20px">${fmt(total)}</span></div>`;
 }
@@ -1545,32 +1546,32 @@ async function confirmPay(method){
 function notifyAdmin(a){
   const num=(S.shop.whatsapp||S.settings.whatsapp||'5511999999999').replace(/\D/g,'');
   const svcs=a.services_json?a.services_json.map(s=>s.name).join(' + '):a.service_name;
-  // Formata data em portugu�s: 2026-06-03 ? 03/06/2026
+  // Formata data em português: 2026-06-03 → 03/06/2026
   const dateParts=(a.appointment_date||'').split('-');
   const dataFmt=dateParts.length===3?`${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`:a.appointment_date;
-  // Formata hor�rio: 18:30:00 ? 18:30
+  // Formata horário: 18:30:00 → 18:30
   const hora=(a.appointment_time||'').slice(0,5);
   // Traduz forma de pagamento
-  const pagMap={pix:'PIX ??',credito:'Cart�o de Cr�dito ??',debito:'Cart�o de D�bito ??',local:'Pagar no Local ??'};
-  const pagamento=pagMap[a.payment_method]||a.payment_method||'�';
+  const pagMap={pix:'PIX 💲',credito:'Cartão de Crédito 💳',debito:'Cartão de Débito 🏦',local:'Pagar no Local 💵'};
+  const pagamento=pagMap[a.payment_method]||a.payment_method||'—';
   // Monta a mensagem
   const shopName=S.shop.name||'BarberOS';
   const msg=
-`?? *Novo Agendamento � ${shopName}*
-????????????????????
-?? *Cliente:* ${a.client_name}
-?? *WhatsApp:* ${a.client_phone||'N�o informado'}
-?? *Servi�o:* ${svcs}
-?? *Barbeiro:* ${a.barber_name}
-????????????????????
-?? *Data:* ${dataFmt}
-?? *Hor�rio:* ${hora}
-? *Dura��o:* ${a.total_duration_minutes||30} min
-????????????????????
-?? *Total:* ${fmt(a.service_price)}
-?? *Pagamento:* ${pagamento}
-????????????????????
-_Enviado pelo BarberOS_ ??`;
+`🔔 *Novo Agendamento — ${shopName}*
+━━━━━━━━━━━━━━━━━━━━
+👤 *Cliente:* ${a.client_name}
+📱 *WhatsApp:* ${a.client_phone||'Não informado'}
+✂️ *Serviço:* ${svcs}
+💈 *Barbeiro:* ${a.barber_name}
+━━━━━━━━━━━━━━━━━━━━
+📅 *Data:* ${dataFmt}
+🕐 *Horário:* ${hora}
+⏱ *Duração:* ${a.total_duration_minutes||30} min
+━━━━━━━━━━━━━━━━━━━━
+💰 *Total:* ${fmt(a.service_price)}
+💳 *Pagamento:* ${pagamento}
+━━━━━━━━━━━━━━━━━━━━
+_Enviado pelo BarberOS_ ✂️`;
   var _a=document.createElement('a');_a.href='https://wa.me/'+num+'?text='+encodeURIComponent(msg);_a.target='_blank';_a.rel='noopener';document.body.appendChild(_a);_a.click();document.body.removeChild(_a);
 }
 function shareWA(){
@@ -1581,15 +1582,15 @@ function shareWA(){
   const hora=(a.appointment_time||'').slice(0,5);
   const shopName=S.shop.name||'BarberOS';
   const msg=
-`? *Agendamento Confirmado!*
-??????????????????
-?? *Servi�o:* ${a.service_name||''}
-?? *Barbeiro:* ${a.barber_name||''}
-?? *Data:* ${dataFmt}
-?? *Hor�rio:* ${hora}
-?? *Total:* ${fmt(a.service_price||0)}
-??????????????????
-_${shopName} � BarberOS_ ??`;
+`✅ *Agendamento Confirmado!*
+━━━━━━━━━━━━━━━━━━
+✂️ *Serviço:* ${a.service_name||''}
+💈 *Barbeiro:* ${a.barber_name||''}
+📅 *Data:* ${dataFmt}
+🕐 *Horário:* ${hora}
+💰 *Total:* ${fmt(a.service_price||0)}
+━━━━━━━━━━━━━━━━━━
+_${shopName} • BarberOS_ 📲`;
   var _a=document.createElement('a');_a.href='https://wa.me/'+num+'?text='+encodeURIComponent(msg);_a.target='_blank';_a.rel='noopener';document.body.appendChild(_a);_a.click();document.body.removeChild(_a);
 }
 function openWA(){
@@ -1615,7 +1616,7 @@ async function loadMyAppts(){
         <div><div style="font-weight:700;font-size:15px">${a.service_name}</div><div style="font-size:12px;color:var(--txm)">com ${a.barber_name}</div></div>
         <span style="font-size:9px;padding:2px 5px;border-radius:4px;margin-right:6px;font-weight:700;${a.reminder_sent?'background:#27AE60;color:#fff':'background:rgba(201,168,76,.2);color:#C9A84C'}">${a.reminder_sent?'LEMBRADO':'PENDENTE'}</span><span class="badge ${sl[a.status]||'bp'}">${st[a.status]||'Pendente'}</span>
       </div>
-      <div style="font-size:12px;color:var(--txm)">?? ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')} as ${(a.appointment_time||'').slice(0,5)} � ${fmt(a.service_price)}</div>
+      <div style="font-size:12px;color:var(--txm)">📅 ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')} as ${(a.appointment_time||'').slice(0,5)} · ${fmt(a.service_price)}</div>
     </div>`).join('');
 }
 
@@ -1666,7 +1667,7 @@ function agItemHTML(a){
   return`<div class="ai" data-id="${a.id}" onclick="openApptMod('${a.id}')">
     <div class="at"><div class="ath">${h}</div><div class="atm">:${m}</div></div>
     <div class="al${hasAct?' g':''}"></div>
-    <div class="aif"><div class="aic">${a.client_name}${pkgLabel}</div><div class="ais">${a.service_name} � ${fmt(a.service_price)}</div><div class="aib">? ${a.barber_name} � ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')}</div></div>
+    <div class="aif"><div class="aic">${a.client_name}${pkgLabel}</div><div class="ais">${a.service_name} · ${fmt(a.service_price)}</div><div class="aib">✂ ${a.barber_name} · ${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')}</div></div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="badge ${sl[a.status]||'bp'}">${st[a.status]||'Pendente'}</span><span style="font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;${a.reminder_sent?'background:#27AE60;color:#fff':'background:rgba(201,168,76,.15);color:#C9A84C'}">${a.reminder_sent?'LEMBRADO':'PENDENTE'}</span></div>
   </div>`;
 }
@@ -1682,20 +1683,20 @@ async function openApptMod(id){
   document.getElementById('mod-appt-body').innerHTML=`
     <div class="card" style="margin-bottom:16px">
       <div class="sr"><span class="srl">Cliente</span><span class="srv">${a.client_name}</span></div>
-      <div class="sr"><span class="srl">WhatsApp</span><span class="srv">${a.client_phone||'�'}</span></div>
+      <div class="sr"><span class="srl">WhatsApp</span><span class="srv">${a.client_phone||'—'}</span></div>
       <div class="sr"><span class="srl">Servico</span><span class="srv">${a.service_name}</span></div>
       <div class="sr"><span class="srl">Barbeiro</span><span class="srv"><select id="appt-barber-sel" data-appt-id="${a.id}" style="background:var(--dk3);color:var(--tx);border:1px solid var(--dk4);border-radius:8px;padding:4px 8px;font-size:13px;font-family:inherit"></select> <button onclick="saveApptBarber()" style="background:var(--gold);color:#0E0E0E;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;margin-left:4px">Salvar</button></span></div>
       <div class="sr"><span class="srl">Data</span><span class="srv">${new Date(a.appointment_date+'T12:00').toLocaleDateString('pt-BR')}</span></div>
       <div class="sr"><span class="srl">Horario</span><span class="srv">${t}</span></div>
-      <div class="sr"><span class="srl">Pagamento</span><span class="srv">${a.payment_method||'�'}</span></div>
+      <div class="sr"><span class="srl">Pagamento</span><span class="srv">${a.payment_method||'—'}</span></div>
       <div class="sr"><span class="srl">Total</span><span class="srv" style="color:var(--gold);font-size:18px">${fmt(a.service_price)}</span></div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-gold" onclick="updAppt('${a.id}','confirmed')">? Confirmar</button>
-      <button class="btn btn-grn" onclick="updAppt('${a.id}','done')">?? Marcar como Feito</button>
-      ${S.role!=='barber'?'<button class="btn" onclick="encerrarAppt(\''+a.id+'\',\''+a.barber_id+'\')" style="background:#8E44AD;color:#fff;border:none;border-radius:50px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%">?? Encerrar (gerar comissao)</button>':''}
+      <button class="btn btn-gold" onclick="updAppt('${a.id}','confirmed')">✅ Confirmar</button>
+      <button class="btn btn-grn" onclick="updAppt('${a.id}','done')">🏁 Marcar como Feito</button>
+      ${S.role!=='barber'?'<button class="btn" onclick="encerrarAppt(\''+a.id+'\',\''+a.barber_id+'\')" style="background:#8E44AD;color:#fff;border:none;border-radius:50px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%">🔒 Encerrar (gerar comissao)</button>':''}
       ${pkgSessions.length>1?`<div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:var(--rs);padding:12px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:8px">PACOTE ${pkgSessions.length} SESSOES</div>${pkgSessions.map(s=>('<div style="font-size:12px;padding:4px 0;display:flex;justify-content:space-between"><span style=color:var(--txm)>Sessao '+s.package_session_num+'</span><span>'+new Date(s.appointment_date+'T12:00').toLocaleDateString('pt-BR')+' '+s.appointment_time.slice(0,5)+'</span><span style=color:var(--gold)>'+(s.status==='done'?'Feito':s.status==='cancelled'?'Cancelado':'Pendente')+'</span></div>')).join('')}</div>`:''}
-      ${a.client_phone?`<button class="btn btn-out" onclick="window.open('https://wa.me/${a.client_phone.replace(/\D/g,'')}','_blank')">?? WhatsApp do cliente</button>`:''}
+      ${a.client_phone?`<button class="btn btn-out" onclick="window.open('https://wa.me/${a.client_phone.replace(/\D/g,'')}','_blank')">💬 WhatsApp do cliente</button>`:''}
       <button class="btn-red" onclick="updAppt('${a.id}','cancelled')">Cancelar agendamento</button>
       ${S.role!=="barber"?'<div style="display:flex;gap:8px;margin-top:8px"><button onclick="editApptModal(\x27'+a.id+'\x27)" style="flex:1;background:var(--dk3);border:1px solid var(--dk4);color:var(--gold);border-radius:50px;padding:10px;font-size:13px;cursor:pointer">\u270F Editar</button><button onclick="deleteAppt(\x27'+a.id+'\x27)" style="flex:1;background:rgba(192,57,43,.1);border:1px solid #E74C3C;color:#E74C3C;border-radius:50px;padding:10px;font-size:13px;cursor:pointer">\u{1F5D1} Excluir</button></div>':''}
     </div>`;
@@ -1753,12 +1754,12 @@ async function openPromoMod(id){
   var el=document.getElementById('mod-promo');
   if(!el){
     el=document.createElement('div');el.className='mov';el.id='mod-promo';
-    el.innerHTML='<div class="msh"><div class="mhd"></div><div class="mt" id="prm-title">Nova Promocao</div><div class="fg"><label class="fl">Nome *</label><input class="fi" id="prm-name" placeholder="Ex: Combo Corte + Barba"></div><div class="fg"><label class="fl">Descricao</label><input class="fi" id="prm-desc" placeholder="Descricao da promo"></div><div class="fg"><label class="fl">Emoji</label><input class="fi" id="prm-emoji" placeholder="Ex: ??" value="??"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fg"><label class="fl">Preco original</label><input class="fi" id="prm-orig" type="text" inputmode="decimal" placeholder="0"></div><div class="fg"><label class="fl">Preco promo *</label><input class="fi" id="prm-price" type="text" inputmode="decimal" placeholder="0"></div></div><input type="hidden" id="prm-edit-id" value=""><button class="btn" onclick="savePromo()" style="width:100%;margin-top:12px">Salvar promocao</button></div>';
+    el.innerHTML='<div class="msh"><div class="mhd"></div><div class="mt" id="prm-title">Nova Promocao</div><div class="fg"><label class="fl">Nome *</label><input class="fi" id="prm-name" placeholder="Ex: Combo Corte + Barba"></div><div class="fg"><label class="fl">Descricao</label><input class="fi" id="prm-desc" placeholder="Descricao da promo"></div><div class="fg"><label class="fl">Emoji</label><input class="fi" id="prm-emoji" placeholder="Ex: 🔥" value="🔥"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fg"><label class="fl">Preco original</label><input class="fi" id="prm-orig" type="text" inputmode="decimal" placeholder="0"></div><div class="fg"><label class="fl">Preco promo *</label><input class="fi" id="prm-price" type="text" inputmode="decimal" placeholder="0"></div></div><input type="hidden" id="prm-edit-id" value=""><button class="btn" onclick="savePromo()" style="width:100%;margin-top:12px">Salvar promocao</button></div>';
     document.body.appendChild(el);
   }
   document.getElementById('prm-name').value='';
   document.getElementById('prm-desc').value='';
-  document.getElementById('prm-emoji').value='??';
+  document.getElementById('prm-emoji').value='🔥';
   document.getElementById('prm-orig').value='';
   document.getElementById('prm-price').value='';
   document.getElementById('prm-edit-id').value='';
@@ -1830,8 +1831,8 @@ async function loadAgenda(filter){
   const td=todayLocal();
   let q=db.from('appointments').select('*').eq('shop_id',S.shopId).neq('status','cancelled').order('appointment_date',{ascending:false}).order('appointment_time',{ascending:false});
   if(filter==='hoje')q=q.eq('appointment_date',td);
-  else if(filter==='amanha'){const tmr=new Date();tmr.setDate(tmr.getDate()+1);var tmrISO=tmr.getFullYear()+'-'+String(tmr.getMonth()+1).padStart(2,'0')+'-'+String(tmr.getDate()).padStart(2,'0');q=q.eq('appointment_date',tmrISO);}
-  else if(filter==='semana'){const e=new Date();e.setDate(e.getDate()+7);var eISO=e.getFullYear()+'-'+String(e.getMonth()+1).padStart(2,'0')+'-'+String(e.getDate()).padStart(2,'0');q=q.gte('appointment_date',td).lte('appointment_date',eISO);}
+  else if(filter==='amanha'){const tmr=new Date();tmr.setDate(tmr.getDate()+1);q=q.eq('appointment_date',dateLocalISO(tmr));}
+  else if(filter==='semana'){const e=new Date();e.setDate(e.getDate()+7);q=q.gte('appointment_date',td).lte('appointment_date',dateLocalISO(e));}
   const{data}=await q;
   el.innerHTML=(data&&data.length)?data.map(a=>agItemHTML(a)).join(''):'<div style="text-align:center;padding:30px;color:var(--txm)">Nenhum agendamento.</div>';
 }
@@ -1861,22 +1862,22 @@ async function openAdmBook(){
     window._abPkgMap={};
     var opts='';
     if(svcs&&svcs.length){
-      opts+='<optgroup label="Servi�os">';
-      opts+=(svcs).map(s=>`<option value="svc|${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} � ${fmt(s.price)}</option>`).join('');
+      opts+='<optgroup label="Serviços">';
+      opts+=(svcs).map(s=>`<option value="svc|${s.id}|${s.name}|${s.price}|${s.duration_minutes}">${s.name} — ${fmt(s.price)}</option>`).join('');
       opts+='</optgroup>';
     }
     if(pkgs&&pkgs.length){
-      opts+='<optgroup label="?? Pacotes">';
+      opts+='<optgroup label="📦 Pacotes">';
       opts+=(pkgs).map(p=>{
         window._abPkgMap[p.id]=p;
         var totalItems=(p.items||[]).length;
         var numSessions=totalItems||4;
         var pkgDur=Number(p.duration_minutes)||30;
-        return `<option value="pkg|${p.id}|${p.name}|${p.price}|${numSessions}|${pkgDur}">?? ${p.name} � ${fmt(p.price)} (${numSessions} sess�es � ${pkgDur}min${p.frequencia?' � '+p.frequencia:''})</option>`;
+        return `<option value="pkg|${p.id}|${p.name}|${p.price}|${numSessions}|${pkgDur}">📦 ${p.name} — ${fmt(p.price)} (${numSessions} sessões · ${pkgDur}min${p.frequencia?' · '+p.frequencia:''})</option>`;
       }).join('');
       opts+='</optgroup>';
     }
-    ds.innerHTML=opts||'<option>Nenhum servi�o cadastrado</option>';
+    ds.innerHTML=opts||'<option>Nenhum serviço cadastrado</option>';
     db2.innerHTML=(barbers||[]).map(b=>`<option value="${b.id}|${b.name}">${b.name}</option>`).join('');
     admBookSvcChange();
   }catch(e){
@@ -1904,7 +1905,7 @@ window.abAddSession=function(){
   var idx=listEl.children.length+1;
   var div=document.createElement('div');
   div.style.cssText='display:grid;grid-template-columns:auto 1fr 1fr 30px;gap:8px;align-items:center;margin-bottom:8px';
-  div.innerHTML='<span style="font-size:11px;color:var(--gold);font-weight:700">'+idx+'</span><input type="date" class="fi ab-pkg-date" style="font-size:12px;padding:10px"><input type="time" class="fi ab-pkg-time" style="font-size:12px;padding:10px"><span onclick="this.parentElement.remove();abReindex()" style="color:var(--red);cursor:pointer;font-size:16px;text-align:center">?</span>';
+  div.innerHTML='<span style="font-size:11px;color:var(--gold);font-weight:700">'+idx+'</span><input type="date" class="fi ab-pkg-date" style="font-size:12px;padding:10px"><input type="time" class="fi ab-pkg-time" style="font-size:12px;padding:10px"><span onclick="this.parentElement.remove();abReindex()" style="color:var(--red);cursor:pointer;font-size:16px;text-align:center">✕</span>';
   listEl.appendChild(div);
 };
 window.abReindex=function(){
@@ -1925,7 +1926,7 @@ async function saveAdmBook(){
   const btn=document.getElementById('btn-ab');btn.disabled=true;btn.textContent='Salvando...';
 
   if(type==='pkg'){
-    // === PACOTE: m�ltiplas sess�es ===
+    // === PACOTE: múltiplas sessões ===
     var dates=document.querySelectorAll('#ab-pkg-list-sessions .ab-pkg-date');
     var times=document.querySelectorAll('#ab-pkg-list-sessions .ab-pkg-time');
     var sessions=[];
@@ -1933,7 +1934,7 @@ async function saveAdmBook(){
       var dt=d.value;var tm=times[i]?times[i].value:'';
       if(dt&&tm)sessions.push({date:dt,time:tm});
     });
-    if(sessions.length===0){toast('Adicione pelo menos 1 sess�o com data e hor�rio.','err');btn.disabled=false;btn.textContent='Confirmar Agendamento';return;}
+    if(sessions.length===0){toast('Adicione pelo menos 1 sessão com data e horário.','err');btn.disabled=false;btn.textContent='Confirmar Agendamento';return;}
     var pkgName=svcVal[2]||'Pacote';
     var pkgPrice=Number(svcVal[3])||0;
     var pkgDur=Number(svcVal[5])||30;
@@ -1963,12 +1964,12 @@ async function saveAdmBook(){
     const{error}=await db.from('appointments').insert(appts);
     btn.disabled=false;btn.textContent='Confirmar Agendamento';
     if(error){toast('Erro: '+error.message,'err');return;}
-    toast('Pacote agendado! ('+tot+' sess�es)','ok');
+    toast('Pacote agendado! ('+tot+' sessões)','ok');
   }else{
-    // === SERVI�O NORMAL: sess�o �nica ===
+    // === SERVIÇO NORMAL: sessão única ===
     const date=document.getElementById('ab-date').value;
     const time=document.getElementById('ab-time').value;
-    if(!date||!time){toast('Preencha data e hor�rio.','err');btn.disabled=false;btn.textContent='Confirmar Agendamento';return;}
+    if(!date||!time){toast('Preencha data e horário.','err');btn.disabled=false;btn.textContent='Confirmar Agendamento';return;}
     const{error}=await db.from('appointments').insert({
       shop_id:S.shopId,
       client_name:name,client_phone:phone,
@@ -1998,11 +1999,11 @@ async function loadAdmSvcs(){
       <div class="${catCls(s.category)}" style="width:40px;height:40px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff">${icLabel(s.category)}</div>
       <div style="flex:1">
         <div style="font-size:15px;font-weight:600">${s.name}</div>
-        <div style="font-size:12px;color:var(--txm)">${fmt(s.price)} � ${s.duration_minutes} min � ${s.category}</div>
+        <div style="font-size:12px;color:var(--txm)">${fmt(s.price)} · ${s.duration_minutes} min · ${s.category}</div>
       </div>
       <div class="tog${s.active?' on':''}" onclick="togSvc('${s.id}',${s.active})"></div>
       <button onclick="openSvcMod('${s.id}')" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--tx);border-radius:var(--rs);padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Editar</button>
-      <button onclick="delSvc('${s.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">?</button>
+      <button onclick="delSvc('${s.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">✕</button>
     </div>`).join('');
 }
 function openSvcMod(id){
@@ -2040,12 +2041,12 @@ async function loadAdmPkgs(){
     <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--dk3)">
       <div style="flex:1">
         <div style="font-size:15px;font-weight:600">${p.name}${p.badge?` <span style="background:var(--gold);color:var(--dk);font-size:9px;font-weight:800;border-radius:4px;padding:2px 6px">${p.badge}</span>`:''}</div>
-        <div style="font-size:12px;color:var(--txm)">${fmt(p.price)} � ${(p.items||[]).length} itens</div>
+        <div style="font-size:12px;color:var(--txm)">${fmt(p.price)} · ${(p.items||[]).length} itens</div>
         ${p.frequencia?"<div style=margin-top:3px><span style=background:rgba(201,168,76,.15);color:var(--gold);border-radius:4px;padding:2px_7px;font-size:11px;font-weight:600>"+p.frequencia+"</span> <span style=background:var(--dk4);color:var(--txm);border-radius:4px;padding:2px_6px;font-size:10px>"+(p.validade||"")+"</span></div>":""}
       </div>
       <div class="tog${p.active?' on':''}" onclick="togPkg('${p.id}',${p.active})"></div>
       <button onclick="openPkgMod('${p.id}')" style="background:var(--dk3);border:1px solid var(--dk4);color:var(--tx);border-radius:var(--rs);padding:6px 12px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Editar</button>
-      <button onclick="delPkg('${p.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">?</button>
+      <button onclick="delPkg('${p.id}')" style="background:rgba(192,57,43,.15);border:1px solid var(--red);color:var(--red);border-radius:var(--rs);padding:6px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">✕</button>
     </div>`).join('');
 }
 function openPkgMod(id){
@@ -2088,7 +2089,7 @@ async function saveSettings(){
   const{error}=await db.from('shops').update(updates).eq('id',S.shopId);
   if(error){toast('Erro: '+error.message,'err');return;}
   Object.assign(S.shop,updates);applyShop(S.shop);
-  toast('Configura��es salvas!','ok');
+  toast('Configurações salvas!','ok');
 }
 async function loadCfgForm(){
   const d=S.shop;
@@ -2134,7 +2135,7 @@ async function addBarber(){
   const name=prompt('Nome do barbeiro:');if(!name)return;
   const spec=prompt('Especialidade:');
   const comm=Number(prompt('Comissao % (0-100):'))||0;
-  const{error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec||'',avatar_emoji:'??',rating:5.0,reviews_count:0,active:true,commission_pct:comm});
+  const{error}=await db.from('barbers').insert({shop_id:S.shopId,name,specialty:spec||'',avatar_emoji:'👤',rating:5.0,reviews_count:0,active:true,commission_pct:comm});
   if(error){toast('Erro: '+error.message,'err');return;}
   toast('Barbeiro adicionado!','ok');setTimeout(function(){window.location.reload();},500);
 }
@@ -2154,7 +2155,7 @@ async function saveSvc(){
   if(eid){({error}=await db.from('services').update(payload).eq('id',eid));}
   else{({error}=await db.from('services').insert({...payload,active:true}));}
   if(error){toast('Erro: '+error.message,'err');return;}
-  toast('Servi�o salvo!','ok');closeMod('mod-svc');loadAdmSvcs();loadSvcs();
+  toast('Serviço salvo!','ok');closeMod('mod-svc');loadAdmSvcs();loadSvcs();
 }
 async function savePkg(){
   const name=document.getElementById('pm-name').value.trim();
@@ -2165,7 +2166,7 @@ async function savePkg(){
   const badge=document.getElementById('pm-badge').value.trim();
   const dur=Number(document.getElementById('pm-dur').value)||30;
   const eid=document.getElementById('pm-id').value;
-  if(!name||isNaN(price)||price<=0){toast('Preencha nome e pre�o.','err');return;}
+  if(!name||isNaN(price)||price<=0){toast('Preencha nome e preço.','err');return;}
   const freq=document.getElementById('pm-freq').value;
   const valid=document.getElementById('pm-valid').value;
   const payload={name,price,original_price:orig?parseFloat(orig.replace(/[^0-9.,]/g,'').replace(',','.')):null,items,description:desc,badge:badge||null,frequencia:freq||null,validade:valid||null,duration_minutes:dur,active:true,shop_id:S.shopId};
@@ -2181,7 +2182,7 @@ async function setDefaultShop(){
   // Remove default from all, set on current
   await db.from('shops').update({is_default:false}).neq('id',S.shopId);
   await db.from('shops').update({is_default:true}).eq('id',S.shopId);
-  toast('? Esta barbearia agora � a padr�o do link principal!','ok');
+  toast('✅ Esta barbearia agora é a padrão do link principal!','ok');
 }
 function autoSlug(inp){
   const slug=inp.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -2190,7 +2191,7 @@ function autoSlug(inp){
 }
 function copyShareLink(){
   const link=document.getElementById('cfg-share-link')?.textContent||'';
-  if(!link||link==='Carregando...'){toast('Link n�o dispon�vel ainda.','err');return;}
+  if(!link||link==='Carregando...'){toast('Link não disponível ainda.','err');return;}
   navigator.clipboard.writeText(link).then(()=>toast('Link copiado!','ok')).catch(()=>toast('Link: '+link));
 }
 // =================== ONBOARDING ===================
@@ -2201,10 +2202,10 @@ async function saveOnboarding(){
   const btn=document.getElementById('btn-ob');btn.disabled=true;btn.textContent='Criando...';
   try{
     const{data:{session}}=await db.auth.getSession();
-    if(!session){toast('Sess�o expirada. Fa�a login novamente.','err');enterApp('adm-login');return;}
+    if(!session){toast('Sessão expirada. Faça login novamente.','err');enterApp('adm-login');return;}
     // Check slug availability
     const{data:existing}=await db.from('shops').select('id').eq('slug',slug).maybeSingle();
-    if(existing){toast('Identificador j� em uso. Escolha outro.','err');btn.disabled=false;btn.textContent='Criar minha barbearia';return;}
+    if(existing){toast('Identificador já em uso. Escolha outro.','err');btn.disabled=false;btn.textContent='Criar minha barbearia';return;}
     const{data:shop,error}=await db.from('shops').insert({
       owner_id:session.user.id,name,slug,
       address:g('ob-addr'),whatsapp:g('ob-wa'),pix_key:g('ob-pix'),
@@ -2241,12 +2242,12 @@ async function setNewPassword(){
   const err  = document.getElementById('sp-err');
   const btn  = document.getElementById('btn-sp');
   err.style.display='none';
-  if(pwd.length<8){err.textContent='A senha deve ter no m�nimo 8 caracteres.';err.style.display='block';return;}
-  if(pwd!==pwd2){err.textContent='As senhas n�o coincidem.';err.style.display='block';return;}
+  if(pwd.length<8){err.textContent='A senha deve ter no mínimo 8 caracteres.';err.style.display='block';return;}
+  if(pwd!==pwd2){err.textContent='As senhas não coincidem.';err.style.display='block';return;}
   btn.innerHTML='<span class="spin"></span> Salvando...';btn.disabled=true;
   try{
     const{error}=await db.auth.updateUser({password:pwd});
-    btn.textContent='Criar senha e entrar ?';btn.disabled=false;
+    btn.textContent='Criar senha e entrar →';btn.disabled=false;
     if(error){err.textContent='Erro: '+error.message;err.style.display='block';return;}
     toast('Senha criada com sucesso!','ok');
     await db.auth.refreshSession();
@@ -2266,7 +2267,7 @@ async function setNewPassword(){
         }else{enterApp('onboarding');}
       }
     }
-  }catch(e){btn.textContent='Criar senha e entrar ?';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
+  }catch(e){btn.textContent='Criar senha e entrar →';btn.disabled=false;err.textContent='Erro inesperado.';err.style.display='block';}
 }
 
 async function inviteClient(){
@@ -2277,7 +2278,7 @@ async function inviteClient(){
   const btn=document.getElementById('inv-btn');
   err.style.display='none';ok.style.display='none';
   if(!name){err.textContent='Informe o nome do cliente.';err.style.display='block';return;}
-  if(!email||!email.includes('@')){err.textContent='Informe um e-mail v�lido.';err.style.display='block';return;}
+  if(!email||!email.includes('@')){err.textContent='Informe um e-mail válido.';err.style.display='block';return;}
   btn.innerHTML='<span class="spin"></span> Enviando...';btn.disabled=true;
   try{
     const res=await fetch('https://seyadufuohsbpcqaguig.supabase.co/functions/v1/hotmart-webhook',{
@@ -2291,17 +2292,17 @@ async function inviteClient(){
       document.getElementById('inv-name').value='';
       document.getElementById('inv-email').value='';
     } else if(data.msg==='user already exists'||data.message&&data.message.includes('already')){
-      err.textContent='Este e-mail j� possui acesso ao BarberOS.';err.style.display='block';
+      err.textContent='Este e-mail já possui acesso ao BarberOS.';err.style.display='block';
     } else {
       err.textContent='Erro ao enviar convite: '+(data.error||'tente novamente');err.style.display='block';
     }
-  }catch(e){err.textContent='Erro de conex�o.';err.style.display='block';}
-  btn.textContent='Enviar convite ?';btn.disabled=false;
+  }catch(e){err.textContent='Erro de conexão.';err.style.display='block';}
+  btn.textContent='Enviar convite →';btn.disabled=false;
 }
 
 
 
-async function exportDash(){try{var td=new Date().toISOString().split("T")[0],mes=td.slice(0,7);var r1=await db.from("appointments").select("*").eq("appointment_date",td).eq("shop_id",S.shopId).neq("status","cancelled").order("appointment_time");var r2=await db.from("appointments").select("*").gte("appointment_date",mes+"-01").eq("shop_id",S.shopId).neq("status","cancelled").order("appointment_date");var ta=r1.data||[],ma=r2.data||[];var fV=function(v){return "R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2});};var fD=function(d){return d?new Date(d+"T00:00:00").toLocaleDateString("pt-BR"):"";};var sP=function(s){return({pending:"Pendente",paid:"Pago",done:"Concluido",cancelled:"Cancelado",confirmed:"Confirmado",finished:"Encerrado"})[s]||s;};var pP=function(p){return({pix:"PIX",credito:"Cartao",local:"Local"})[p]||p||"";};
+async function exportDash(){try{var td=todayLocal(),mes=td.slice(0,7);var r1=await db.from("appointments").select("*").eq("appointment_date",td).eq("shop_id",S.shopId).neq("status","cancelled").order("appointment_time");var r2=await db.from("appointments").select("*").gte("appointment_date",mes+"-01").eq("shop_id",S.shopId).neq("status","cancelled").order("appointment_date");var ta=r1.data||[],ma=r2.data||[];var fV=function(v){return "R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2});};var fD=function(d){return d?new Date(d+"T00:00:00").toLocaleDateString("pt-BR"):"";};var sP=function(s){return({pending:"Pendente",paid:"Pago",done:"Concluido",cancelled:"Cancelado",confirmed:"Confirmado",finished:"Encerrado"})[s]||s;};var pP=function(p){return({pix:"PIX",credito:"Cartao",local:"Local"})[p]||p||"";};
 // Buscar barbeiros com comissao
 var rB=await db.from("barbers").select("id,name,commission_pct").eq("shop_id",S.shopId);var barbers=rB.data||[];var bm={};barbers.forEach(function(b){bm[b.id]={name:b.name,pct:Number(b.commission_pct)||0};});
 // Calcular comissoes do mes
@@ -2320,7 +2321,7 @@ if(comRows.length>0){comRows.push({"Barbeiro":"TOTAL","Comissao (%)":"","Atendim
 // Aba Agendamentos detalhados
 var rows=ma.map(function(a){return{"Data":fD(a.appointment_date),"Hora":(a.appointment_time||"").slice(0,5),"Cliente":a.client_name||"","Telefone":a.client_phone||"","Servico":a.service_name||"","Barbeiro":a.barber_name||"","Valor":fV(a.service_price),"Valor Comissao":fV(Number(a.service_price||0)*(bm[a.barber_id]?bm[a.barber_id].pct:0)/100),"Valor Liquido":fV(Number(a.service_price||0)-(Number(a.service_price||0)*(bm[a.barber_id]?bm[a.barber_id].pct:0)/100)),"Pagamento":pP(a.payment_method),"Status":sP(a.status),"Ref Pacote":a.package_ref||"","Pacote":a.package_group_id?"Sim":"","Sessao":a.package_session_num||"","Total Sessoes":a.package_total_sessions||""};});
 var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(resumo),"Resumo");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(comRows),"Comissoes");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"Agendamentos");XLSX.writeFile(wb,"Dashboard_BarberOS_"+mes+".xlsx");toast("Dashboard exportado!","ok");}catch(e){toast("Erro ao exportar.","err");}}
-async function exportAgenda(){try{var r=await db.from("appointments").select("*").eq("shop_id",S.shopId).order("appointment_date",{ascending:false}).order("appointment_time");var ap=r.data||[];var rB=await db.from("barbers").select("id,name,commission_pct").eq("shop_id",S.shopId);var _bm={};(rB.data||[]).forEach(function(b){_bm[b.id]={name:b.name,pct:Number(b.commission_pct)||0};});var fD=function(d){return d?new Date(d+"T00:00:00").toLocaleDateString("pt-BR"):"";};var fV=function(v){return "R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2});};var sP=function(s){return({pending:"Pendente",paid:"Pago",done:"Concluido",cancelled:"Cancelado",confirmed:"Confirmado",finished:"Encerrado"})[s]||s;};var pP=function(p){return({pix:"PIX",credito:"Cartao",local:"Local"})[p]||p||"";};var rows=ap.map(function(a){var pct=_bm[a.barber_id]?_bm[a.barber_id].pct:0;var val=Number(a.service_price||0);var comm=val*(pct/100);return{"Data":fD(a.appointment_date),"Hora":(a.appointment_time||"").slice(0,5),"Cliente":a.client_name||"","Telefone":a.client_phone||"","Servico":a.service_name||"","Barbeiro":a.barber_name||"","Valor":fV(val),"Valor Comissao":fV(comm),"Valor Liquido":fV(val-comm),"Pagamento":pP(a.payment_method),"Status":sP(a.status),"Ref Pacote":a.package_ref||"","Pacote":a.package_group_id?"Sim":"","Sessao":a.package_session_num||"","Total Sessoes":a.package_total_sessions||""};});var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"Agenda");XLSX.writeFile(wb,"Agenda_BarberOS_"+new Date().toISOString().split("T")[0]+".xlsx");toast("Agenda exportada!","ok");}catch(e){toast("Erro ao exportar.","err");}}
+async function exportAgenda(){try{var r=await db.from("appointments").select("*").eq("shop_id",S.shopId).order("appointment_date",{ascending:false}).order("appointment_time");var ap=r.data||[];var rB=await db.from("barbers").select("id,name,commission_pct").eq("shop_id",S.shopId);var _bm={};(rB.data||[]).forEach(function(b){_bm[b.id]={name:b.name,pct:Number(b.commission_pct)||0};});var fD=function(d){return d?new Date(d+"T00:00:00").toLocaleDateString("pt-BR"):"";};var fV=function(v){return "R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2});};var sP=function(s){return({pending:"Pendente",paid:"Pago",done:"Concluido",cancelled:"Cancelado",confirmed:"Confirmado",finished:"Encerrado"})[s]||s;};var pP=function(p){return({pix:"PIX",credito:"Cartao",local:"Local"})[p]||p||"";};var rows=ap.map(function(a){var pct=_bm[a.barber_id]?_bm[a.barber_id].pct:0;var val=Number(a.service_price||0);var comm=val*(pct/100);return{"Data":fD(a.appointment_date),"Hora":(a.appointment_time||"").slice(0,5),"Cliente":a.client_name||"","Telefone":a.client_phone||"","Servico":a.service_name||"","Barbeiro":a.barber_name||"","Valor":fV(val),"Valor Comissao":fV(comm),"Valor Liquido":fV(val-comm),"Pagamento":pP(a.payment_method),"Status":sP(a.status),"Ref Pacote":a.package_ref||"","Pacote":a.package_group_id?"Sim":"","Sessao":a.package_session_num||"","Total Sessoes":a.package_total_sessions||""};});var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"Agenda");XLSX.writeFile(wb,"Agenda_BarberOS_"+todayLocal()+".xlsx");toast("Agenda exportada!","ok");}catch(e){toast("Erro ao exportar.","err");}}
 var _allClientes=[];
 var _editUID=null;
 async function loadClientes(){
@@ -2537,29 +2538,29 @@ async function deleteCliente(uid){
     if(n){const e=document.getElementById('prf-name');if(e)e.value=n;}
     if(p){const e=document.getElementById('prf-phone');if(e)e.value=p;const f=document.getElementById('my-ph');if(f)f.value=p;}
 
-    // 3. Carregar barbearia: por slug da URL ou barbearia padr�o
+    // 3. Carregar barbearia: por slug da URL ou barbearia padrão
     if(S.shopSlug){
-      // URL tem ?s=slug � carrega essa barbearia espec�fica
+      // URL tem ?s=slug — carrega essa barbearia específica
       await loadShop(S.shopSlug, false);
     } else {
-      // Sem slug na URL � carrega a barbearia marcada como padr�o (modo demo)
+      // Sem slug na URL — carrega a barbearia marcada como padrão (modo demo)
       try{
         const{data,error}=await db.from('shops').select('*').eq('is_default',true).eq('active',true).single();
         if(!error&&data){
           S.shop=data; S.shopId=data.id; S.shopSlug=data.slug;
           applyShop(data);
-          // Mostra banner SaaS pois est� em modo demo (sem ?s= na URL)
+          // Mostra banner SaaS pois está em modo demo (sem ?s= na URL)
           S.isDemoMode=true;
         }
-      }catch(e){ console.warn('Erro ao carregar barbearia padr�o:',e); }
+      }catch(e){ console.warn('Erro ao carregar barbearia padrão:',e); }
     }
 
-    // 4. Checar sess�o existente � manter logado ao recarregar
+    // 4. Checar sessão existente — manter logado ao recarregar
     try{
       const{data:{session}}=await db.auth.getSession();
       if(session){
         const uid=session.user.id;
-        // Verificar se � owner
+        // Verificar se é owner
         const{data:shopData}=await db.from('shops').select('*').eq('owner_id',uid).maybeSingle();
         if(shopData){
           S.shop=shopData;S.shopId=shopData.id;S.shopSlug=shopData.slug;
@@ -2571,7 +2572,7 @@ async function deleteCliente(uid){
           enterApp('admin');
           if(typeof updateLoggedName==='function')updateLoggedName(session.user.email);
         } else {
-          // Verificar se � barbeiro
+          // Verificar se é barbeiro
           const{data:buData}=await db.from('barber_users').select('barber_id,shop_id').eq('user_id',uid).maybeSingle();
           if(buData){
             const{data:bShop}=await db.from('shops').select('*').eq('id',buData.shop_id).maybeSingle();
@@ -2592,13 +2593,13 @@ async function deleteCliente(uid){
     if(!isAdmin && S.shopId){
       enterApp('client');
     }
-    // Se n�o entrou em nenhuma tela, fica no splash (j� � o padr�o)
+    // Se não entrou em nenhuma tela, fica no splash (já é o padrão)
   }catch(e){console.warn('Init error',e);}
 
 // PKB e calcSessions removidos - definidos em pkg_booking.js
 // Override pkbRenderTimes e pkbSelDate inline para garantir horario de almoco e conflitos corretos em pacotes
 setTimeout(function(){
-  window.pkbRenderTimes=function(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var pkgDur=(PKB.pkg&&Number(PKB.pkg.duration_minutes))||slot;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var openM=toMin(open),closeM=toMin(close);var occupied=[];(PKB.busySlots||[]).forEach(function(b){var bStart=toMin(b.time);occupied.push({start:bStart,end:bStart+b.dur});});if(lsM!==null&&leM!==null)occupied.push({start:lsM,end:leM,lunch:true});occupied.sort(function(a,b){return a.start-b.start;});var merged=[];occupied.forEach(function(o){if(merged.length&&o.start<merged[merged.length-1].end){merged[merged.length-1].end=Math.max(merged[merged.length-1].end,o.end);if(o.lunch)merged[merged.length-1].lunch=true;}else{merged.push({start:o.start,end:o.end,lunch:o.lunch||false});}});var allSlots=[];merged.forEach(function(block){if(!block.lunch){allSlots.push({time:toStr(block.start),busy:true,lunch:false});}});var cursor=openM;for(var mi=0;mi<=merged.length;mi++){var blockStart=(mi<merged.length)?merged[mi].start:closeM;while(cursor+pkgDur<=blockStart&&cursor+pkgDur<=closeM){allSlots.push({time:toStr(cursor),busy:false,lunch:false});cursor+=slot;}if(mi<merged.length){if(merged[mi].lunch){allSlots.push({time:toStr(merged[mi].start),busy:true,lunch:true});}cursor=Math.max(cursor,merged[mi].end);}}allSlots.sort(function(a,b){return toMin(a.time)-toMin(b.time);});if(!allSlots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios dispon�veis.</div>';return;}var html='';if(lsM&&leM){var manha=allSlots.filter(function(s){return toMin(s.time)<lsM;});var tarde=allSlots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">? Manh�</div>'+manha.map(function(s){if(s.busy||s.lunch)return'<div class="ts busy'+(s.lunch?' lunch':'')+'">'+ s.time+(s.lunch?' ??':'')+'</div>';return'<div class="ts'+(PKB.selTime===s.time?' sel':'')+'" data-time="'+s.time+'" onclick="pkbTimeClick(this)">'+s.time+'</div>';}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>?? Almo�o '+lunchStart+'�'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">?? Tarde</div>'+tarde.map(function(s){if(s.busy||s.lunch)return'<div class="ts busy'+(s.lunch?' lunch':'')+'">'+ s.time+(s.lunch?' ??':'')+'</div>';return'<div class="ts'+(PKB.selTime===s.time?' sel':'')+'" data-time="'+s.time+'" onclick="pkbTimeClick(this)">'+s.time+'</div>';}).join('');}else{html=allSlots.map(function(s){if(s.busy||s.lunch)return'<div class="ts busy'+(s.lunch?' lunch':'')+'">'+ s.time+(s.lunch?' ??':'')+'</div>';return'<div class="ts'+(PKB.selTime===s.time?' sel':'')+'" data-time="'+s.time+'" onclick="pkbTimeClick(this)">'+s.time+'</div>';}).join('');}g.innerHTML=html;};
+  window.pkbRenderTimes=function(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var pkgDur=(PKB.pkg&&Number(PKB.pkg.duration_minutes))||slot;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var openM=toMin(open),closeM=toMin(close);var occupied=[];(PKB.busySlots||[]).forEach(function(b){var bStart=toMin(b.time);occupied.push({start:bStart,end:bStart+b.dur});});if(lsM!==null&&leM!==null)occupied.push({start:lsM,end:leM,lunch:true});occupied.sort(function(a,b){return a.start-b.start;});var merged=[];occupied.forEach(function(o){if(merged.length&&o.start<merged[merged.length-1].end){merged[merged.length-1].end=Math.max(merged[merged.length-1].end,o.end);if(o.lunch)merged[merged.length-1].lunch=true;}else{merged.push({start:o.start,end:o.end,lunch:o.lunch||false});}});var allSlots=[];merged.forEach(function(block){if(!block.lunch){allSlots.push({time:toStr(block.start),busy:true,lunch:false});}});var cursor=openM;for(var mi=0;mi<=merged.length;mi++){var blockStart=(mi<merged.length)?merged[mi].start:closeM;while(cursor+pkgDur<=blockStart&&cursor+pkgDur<=closeM){allSlots.push({time:toStr(cursor),busy:false,lunch:false});cursor+=slot;}if(mi<merged.length){if(merged[mi].lunch){allSlots.push({time:toStr(merged[mi].start),busy:true,lunch:true});}cursor=Math.max(cursor,merged[mi].end);}}allSlots.sort(function(a,b){return toMin(a.time)-toMin(b.time);});if(!allSlots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios disponíveis.</div>';return;}var html='';if(lsM&&leM){var manha=allSlots.filter(function(s){return toMin(s.time)<lsM;});var tarde=allSlots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){if(s.busy||s.lunch)return'<div class="ts busy'+(s.lunch?' lunch':'')+'">'+ s.time+(s.lunch?' 🍽':'')+'</div>';return'<div class="ts'+(PKB.selTime===s.time?' sel':'')+'" data-time="'+s.time+'" onclick="pkbTimeClick(this)">'+s.time+'</div>';}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){if(s.busy||s.lunch)return'<div class="ts busy'+(s.lunch?' lunch':'')+'">'+ s.time+(s.lunch?' 🍽':'')+'</div>';return'<div class="ts'+(PKB.selTime===s.time?' sel':'')+'" data-time="'+s.time+'" onclick="pkbTimeClick(this)">'+s.time+'</div>';}).join('');}else{html=allSlots.map(function(s){if(s.busy||s.lunch)return'<div class="ts busy'+(s.lunch?' lunch':'')+'">'+ s.time+(s.lunch?' 🍽':'')+'</div>';return'<div class="ts'+(PKB.selTime===s.time?' sel':'')+'" data-time="'+s.time+'" onclick="pkbTimeClick(this)">'+s.time+'</div>';}).join('');}g.innerHTML=html;};
   window.pkbSelDate=async function(el,label,iso){document.querySelectorAll('#pkb-cal-grid .cal-d').forEach(function(d){d.classList.remove('sel');});el.classList.add('sel');PKB.selDate=label;PKB.selDateISO=iso;PKB.selTime=null;document.getElementById('pkb-tg').innerHTML='<div style="text-align:center;padding:10px"><div class="spin"></div></div>';try{if(db){var r=await db.from('appointments').select('appointment_time,total_duration_minutes,barber_id').eq('appointment_date',iso).eq('shop_id',S.shopId).neq('status','cancelled');var allAppts=r.data||[];var barbSel=document.getElementById('pkb-barber');var selBarberId=barbSel&&barbSel.value?barbSel.value:null;if(selBarberId){PKB.busySlots=allAppts.filter(function(a){return a.barber_id===selBarberId||!a.barber_id;}).map(function(a){return{time:a.appointment_time.slice(0,5),dur:Number(a.total_duration_minutes)||30};});}else{PKB.busySlots=allAppts.map(function(a){return{time:a.appointment_time.slice(0,5),dur:Number(a.total_duration_minutes)||30};});}try{var blkR=await db.from('blocked_slots').select('start_time,end_time').eq('shop_id',S.shopId).eq('block_date',iso);(blkR.data||[]).forEach(function(b){var bS=b.start_time.slice(0,5),bE=b.end_time.slice(0,5);var toM3=function(t2){var p2=t2.split(':').map(Number);return p2[0]*60+p2[1];};var durB=toM3(bE)-toM3(bS);PKB.busySlots.push({time:bS,dur:durB});});}catch(e2){}}}catch(e){PKB.busySlots=[];}pkbRenderTimes();pkbUpdateProgress();};
 },200);
 
@@ -2641,13 +2642,13 @@ window.toggleBlockSlot = function(el){
   else{el.style.background='var(--dk3)';el.style.borderColor='var(--dk4)';el.style.color='var(--tx)';}
   var count=document.querySelectorAll('.blk-selected').length;
   var countEl=document.getElementById('blk-count');
-  if(countEl)countEl.textContent=count>0?count+' hor�rio(s) selecionado(s)':'';
+  if(countEl)countEl.textContent=count>0?count+' horário(s) selecionado(s)':'';
 };
 window.saveBlock = async function(){
   var d=document.getElementById('blk-date').value;
   if(!d){toast('Selecione a data.','err');return;}
   var selected=document.querySelectorAll('.blk-selected');
-  if(!selected.length){toast('Selecione pelo menos um hor�rio.','err');return;}
+  if(!selected.length){toast('Selecione pelo menos um horário.','err');return;}
   var reason=document.getElementById('blk-reason').value.trim();
   var slot=Number((S.shop||S.settings||{}).slot_duration)||30;
   var inserts=[];
@@ -2660,7 +2661,7 @@ window.saveBlock = async function(){
   });
   var{error}=await db.from('blocked_slots').insert(inserts);
   if(error){toast('Erro: '+error.message,'err');return;}
-  toast(inserts.length+' hor�rio(s) bloqueado(s)!','ok');
+  toast(inserts.length+' horário(s) bloqueado(s)!','ok');
   closeMod('mod-block');
   loadBlockedSlots();
 };
@@ -2669,10 +2670,10 @@ window.loadBlockedSlots = async function(){
   if(!el||!S.shopId)return;
   var today=todayLocal();
   var{data,error}=await db.from('blocked_slots').select('*').eq('shop_id',S.shopId).gte('block_date',today).order('block_date').order('start_time');
-  if(error||!data||!data.length){el.innerHTML='<div style="color:var(--txm);font-size:13px;padding:8px 0">Nenhum hor�rio bloqueado.</div>';return;}
+  if(error||!data||!data.length){el.innerHTML='<div style="color:var(--txm);font-size:13px;padding:8px 0">Nenhum horário bloqueado.</div>';return;}
   el.innerHTML=data.map(function(b){
     var dt=new Date(b.block_date+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--dk2);border:1px solid var(--dk4);border-radius:8px;margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">'+dt+' � '+b.start_time.slice(0,5)+' �s '+b.end_time.slice(0,5)+'</div>'+(b.reason?'<div style="font-size:11px;color:var(--txm)">'+b.reason+'</div>':'')+'</div><button onclick="removeBlock(\''+b.id+'\') " style="background:rgba(231,76,60,.15);color:var(--red);border:1px solid var(--red);border-radius:50px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600">Remover</button></div>';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--dk2);border:1px solid var(--dk4);border-radius:8px;margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">'+dt+' — '+b.start_time.slice(0,5)+' às '+b.end_time.slice(0,5)+'</div>'+(b.reason?'<div style="font-size:11px;color:var(--txm)">'+b.reason+'</div>':'')+'</div><button onclick="removeBlock(\''+b.id+'\') " style="background:rgba(231,76,60,.15);color:var(--red);border:1px solid var(--red);border-radius:50px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600">Remover</button></div>';
   }).join('');
 };
 window.removeBlock = async function(id){
@@ -2810,7 +2811,7 @@ async function loadReminders(){
   var limit=nowMin+120; // proximas 2 horas
   var hasAny=false;
   try{
-    // === LEMBRETES 24H (amanh�) ===
+    // === LEMBRETES 24H (amanhã) ===
     var r24=await db.from('appointments').select('id,client_name,client_phone,appointment_time,service_name,barber_name,reminder_24h_sent').eq('appointment_date',tomorrowISO).eq('shop_id',S.shopId).in('status',['confirmed','pending']).order('appointment_time');
     var appts24=(r24.data||[]).filter(function(a){ return !a.reminder_24h_sent; });
     if(appts24.length>0 && sec24h && list24h){
@@ -2943,14 +2944,14 @@ if(typeof window.openCreateBarberUser==='undefined'){
 </script>
 <script src="pkg_booking.js?v=5"></script>
 <script>
-// Override pkbRenderTimes para garantir hor�rio de almo�o em pacotes
-function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+slot<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+slot)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">? Manh�</div>'+manha.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>?? Almo�o '+lunchStart+'�'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">?? Tarde</div>'+tarde.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}else{html=slots.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}g.innerHTML=html;}
-function pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||PKB.busySlots.some(function(b){var bMin=toMin(b.time);var bEnd=bMin+b.dur;return tMin<bEnd&&(tMin+slot)>bMin;});var sel=PKB.selTime===s.time;var lunchCls=s.lunch?' lunch':'';return'<div class="ts'+(busy?' busy':'')+(sel?' sel':'')+lunchCls+'"'+(busy?'':' data-time="'+s.time+'" onclick="pkbTimeClick(this)"')+'>'+s.time+(s.lunch?' ??':'')+'</div>';}
+// Override pkbRenderTimes para garantir horário de almoço em pacotes
+function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+slot<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+slot)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}else{html=slots.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}g.innerHTML=html;}
+function pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||PKB.busySlots.some(function(b){var bMin=toMin(b.time);var bEnd=bMin+b.dur;return tMin<bEnd&&(tMin+slot)>bMin;});var sel=PKB.selTime===s.time;var lunchCls=s.lunch?' lunch':'';return'<div class="ts'+(busy?' busy':'')+(sel?' sel':'')+lunchCls+'"'+(busy?'':' data-time="'+s.time+'" onclick="pkbTimeClick(this)"')+'>'+s.time+(s.lunch?' 🍽':'')+'</div>';}
 </script>
 <script>
 // Override pkbRenderTimes para respeitar horario de almoco
-function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+slot<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+slot)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">? Manh�</div>'+manha.map(function(s){return _pkbSlotBtn(s,slot,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>?? Almo�o '+lunchStart+'�'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">?? Tarde</div>'+tarde.map(function(s){return _pkbSlotBtn(s,slot,toMin);}).join('');}else{html=slots.map(function(s){return _pkbSlotBtn(s,slot,toMin);}).join('');}g.innerHTML=html;}
-function _pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||(PKB.busySlots||[]).some(function(b){var bMin=toMin(b.time);var bEnd=bMin+b.dur;return tMin<bEnd&&(tMin+slot)>bMin;});var sel=PKB.selTime===s.time;var lunchCls=s.lunch?' lunch':'';return'<div class="ts'+(busy?' busy':'')+(sel?' sel':'')+lunchCls+'"'+(busy?'':' data-time="'+s.time+'" onclick="pkbTimeClick(this)"')+'>'+s.time+(s.lunch?' ??':'')+'</div>';}
+function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+slot<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+slot)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){return _pkbSlotBtn(s,slot,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){return _pkbSlotBtn(s,slot,toMin);}).join('');}else{html=slots.map(function(s){return _pkbSlotBtn(s,slot,toMin);}).join('');}g.innerHTML=html;}
+function _pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||(PKB.busySlots||[]).some(function(b){var bMin=toMin(b.time);var bEnd=bMin+b.dur;return tMin<bEnd&&(tMin+slot)>bMin;});var sel=PKB.selTime===s.time;var lunchCls=s.lunch?' lunch':'';return'<div class="ts'+(busy?' busy':'')+(sel?' sel':'')+lunchCls+'"'+(busy?'':' data-time="'+s.time+'" onclick="pkbTimeClick(this)"')+'>'+s.time+(s.lunch?' 🍽':'')+'</div>';}
 </script>
 <script src="barberos-features.js?v=3"></script>
 </body>
