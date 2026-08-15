@@ -1283,6 +1283,17 @@ function renderCal(){
   g.innerHTML=h;
 }
 function chMon(d){S.calM+=d;if(S.calM>11){S.calM=0;S.calY++;}if(S.calM<0){S.calM=11;S.calY--;}renderCal();}
+function autoSelectToday(){
+  const now=new Date();
+  const d=now.getDate();const m=now.getMonth();const y=now.getFullYear();
+  const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+  const lbl=d+' '+MONTHS[m].slice(0,3);
+  S.selDate=lbl;S.selDateISO=iso;
+  // Marcar visualmente o dia de hoje como selecionado
+  const todEl=document.querySelector('.cal-d.tod');
+  if(todEl)todEl.classList.add('sel');
+  loadBusy();
+}
 async function selDate(el,label,iso){
   document.querySelectorAll('.cal-d').forEach(d=>d.classList.remove('sel'));
   el.classList.add('sel');S.selDate=label;S.selDateISO=iso;
@@ -1453,7 +1464,7 @@ function resetBooking(){
 function goStep(n){
   goStepUI(n);
   if(n===2){loadBarbers();}
-  if(n===3){S.selTime=null;renderCal();renderTimes();if(S.selDateISO)loadBusy();}
+  if(n===3){S.selTime=null;renderCal();renderTimes();autoSelectToday();}
   if(n===4)renderSummary();
   document.getElementById('cc').scrollTop=0;
 }
