@@ -1377,7 +1377,7 @@ function renderTimes(){
   occupied.sort(function(a,b){return a.start-b.start;});
   var merged=[];
   occupied.forEach(function(o){
-    if(merged.length&&o.start<merged[merged.length-1].end){
+    if(merged.length&&o.start<=merged[merged.length-1].end){
       merged[merged.length-1].end=Math.max(merged[merged.length-1].end,o.end);
       if(o.lunch)merged[merged.length-1].lunch=true;
     }else{merged.push({start:o.start,end:o.end,lunch:o.lunch||false});}
