@@ -1171,7 +1171,12 @@ function renderSvcMenu(){
 async function loadBarbers(){
   const g=document.getElementById('barber-grid');
   if(g)g.innerHTML='<div style="grid-column:span 2;text-align:center;padding:30px"><div class="spin"></div></div>';
-  if(!S.shopId){useFallbackBarbers();return;}
+  if(!S.shopId){
+    // Aguardar shopId estar disponível (retry até 3 segundos — igual ao loadSvcs)
+    var retries=0;
+    while(!S.shopId&&retries<6){await new Promise(r=>setTimeout(r,500));retries++;}
+    if(!S.shopId){useFallbackBarbers();return;}
+  }
   try{
     const{data,error}=await db.from('barbers').select('*').eq('active',true).eq('shop_id',S.shopId).order('name');
     if(error){console.error('loadBarbers error:',error);useFallbackBarbers();return;}
@@ -1182,7 +1187,6 @@ async function loadBarbers(){
 function useFallbackBarbers(){
   // Só usa fallback se não tem shopId (modo demo sem barbearia)
   if(S.shopId){S.barbers=[];renderBarberGrid();return;}
-  if(S.barbers.length){renderBarberGrid();return;}
   S.barbers=[
     {id:'tmp-b1',name:'Marcos',specialty:'Degradê & Barba',rating:4.9,reviews_count:142,avatar_emoji:'👤'},
     {id:'tmp-b2',name:'Rafael',specialty:'Clássico & Social',rating:4.8,reviews_count:89,avatar_emoji:'👤'},
