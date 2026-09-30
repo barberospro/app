@@ -2868,7 +2868,10 @@ function loadEstoque(){
 async function loadAdmProds(){
   var el=document.getElementById('prod-list');if(!el)return;
   el.innerHTML='<div style="text-align:center;padding:30px"><div class="spin"></div></div>';
+  if(!S.shopId){el.innerHTML='<div style="padding:20px;color:var(--txm);text-align:center">Carregando dados da barbearia...</div>';return;}
+  try{
   var{data,error}=await db.from('products').select('*').eq('shop_id',S.shopId).order('name');
+  if(error){el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center">Erro: '+error.message+'<br><small>Verifique se o SQL do módulo foi executado no Supabase.</small></div>';return;}
   var prods=data||[];
   var lbl=document.getElementById('prod-count-lbl');
   if(lbl)lbl.textContent=prods.length+' produto'+(prods.length!==1?'s':'');
@@ -2892,6 +2895,7 @@ async function loadAdmProds(){
       '</div>'+
     '</div>';
   }).join('');
+  }catch(e){el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center">Erro ao carregar produtos.<br><small>'+e.message+'</small></div>';}
 }
 
 function openProdMod(id){
@@ -3064,7 +3068,10 @@ async function openProdHist(id,name){
 async function loadAdmSups(){
   var el=document.getElementById('sup-list');if(!el)return;
   el.innerHTML='<div style="text-align:center;padding:30px"><div class="spin"></div></div>';
-  var{data}=await db.from('supplies').select('*').eq('shop_id',S.shopId).order('name');
+  if(!S.shopId){el.innerHTML='<div style="padding:20px;color:var(--txm);text-align:center">Carregando dados da barbearia...</div>';return;}
+  try{
+  var{data,error}=await db.from('supplies').select('*').eq('shop_id',S.shopId).order('name');
+  if(error){el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center">Erro: '+error.message+'<br><small>Verifique se o SQL do módulo foi executado no Supabase.</small></div>';return;}
   var sups=data||[];
   var lbl=document.getElementById('sup-count-lbl');
   if(lbl)lbl.textContent=sups.length+' insumo'+(sups.length!==1?'s':'');
@@ -3087,6 +3094,7 @@ async function loadAdmSups(){
       '</div>'+
     '</div>';
   }).join('');
+  }catch(e){el.innerHTML='<div style="padding:20px;color:var(--red);text-align:center">Erro ao carregar insumos.<br><small>'+e.message+'</small></div>';}
 }
 
 function openSupMod(id){
