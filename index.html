@@ -1317,34 +1317,61 @@ async function loadBusy(){
       var filtered=(data||[]).filter(function(a){ return a.barber_id===S.selectedBarberId || !a.barber_id; });
       S.busySlots=filtered.map(a=>({time:a.appointment_time.slice(0,5),dur:Number(a.total_duration_minutes)||30}));
     }else{
-      // Sem barbeiro selecionado: um slot é "busy" se TODOS os barbeiros estão ocupados nesse horário
+      // Sem barbeiro selecionado: um slot é "busy" se NENHUM barbeiro tem o bloco inteiro livre
       var barbR=await db.from('barbers').select('id').eq('shop_id',S.shopId).eq('active',true);
       var barberIds=(barbR.data||[]).map(function(b){return b.id;});
-      var numBarbers=barberIds.length||1;
-      // Agrupar por slot de 5min e ver quantos barbeiros estão ocupados
-      var slotMap={};
+      // Se não há barbeiros cadastrados, tratar como 1 barbeiro genérico (modo sem barbeiro)
+      var noBarbers=barberIds.length===0;
+      // Calcular duração total do carrinho (igual ao renderTimes)
+      var slotDurMin=Number((S.shop||S.settings||{}).slot_duration)||30;
+      var cartDur=Math.max(S.cart.reduce(function(s,c){return s+(Number(c.duration_minutes)||0);},0),slotDurMin);
+      // Montar mapa de intervalos ocupados por barbeiro
+      var barbBusy={};
+      barberIds.forEach(function(bid){barbBusy[bid]=[];});
       (data||[]).forEach(function(a){
         var t=a.appointment_time.slice(0,5);
         var dur=Number(a.total_duration_minutes)||30;
-        var[h,m]=t.split(':').map(Number);
-        var startMin=h*60+m;
-        for(var min=startMin;min<startMin+dur;min+=5){
-          var key=String(Math.floor(min/60)).padStart(2,'0')+':'+String(min%60).padStart(2,'0');
-          if(!slotMap[key])slotMap[key]=new Set();
-          if(a.barber_id){
-            slotMap[key].add(a.barber_id);
-          }else{
-            // Sem barbeiro definido = bloqueia TODOS os barbeiros nesse slot
-            barberIds.forEach(function(bid){slotMap[key].add(bid);});
+        var p2=t.split(':').map(Number);
+        var startMin=p2[0]*60+p2[1];
+        var endMin=startMin+dur;
+        if(a.barber_id&&barbBusy[a.barber_id]){
+          barbBusy[a.barber_id].push({start:startMin,end:endMin});
+        }else if(!a.barber_id){
+          // Sem barbeiro definido = ocupa todos
+          barberIds.forEach(function(bid){barbBusy[bid].push({start:startMin,end:endMin});});
+        }
+      });
+      // Para cada barbeiro, um slot candidato (start) está LIVRE se não há sobreposição com [start, start+cartDur)
+      function barberFreeAt(bid,startMin){
+        return !barbBusy[bid].some(function(b){return startMin<b.end&&(startMin+cartDur)>b.start;});
+      }
+      // Gerar busySlots: de 5 em 5 min, marcar slots onde NENHUM barbeiro está livre para o bloco cartDur
+      var shop2=S.shop||S.settings||{};
+      var openMin2=((shop2.opening_time||'09:00').slice(0,5)).split(':').map(Number);
+      var closeMin2=((shop2.closing_time||'20:00').slice(0,5)).split(':').map(Number);
+      var dayOpen=openMin2[0]*60+openMin2[1];
+      var dayClose=closeMin2[0]*60+closeMin2[1];
+      S.busySlots=[];
+      // Marcar cada minuto de 5 em 5 que está dentro de algum agendamento existente como ocupado na UI
+      var allOccupiedMins=new Set();
+      (data||[]).forEach(function(a){
+        var p2=a.appointment_time.slice(0,5).split(':').map(Number);
+        var startMin=p2[0]*60+p2[1];
+        var dur=Number(a.total_duration_minutes)||30;
+        for(var min=startMin;min<startMin+dur;min+=5){allOccupiedMins.add(min);}
+      });
+      allOccupiedMins.forEach(function(min){
+        S.busySlots.push({time:String(Math.floor(min/60)).padStart(2,'0')+':'+String(min%60).padStart(2,'0'),dur:5});
+      });
+      // Se há barbeiros cadastrados: bloquear slots onde nenhum barbeiro consegue atender o bloco cartDur inteiro
+      if(!noBarbers){
+        for(var slotStart=dayOpen;slotStart+cartDur<=dayClose;slotStart+=5){
+          var anyFree=barberIds.some(function(bid){return barberFreeAt(bid,slotStart);});
+          if(!anyFree){
+            S.busySlots.push({time:String(Math.floor(slotStart/60)).padStart(2,'0')+':'+String(slotStart%60).padStart(2,'0'),dur:5});
           }
         }
-      });
-      S.busySlots=[];
-      Object.keys(slotMap).forEach(function(key){
-        if(slotMap[key].size>=numBarbers){
-          S.busySlots.push({time:key,dur:5});
-        }
-      });
+      }
     }
     // Check blocked slots
     try{var blkR2=await db.from('blocked_slots').select('start_time,end_time').eq('shop_id',S.shopId).eq('block_date',S.selDateISO);(blkR2.data||[]).forEach(function(b){var bS=b.start_time.slice(0,5),bE=b.end_time.slice(0,5);var toM=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var sm=toM(bS),em=toM(bE);for(var m=sm;m<em;m+=5){S.busySlots.push({time:String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'),dur:5});}});}catch(e){}
