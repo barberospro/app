@@ -1335,7 +1335,12 @@ async function loadBusy(){
         var startMin=p2[0]*60+p2[1];
         var endMin=startMin+dur;
         if(a.barber_id&&barbBusy[a.barber_id]){
+          // Barbeiro conhecido e ativo
           barbBusy[a.barber_id].push({start:startMin,end:endMin});
+        }else if(a.barber_id&&!barbBusy[a.barber_id]){
+          // Barbeiro existe no agendamento mas não está na lista de ativos
+          // (inativo ou de outra shop) — tratar como ocupando todos para segurança
+          barberIds.forEach(function(bid){barbBusy[bid].push({start:startMin,end:endMin});});
         }else if(!a.barber_id){
           // Sem barbeiro definido = ocupa todos
           barberIds.forEach(function(bid){barbBusy[bid].push({start:startMin,end:endMin});});
