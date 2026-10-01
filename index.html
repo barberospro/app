@@ -1590,6 +1590,13 @@ function renderTimes(){
   const lsM=lunchStart?toMin(lunchStart):null;
   const leM=lunchEnd  ?toMin(lunchEnd)  :null;
 
+  // Bloqueio de horários passados (quando a data selecionada é hoje — fuso São Paulo)
+  var nowMinSP=null;
+  if(S.selDateISO&&S.selDateISO===todayLocal()){
+    var nowSP=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+    nowMinSP=nowSP.getHours()*60+nowSP.getMinutes();
+  }
+
   // Construir lista de intervalos ocupados (ordenados e mesclados)
   var occupied=[];
   (S.busySlots||[]).forEach(function(b){
@@ -1639,6 +1646,16 @@ function renderTimes(){
     var toM=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};
     return toM(a.time)-toM(b.time);
   });
+
+  // Marcar slots passados (hoje, antes da hora atual SP)
+  if(nowMinSP!==null){
+    allSlots.forEach(function(s){
+      if(!s.busy&&!s.lunch){
+        var sMin=toMin(s.time);
+        if(sMin<nowMinSP)s.busy=true;
+      }
+    });
+  }
 
   if(!allSlots.length){
     g.innerHTML='<div style="grid-column:span 4;color:var(--txm);font-size:13px;padding:10px">Sem horários disponíveis.</div>';
