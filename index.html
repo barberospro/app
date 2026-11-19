@@ -19,7 +19,7 @@
 // =================== VERSAO DO APP ===================
 // A cada publicacao, mude APP_VERSION aqui E em version.json (mesmo valor).
 // Se o celular estiver com uma versao antiga, ele limpa caches e recarrega sozinho.
-var APP_VERSION='2026-11-19.1';
+var APP_VERSION='2026-11-19.2';
 (function(){
   // Chaves do localStorage que devem sobreviver a uma atualizacao
   var KEEP=['client_name','client_phone','barberos_shop_slug','barberos_storage_version'];
@@ -1121,7 +1121,11 @@ async function loadSAShopSelector(){
   try{
     var{data}=await db.from('shops').select('id,name,slug').eq('active',true).order('name');
     if(!data||!data.length){sel.innerHTML='<option>Nenhuma barbearia</option>';return;}
-    sel.innerHTML=data.map(function(s){
+    // Se a barbearia aberta nao esta na lista (ex.: desativada), mostra ela no topo;
+    // senao o seletor exibe outra e escolher essa outra nao troca nada
+    var atualNaLista=data.some(function(s){return s.id===S.shopId;});
+    var topo=(!atualNaLista&&S.shop)?'<option value="" selected>'+S.shop.name+(S.shop.active===false?' (desativada)':'')+'</option>':'';
+    sel.innerHTML=topo+data.map(function(s){
       var selected=s.id===S.shopId?' selected':'';
       return '<option value="'+s.id+'"'+selected+'>'+s.name+'</option>';
     }).join('');
@@ -2474,10 +2478,14 @@ async function savePkg(){
 
 async function setDefaultShop(){
   if(!S.shopId){toast('Nenhuma barbearia carregada.','err');return;}
+  if(S.shop&&S.shop.active===false){toast('Esta barbearia esta desativada. Escolha outra no seletor.','err');return;}
+  if(!confirm('Definir "'+((S.shop&&S.shop.name)||'esta barbearia')+'" como padrao do link principal?'))return;
   // Remove default from all, set on current
   await db.from('shops').update({is_default:false}).neq('id',S.shopId);
-  await db.from('shops').update({is_default:true}).eq('id',S.shopId);
-  toast('✅ Esta barbearia agora é a padrão do link principal!','ok');
+  const{data,error}=await db.from('shops').update({is_default:true}).eq('id',S.shopId).select('id');
+  // Sem permissao o banco nao da erro, so nao altera nenhuma linha
+  if(error||!data||!data.length){toast('Nao foi possivel salvar: '+((error&&error.message)||'sem permissao'),'err');return;}
+  toast('✅ '+((S.shop&&S.shop.name)||'Esta barbearia')+' agora é a padrão do link principal!','ok');
 }
 function autoSlug(inp){
   const slug=inp.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -3250,7 +3258,7 @@ if(typeof window.openCreateBarberUser==='undefined'){
 }
 
 </script>
-<script src="pkg_booking.js?v=2026-11-19.1"></script>
+<script src="pkg_booking.js?v=2026-11-19.2"></script>
 <script>
 // Override pkbRenderTimes para garantir horário de almoço em pacotes
 function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+slot<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+slot)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}else{html=slots.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}g.innerHTML=html;}
@@ -3261,7 +3269,7 @@ function pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||PKB.b
 function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var sessDur=Math.max(slot,(PKB.pkg&&Number(PKB.pkg.duration_minutes)>0)?Number(PKB.pkg.duration_minutes):slot);var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+sessDur<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+sessDur)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');}else{html=slots.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');}g.innerHTML=html;}
 function _pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||(PKB.busySlots||[]).some(function(b){var bMin=toMin(b.time);var bEnd=bMin+b.dur;return tMin<bEnd&&(tMin+slot)>bMin;});var sel=PKB.selTime===s.time;var lunchCls=s.lunch?' lunch':'';return'<div class="ts'+(busy?' busy':'')+(sel?' sel':'')+lunchCls+'"'+(busy?'':' data-time="'+s.time+'" onclick="pkbTimeClick(this)"')+'>'+s.time+(s.lunch?' 🍽':'')+'</div>';}
 </script>
-<script src="barberos-features.js?v=2026-11-19.1"></script>
-<script src="estoque.js?v=2026-11-19.1"></script>
+<script src="barberos-features.js?v=2026-11-19.2"></script>
+<script src="estoque.js?v=2026-11-19.2"></script>
 </body>
 </html>
