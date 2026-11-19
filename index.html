@@ -19,7 +19,7 @@
 // =================== VERSAO DO APP ===================
 // A cada publicacao, mude APP_VERSION aqui E em version.json (mesmo valor).
 // Se o celular estiver com uma versao antiga, ele limpa caches e recarrega sozinho.
-var APP_VERSION='2026-11-19.2';
+var APP_VERSION='2026-11-19.3';
 (function(){
   // Chaves do localStorage que devem sobreviver a uma atualizacao
   var KEEP=['client_name','client_phone','barberos_shop_slug','barberos_storage_version'];
@@ -1196,8 +1196,9 @@ function showC(sec){
   window.scrollTo(0,0);
   document.querySelectorAll('.csec').forEach(s=>s.style.display='none');
   const t=document.getElementById('sc-'+sec);if(t)t.style.display='block';
-  // Mostra banner SaaS apenas quando não há ?s= na URL
-  if(sec==='home'){const b=document.getElementById('saas-banner');if(b)b.style.display=isDemoMode()?'block':'none';}
+  // Banner SaaS so quando nao ha barbearia carregada. Quem abre sem ?s= (ex.: icone antigo)
+  // e cai na barbearia padrao e cliente dela, nao deve ver propaganda do BarberOS
+  if(sec==='home'){const b=document.getElementById('saas-banner');if(b)b.style.display=(isDemoMode()&&!S.shopId)?'block':'none';}
   document.querySelectorAll('#client-app .ni').forEach(n=>n.classList.remove('active'));
   const m={home:'cn-home',agendar:'cn-agendar',servicos:'cn-servicos',meus:'cn-meus',perfil:'cn-perfil',loja:'cn-loja'};
   if(m[sec]){const el=document.getElementById(m[sec]);if(el)el.classList.add('active');}
@@ -3258,7 +3259,7 @@ if(typeof window.openCreateBarberUser==='undefined'){
 }
 
 </script>
-<script src="pkg_booking.js?v=2026-11-19.2"></script>
+<script src="pkg_booking.js?v=2026-11-19.3"></script>
 <script>
 // Override pkbRenderTimes para garantir horário de almoço em pacotes
 function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+slot<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+slot)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}else{html=slots.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}g.innerHTML=html;}
@@ -3269,7 +3270,7 @@ function pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||PKB.b
 function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var sessDur=Math.max(slot,(PKB.pkg&&Number(PKB.pkg.duration_minutes)>0)?Number(PKB.pkg.duration_minutes):slot);var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+sessDur<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+sessDur)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');}else{html=slots.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');}g.innerHTML=html;}
 function _pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||(PKB.busySlots||[]).some(function(b){var bMin=toMin(b.time);var bEnd=bMin+b.dur;return tMin<bEnd&&(tMin+slot)>bMin;});var sel=PKB.selTime===s.time;var lunchCls=s.lunch?' lunch':'';return'<div class="ts'+(busy?' busy':'')+(sel?' sel':'')+lunchCls+'"'+(busy?'':' data-time="'+s.time+'" onclick="pkbTimeClick(this)"')+'>'+s.time+(s.lunch?' 🍽':'')+'</div>';}
 </script>
-<script src="barberos-features.js?v=2026-11-19.2"></script>
-<script src="estoque.js?v=2026-11-19.2"></script>
+<script src="barberos-features.js?v=2026-11-19.3"></script>
+<script src="estoque.js?v=2026-11-19.3"></script>
 </body>
 </html>
