@@ -1,0 +1,7 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>BarberOS</title>
+<script>
+// Links antigos ou quebrados (ex.: /barberos-v2/agendar, /app/...) voltam para o app,
+// mantendo o ?s=barbearia e o #... do link original.
+window.location.replace("/"+(window.location.search||"")+(window.location.hash||""));
+</script></head><body style="background:#0E0E0E;color:#C9A84C;font-family:sans-serif;text-align:center;padding:40px">
+<a href="/" style="color:#C9A84C">Abrir o BarberOS</a></body></html>

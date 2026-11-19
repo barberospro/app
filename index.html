@@ -15,6 +15,42 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<script>
+// =================== VERSAO DO APP ===================
+// A cada publicacao, mude APP_VERSION aqui E em version.json (mesmo valor).
+// Se o celular estiver com uma versao antiga, ele limpa caches e recarrega sozinho.
+var APP_VERSION='2026-11-19.1';
+(function(){
+  // Chaves do localStorage que devem sobreviver a uma atualizacao
+  var KEEP=['client_name','client_phone','barberos_shop_slug','barberos_storage_version'];
+  function keep(k){return KEEP.indexOf(k)>-1||k.indexOf('sb-')===0;}
+  // Remove ?v= que a propria atualizacao coloca na URL
+  try{var u0=new URL(location.href);if(u0.searchParams.has('v')){u0.searchParams.delete('v');history.replaceState(null,'',u0.pathname+u0.search+u0.hash);}}catch(e){}
+  // Limpa dados antigos guardados no celular quando a versao muda
+  try{
+    if(localStorage.getItem('barberos_storage_version')!==APP_VERSION){
+      Object.keys(localStorage).forEach(function(k){if(!keep(k))localStorage.removeItem(k);});
+      localStorage.setItem('barberos_storage_version',APP_VERSION);
+    }
+  }catch(e){}
+  function cleanup(){
+    var ps=[];
+    if('serviceWorker' in navigator)ps.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister();}));}));
+    if(window.caches)ps.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}));
+    return Promise.all(ps).catch(function(){});
+  }
+  function check(){
+    fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(v){
+      if(!v||!v.version||v.version===APP_VERSION)return;
+      // Evita loop: recarrega no maximo 1 vez por versao nova
+      try{if(sessionStorage.getItem('barberos_reload_for')===v.version)return;sessionStorage.setItem('barberos_reload_for',v.version);}catch(e){}
+      cleanup().then(function(){var u=new URL(location.href);u.searchParams.set('v',v.version);location.replace(u.toString());});
+    }).catch(function(){});
+  }
+  window.addEventListener('load',check);
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')check();});
+})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
 <style>
@@ -148,6 +184,7 @@ html,body{overscroll-behavior-y:none;}
     <img src="logo-icon.png" alt="BarberOS" style="width:80px;height:80px;border-radius:20px;margin-bottom:20px;object-fit:cover">
     <div style="font-family:'Playfair Display',serif;font-size:52px;font-weight:900;color:var(--gold);letter-spacing:-1px">BarberOS</div>
     <div style="font-size:15px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin:8px 0 50px;font-weight:600" id="sp-name">Estilo & Precisao</div>
+    <div id="sp-noshop" style="display:none;max-width:320px;margin:0 0 16px;padding:14px;border:1px solid var(--gold);border-radius:12px;color:var(--txm);font-size:13px;text-align:center;line-height:1.5">Para agendar, abra o <strong style="color:var(--gold)">link que a sua barbearia enviou</strong> (ele termina com <strong style="color:var(--gold)">?s=nome-da-barbearia</strong>).</div>
     <button class="btn btn-gold" onclick="enterApp('client')" style="max-width:320px">Agendar Agora</button>
     <button class="btn btn-out" onclick="enterApp('adm-login')" style="max-width:320px">Area do Proprietario</button>
     <div id="sp-addr" style="display:none"></div>
@@ -1030,7 +1067,13 @@ const S={
   busySlots:[],svcs:[],barbers:[],settings:{},lastBooking:null
 };
 // Read slug from URL: ?s=SLUG or ?shop=SLUG
-(()=>{const p=new URLSearchParams(window.location.search);S.shopSlug=p.get('s')||p.get('shop')||null;})();
+// Sem slug na URL (ex.: icone na tela inicial) — usa a ultima barbearia aberta neste celular
+(()=>{
+  const p=new URLSearchParams(window.location.search);S.shopSlug=p.get('s')||p.get('shop')||null;
+  if(!S.shopSlug){try{S.shopSlug=localStorage.getItem('barberos_shop_slug')||null;}catch(e){}}
+  if(S.shopSlug&&p.get('s')!==S.shopSlug){p.delete('shop');p.set('s',S.shopSlug);history.replaceState(null,'',window.location.pathname+'?'+p.toString()+window.location.hash);}
+  S.shopLoading=true; // vira false quando a barbearia terminar de carregar
+})();
 
 // =================== UTILS ===================
 function toast(m,t=''){const el=document.getElementById('toast');el.textContent=m;el.className='show '+(t==='ok'?'ok':t==='err'?'err':'');setTimeout(()=>el.className='',3000);}
@@ -1044,6 +1087,13 @@ function icLabel(cat){const m={'Cortes':'CO','Barba':'BA','Combos':'CB','Tratame
 
 // =================== NAV ===================
 function enterApp(mode){
+  // Nunca abrir o agendamento sem uma barbearia carregada (antes mostrava barbeiros de exemplo)
+  if(mode==='client'&&!S.shopId){
+    if(S.shopLoading){toast('Carregando a barbearia, aguarde...');return;}
+    const n=document.getElementById('sp-noshop');if(n)n.style.display='block';
+    toast('Abra o link que a sua barbearia enviou.','err');
+    return;
+  }
   window.scrollTo(0,0);
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const idMap={client:'client-app',admin:'admin-app','adm-login':'adm-login',planos:'planos',splash:'splash',onboarding:'onboarding','set-password':'set-password'};
@@ -1111,8 +1161,14 @@ async function loadShop(slugOrOwnerId, byOwner=false){
     if(byOwner) q=q.eq('owner_id',slugOrOwnerId);
     else q=q.eq('slug',slugOrOwnerId).eq('active',true);
     const{data,error}=await q.single();
-    if(error||!data){console.warn('Shop not found:',error);return false;}
+    if(error||!data){
+      console.warn('Shop not found:',error);
+      // Link de barbearia que nao existe mais (ou foi desativada): esquece neste celular
+      if(!byOwner&&error&&error.code==='PGRST116'){try{if(localStorage.getItem('barberos_shop_slug')===slugOrOwnerId)localStorage.removeItem('barberos_shop_slug');}catch(e){}}
+      return false;
+    }
     S.shop=data; S.shopId=data.id; S.shopSlug=data.slug;
+    if(!byOwner){try{localStorage.setItem('barberos_shop_slug',data.slug);}catch(e){}}
     applyShop(data);
     return true;
   }catch(e){console.warn('loadShop error:',e);return false;}
@@ -1276,18 +1332,8 @@ async function loadSvcs(){
   }catch(e){console.error('loadSvcs exception:',e);useFallbackSvcs();}
 }
 function useFallbackSvcs(){
-  // Só usa fallback se não tem shopId (modo demo sem barbearia)
-  if(S.shopId){S.svcs=[];renderSvcGrid();return;}
-  if(S.svcs.length){renderSvcGrid();return;}
-  S.svcs=[
-    {id:'tmp-1',name:'Corte Degradê',price:45,duration_minutes:40,category:'Cortes'},
-    {id:'tmp-2',name:'Barba Completa',price:35,duration_minutes:30,category:'Barba'},
-    {id:'tmp-3',name:'Corte + Barba',price:70,duration_minutes:60,category:'Combos'},
-    {id:'tmp-4',name:'Pezinho',price:20,duration_minutes:15,category:'Cortes'},
-    {id:'tmp-5',name:'Hidratação',price:30,duration_minutes:30,category:'Tratamentos'},
-    {id:'tmp-6',name:'Sobrancelha',price:15,duration_minutes:15,category:'Tratamentos'},
-  ];
-  renderSvcGrid();
+  // Nunca mostrar servicos de exemplo: o cliente agendaria algo que a barbearia nao ve
+  S.svcs=[];renderSvcGrid();
 }
 function catCls(cat){return icCls(cat);}
 
@@ -1372,14 +1418,8 @@ async function loadBarbers(){
   }catch(e){console.error('loadBarbers exception:',e);useFallbackBarbers();}
 }
 function useFallbackBarbers(){
-  // Só usa fallback se não tem shopId (modo demo sem barbearia)
-  if(S.shopId){S.barbers=[];renderBarberGrid();return;}
-  S.barbers=[
-    {id:'tmp-b1',name:'Marcos',specialty:'Degradê & Barba',rating:4.9,reviews_count:142,avatar_emoji:'👤'},
-    {id:'tmp-b2',name:'Rafael',specialty:'Clássico & Social',rating:4.8,reviews_count:89,avatar_emoji:'👤'},
-    {id:'tmp-b3',name:'João',specialty:'Navalhado & Barba',rating:4.7,reviews_count:56,avatar_emoji:'👤'},
-  ];
-  renderBarberGrid();
+  // Nunca mostrar barbeiros de exemplo (Marcos/Rafael/Joao): nao existem na barbearia
+  S.barbers=[];renderBarberGrid();
 }
 function renderBarberGrid(){
   const g=document.getElementById('barber-grid');if(!g)return;
@@ -1746,6 +1786,7 @@ async function confirmPay(method){
   const name=document.getElementById('bk-name').value.trim();
   const phone=document.getElementById('bk-phone').value.trim();
   if(!name){toast('Digite seu nome.','err');return;}
+  if(!S.shopId){toast('Barbearia nao carregada. Abra novamente o link da barbearia.','err');return;}
   if(!S.selDate||!S.selTime){toast('Selecione data e horario.','err');return;}
   if(method==='credito'){
     if(!document.getElementById('c-num').value.replace(/\s/g,'').length){toast('Informe o numero do cartao.','err');return;}
@@ -1857,7 +1898,9 @@ async function loadMyAppts(){
   if(!ph){toast('Digite seu WhatsApp','err');return;}
   const el=document.getElementById('my-list');
   el.innerHTML='<div style="text-align:center;padding:20px"><div class="spin"></div></div>';
-  const{data}=await db.from('appointments').select('*').eq('client_phone',ph).order('appointment_date',{ascending:false});
+  // So os agendamentos DESTA barbearia (antes apareciam testes e agendamentos de outros saloes)
+  if(!S.shopId){el.innerHTML='<div style="color:var(--txm);font-size:13px;padding:10px 0">Abra o link da sua barbearia para ver seus agendamentos.</div>';return;}
+  const{data}=await db.from('appointments').select('*').eq('client_phone',ph).eq('shop_id',S.shopId).order('appointment_date',{ascending:false});
   if(!data||!data.length){el.innerHTML='<div style="color:var(--txm);font-size:13px;padding:10px 0">Nenhum agendamento encontrado.</div>';return;}
   const sl={pending:'bp',confirmed:'bc',done:'bd',finished:'bf',cancelled:'bx'};
   const st={pending:'Pendente',confirmed:'Confirmado',done:'Feito',finished:'Encerrado',cancelled:'Cancelado'};
@@ -2795,7 +2838,7 @@ async function deleteCliente(uid){
       _authRedirect=true;
     }
 
-    if(_authRedirect)return;
+    if(_authRedirect){S.shopLoading=false;return;}
     // 2. Load profile from localStorage
     const n=localStorage.getItem('client_name');const p=localStorage.getItem('client_phone');
     if(n){const e=document.getElementById('prf-name');if(e)e.value=n;}
@@ -2817,6 +2860,7 @@ async function deleteCliente(uid){
         }
       }catch(e){ console.warn('Erro ao carregar barbearia padrão:',e); }
     }
+    S.shopLoading=false;
 
     // 4. Checar sessão existente — manter logado ao recarregar
     try{
@@ -2857,7 +2901,7 @@ async function deleteCliente(uid){
       enterApp('client');
     }
     // Se não entrou em nenhuma tela, fica no splash (já é o padrão)
-  }catch(e){console.warn('Init error',e);}
+  }catch(e){S.shopLoading=false;console.warn('Init error',e);}
 
 // PKB e calcSessions removidos - definidos em pkg_booking.js
 // Override pkbRenderTimes e pkbSelDate inline para garantir horario de almoco e conflitos corretos em pacotes
@@ -3206,7 +3250,7 @@ if(typeof window.openCreateBarberUser==='undefined'){
 }
 
 </script>
-<script src="pkg_booking.js?v=5"></script>
+<script src="pkg_booking.js?v=2026-11-19.1"></script>
 <script>
 // Override pkbRenderTimes para garantir horário de almoço em pacotes
 function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+slot<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+slot)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}else{html=slots.map(function(s){return pkbSlotBtn(s,slot,toMin);}).join('');}g.innerHTML=html;}
@@ -3217,7 +3261,7 @@ function pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||PKB.b
 function pkbRenderTimes(){var g=document.getElementById('pkb-tg');if(!g)return;var shop=(S&&S.shop)||{};var open=(shop.opening_time||'09:00').slice(0,5),close=(shop.closing_time||'20:00').slice(0,5);var lunchStart=shop.lunch_start?(shop.lunch_start.slice(0,5)):'';var lunchEnd=shop.lunch_end?(shop.lunch_end.slice(0,5)):'';var slot=Number(shop.slot_duration)||30;var sessDur=Math.max(slot,(PKB.pkg&&Number(PKB.pkg.duration_minutes)>0)?Number(PKB.pkg.duration_minutes):slot);var toMin=function(t){var p=t.split(':').map(Number);return p[0]*60+p[1];};var toStr=function(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};var lsM=lunchStart?toMin(lunchStart):null;var leM=lunchEnd?toMin(lunchEnd):null;var cur=toMin(open),closeM=toMin(close),slots=[];while(cur+sessDur<=closeM){var isLunch=lsM!==null&&leM!==null&&(cur<leM&&(cur+sessDur)>lsM);slots.push({time:toStr(cur),lunch:isLunch});cur+=slot;}if(!slots.length){g.innerHTML='<div style="color:#9A9080;padding:10px">Sem horarios.</div>';return;}var html='';if(lsM&&leM){var manha=slots.filter(function(s){return toMin(s.time)<lsM;});var tarde=slots.filter(function(s){return toMin(s.time)>=leM;});if(manha.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">☀ Manhã</div>'+manha.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');html+='<div style="grid-column:span 4;font-size:11px;color:#9A9080;padding:6px 0 4px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:1px;background:#2E2E2E"></div>🍽 Almoço '+lunchStart+'–'+lunchEnd+'<div style="flex:1;height:1px;background:#2E2E2E"></div></div>';if(tarde.length)html+='<div style="grid-column:span 4;font-size:11px;font-weight:700;color:#C9A84C;letter-spacing:1px;padding:4px 0 6px;text-transform:uppercase">🌤 Tarde</div>'+tarde.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');}else{html=slots.map(function(s){return _pkbSlotBtn(s,sessDur,toMin);}).join('');}g.innerHTML=html;}
 function _pkbSlotBtn(s,slot,toMin){var tMin=toMin(s.time);var busy=s.lunch||(PKB.busySlots||[]).some(function(b){var bMin=toMin(b.time);var bEnd=bMin+b.dur;return tMin<bEnd&&(tMin+slot)>bMin;});var sel=PKB.selTime===s.time;var lunchCls=s.lunch?' lunch':'';return'<div class="ts'+(busy?' busy':'')+(sel?' sel':'')+lunchCls+'"'+(busy?'':' data-time="'+s.time+'" onclick="pkbTimeClick(this)"')+'>'+s.time+(s.lunch?' 🍽':'')+'</div>';}
 </script>
-<script src="barberos-features.js?v=4"></script>
-<script src="estoque.js?v=1"></script>
+<script src="barberos-features.js?v=2026-11-19.1"></script>
+<script src="estoque.js?v=2026-11-19.1"></script>
 </body>
 </html>
